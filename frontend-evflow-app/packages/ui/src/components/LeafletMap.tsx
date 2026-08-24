@@ -21,11 +21,27 @@ type LeafletMapProps = {
   onMarkerPress?: (markerId: string) => void;
   onPickedPointMoved?: (latitude: number, longitude: number) => void;
   onViewportChange?: (viewport: MapViewport) => void;
+  /**
+   * Accepted so web and native share one call site, then ignored: the native
+   * map renders through a WebView bridge with no canvas layer, and a POI cloud
+   * of tens of thousands of points is a desktop planning view rather than
+   * something a driver needs on a phone.
+   */
+  pointLayers?: LeafletPointLayer[];
   polygonLayers?: LeafletPolygonLayer[];
   pickedPoint?: {
     latitude: number;
     longitude: number;
   } | null;
+  connectionLines?: LeafletConnectionLine[];
+  /**
+   * Raster layers drawn over the base map and under everything else.
+   *
+   * Kept generic rather than named after any one provider: the map package
+   * should not know what TomTom is. Whoever passes these owns the URL, the key
+   * inside it and the attribution string.
+   */
+  tileOverlays?: LeafletTileOverlay[];
   polylineColor?: string;
   polylineCoordinates?: [number, number][];
   radiusKm?: number | null;
@@ -43,6 +59,38 @@ export type MapViewport = {
   west: number;
   zoom: number;
 };
+export type LeafletTileOverlay = {
+  id: string;
+  /** Tile template with {z}/{x}/{y} placeholders. */
+  url: string;
+  /** Required by most providers, and by TomTom's terms. Rendered by Leaflet. */
+  attribution?: string;
+  opacity?: number;
+  maxZoom?: number;
+};
+
+export type LeafletConnectionLine = {
+  id: string;
+  from: [number, number];
+  to: [number, number];
+  color: string;
+  weight?: number;
+  /** Dashed by default: a relationship, not a route anyone drives. */
+  dashed?: boolean;
+  /**
+   * Marching dashes, the same effect React Flow gives an animated edge.
+   *
+   * It reads as flow rather than as a static measurement, which is right for a
+   * link that says "these belong together" and wrong for one that reports a
+   * fixed distance. Motion draws the eye, so only one kind of line uses it.
+   */
+  animated?: boolean;
+  /** Shown on hover. Keep it short, e.g. the distance. */
+  label?: string;
+};
+
+export type LeafletPointLayer = { id: string; latitude: number; longitude: number; color: string; radius?: number; title?: string };
+
 export type LeafletPolygonLayer = { color?: string; coordinates: Array<[number, number]>; fillColor: string; fillOpacity: number; id: string; weight?: number };
 
 export type LeafletMapMarker = {

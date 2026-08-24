@@ -32,3 +32,11 @@ export const populationIcon = svg(
 export const landUseIcon = svg(
   '<path d="M2 2H9V9H2V2ZM4 4V7H7V4H4ZM11 2H18V6H11V2ZM13 4H16V4H13ZM11 8H18V18H11V8ZM13 10V16H16V10H13ZM2 11H9V18H2V11ZM4 13V16H7V13H4Z" fill="#53686A"/>'
 );
+
+export const modelPredictionIcon = svg(
+  '<path d="M10 2.5A7.5 7.5 0 0 0 2.5 10h2.2A5.3 5.3 0 0 1 10 4.7A5.3 5.3 0 0 1 15.3 10h2.2A7.5 7.5 0 0 0 10 2.5Z" fill="#7C3AED"/><path d="M10 10L13.6 6.9L11.1 11.4A1.3 1.3 0 1 1 10 10Z" fill="#7C3AED"/><path d="M3.6 13.2H16.4" stroke="#7C3AED" stroke-width="1.6" stroke-linecap="round"/>'
+);
+
+export const trafficIcon = svg(
+  '<rect x="6" y="1.5" width="8" height="17" rx="3" stroke="#DC2626" stroke-width="1.6"/><circle cx="10" cy="6" r="1.7" fill="#DC2626"/><circle cx="10" cy="10" r="1.7" fill="#F59E0B"/><circle cx="10" cy="14" r="1.7" fill="#10B981"/>'
+);

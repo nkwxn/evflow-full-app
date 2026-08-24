@@ -17,12 +17,39 @@ type LeafletMapProps = {
   onPickedPointMoved?: (latitude: number, longitude: number) => void;
   onViewportChange?: (viewport: MapViewport) => void;
   polygonLayers?: LeafletPolygonLayer[];
+  /**
+   * Lightweight points drawn on a shared canvas rather than as DOM markers.
+   *
+   * A DivIcon marker is a DOM node with its own layout and paint cost, which is
+   * fine for a handful of pins and unusable for tens of thousands: a
+   * Jakarta-wide POI layer holds 27,114. Canvas-rendered circles handle that
+   * without the browser stalling, and they still receive clicks, so nothing is
+   * traded away except the ability to put arbitrary HTML inside each one.
+   */
+  pointLayers?: LeafletPointLayer[];
   pickedPoint?: {
     latitude: number;
     longitude: number;
   } | null;
   polylineCoordinates?: [number, number][];
   polylineColor?: string;
+  /**
+   * Straight lines between two points, drawn on the map itself.
+   *
+   * Separate from polylineCoordinates, which is the driver's single routed
+   * path: these are many short links, each its own colour, and they are
+   * relationships rather than a route anyone would drive. Keeping them apart
+   * means the planner's links cannot overwrite a live navigation line.
+   */
+  connectionLines?: LeafletConnectionLine[];
+  /**
+   * Raster layers drawn over the base map and under everything else.
+   *
+   * Kept generic rather than named after any one provider: the map package
+   * should not know what TomTom is. Whoever passes these owns the URL, the key
+   * inside it and the attribution string.
+   */
+  tileOverlays?: LeafletTileOverlay[];
   autoFitBounds?: boolean;
   radiusKm?: number | null;
   selectedMarkerIconSvg?: string;
@@ -38,6 +65,71 @@ export type MapViewport = {
   south: number;
   west: number;
   zoom: number;
+};
+
+const CONNECTION_ANIMATION_CLASS = 'evflow-connection-animated';
+
+/**
+ * Injects the marching-dash keyframes once, on first use.
+ *
+ * A stylesheet import would be the tidier route, but this file is also resolved
+ * by bundlers that do not handle CSS imports from a shared package, and the rule
+ * is four lines. Copied from @xyflow/react/dist/style.css so an animated link on
+ * the map and an animated edge in the diagram move at the same rate.
+ */
+function ensureConnectionAnimationStyle() {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById(CONNECTION_ANIMATION_CLASS)) return;
+  const style = document.createElement('style');
+  style.id = CONNECTION_ANIMATION_CLASS;
+  style.textContent = `
+    @keyframes evflow-dashdraw { from { stroke-dashoffset: 10; } }
+    .${CONNECTION_ANIMATION_CLASS} {
+      animation: evflow-dashdraw 0.5s linear infinite;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+export type LeafletTileOverlay = {
+  id: string;
+  /** Tile template with {z}/{x}/{y} placeholders. */
+  url: string;
+  /** Required by most providers, and by TomTom's terms. Rendered by Leaflet. */
+  attribution?: string;
+  opacity?: number;
+  maxZoom?: number;
+};
+
+export type LeafletConnectionLine = {
+  id: string;
+  from: [number, number];
+  to: [number, number];
+  color: string;
+  weight?: number;
+  /** Dashed by default: a relationship, not a route anyone drives. */
+  dashed?: boolean;
+  /**
+   * Marching dashes, the same effect React Flow gives an animated edge.
+   *
+   * It reads as flow rather than as a static measurement, which is right for a
+   * link that says "these belong together" and wrong for one that reports a
+   * fixed distance. Motion draws the eye, so only one kind of line uses it.
+   */
+  animated?: boolean;
+  /** Shown on hover. Keep it short, e.g. the distance. */
+  label?: string;
+};
+
+export type LeafletPointLayer = {
+  id: string;
+  latitude: number;
+  longitude: number;
+  color: string;
+  radius?: number;
+  /** Shown on hover. Points carry no permanent label; that is what made the
+   *  earlier clustered version unreadable at region zoom. */
+  title?: string;
 };
 
 export type LeafletPolygonLayer = {
@@ -91,8 +183,11 @@ export function LeafletMap({
   onMarkerPress,
   onPickedPointMoved,
   onViewportChange,
+  pointLayers = [],
   polygonLayers = [],
   pickedPoint,
+  connectionLines,
+  tileOverlays,
   polylineColor,
   polylineCoordinates,
   radiusKm,
@@ -112,6 +207,8 @@ export function LeafletMap({
   const radiusKmRef = useRef<number | null>(radiusKm ?? null);
   const pickerMarkerRef = useRef<import('leaflet').Marker | null>(null);
   const polygonLayersRef = useRef<import('leaflet').Layer[]>([]);
+  const pointLayersRef = useRef<import('leaflet').Layer[]>([]);
+  const pointRendererRef = useRef<import('leaflet').Renderer | null>(null);
   // Mirrors of the interaction callbacks: the map instance and the picker
   // marker outlive any single render, so their Leaflet handlers must read the
   // latest props through refs (same pattern as radiusKmRef below).
@@ -354,6 +451,7 @@ export function LeafletMap({
       radiusCircleRef.current = null;
       pickerMarkerRef.current = null;
       polylineLayersRef.current = [];
+      connectionLayersRef.current = [];
       polygonLayersRef.current = [];
     };
   }, [mapContainerId]);
@@ -388,6 +486,8 @@ export function LeafletMap({
   }, [center.latitude, center.longitude, zoom]);
 
   const polylineLayersRef = useRef<import('leaflet').Layer[]>([]);
+  const connectionLayersRef = useRef<import('leaflet').Layer[]>([]);
+  const tileOverlayLayersRef = useRef<import('leaflet').Layer[]>([]);
 
   useEffect(() => {
     renderStationMarkers(markers);
@@ -407,6 +507,40 @@ export function LeafletMap({
     }).addTo(mapRef.current!));
     return () => { polygonLayersRef.current.forEach((layer) => layer.remove()); polygonLayersRef.current = []; };
   }, [mapRevision, polygonLayers]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const L = leafletRef.current;
+    if (!map || !L) return;
+    pointLayersRef.current.forEach((layer) => layer.remove());
+    pointLayersRef.current = [];
+    if (!pointLayers.length) return;
+
+    // One canvas shared by every point. Creating a renderer per circle would
+    // reintroduce exactly the per-node cost this exists to avoid.
+    if (!pointRendererRef.current) pointRendererRef.current = L.canvas({ padding: 0.3 });
+
+    pointLayersRef.current = pointLayers.map((point) => {
+      const circle = L.circleMarker([point.latitude, point.longitude], {
+        renderer: pointRendererRef.current!,
+        radius: point.radius ?? 3.2,
+        color: '#ffffff',
+        weight: 0.8,
+        fillColor: point.color,
+        fillOpacity: 0.9,
+        // Clicks belong to the map underneath unless the point itself is the
+        // target, so panning over a dense layer still works.
+        bubblingMouseEvents: false
+      });
+      if (point.title) circle.bindTooltip(point.title, { direction: 'top', opacity: 0.92 });
+      return circle.addTo(map);
+    });
+
+    return () => {
+      pointLayersRef.current.forEach((layer) => layer.remove());
+      pointLayersRef.current = [];
+    };
+  }, [mapRevision, pointLayers]);
 
   useEffect(() => {
     if (!mapRef.current || !leafletRef.current) {
@@ -501,6 +635,68 @@ export function LeafletMap({
       polylineLayersRef.current = [];
     };
   }, [mapRevision, markers, polylineCoordinates, polylineColor, autoFitBounds]);
+
+  // Overlay tiles sit in Leaflet's own tilePane, so they render above the base
+  // map and below every marker, polygon and line without any z-index juggling.
+  // Rebuilt whenever the list changes: a traffic layer that keeps showing after
+  // its toggle is off would be reporting conditions nobody asked to see.
+  useEffect(() => {
+    if (!mapRef.current || !leafletRef.current) return;
+
+    tileOverlayLayersRef.current.forEach((layer) => layer.remove());
+    tileOverlayLayersRef.current = [];
+
+    (tileOverlays ?? []).forEach((overlay) => {
+      const layer = leafletRef.current!.tileLayer(overlay.url, {
+        attribution: overlay.attribution,
+        opacity: overlay.opacity ?? 1,
+        maxZoom: overlay.maxZoom ?? 19,
+        // Above the base map, still inside tilePane so data layers stay on top.
+        zIndex: 250
+      }).addTo(mapRef.current!);
+      tileOverlayLayersRef.current.push(layer);
+    });
+
+    return () => {
+      tileOverlayLayersRef.current.forEach((layer) => layer.remove());
+      tileOverlayLayersRef.current = [];
+    };
+  }, [mapRevision, tileOverlays]);
+
+  // Connection lines get their own layer list and their own effect. Sharing the
+  // route's would make a planner link and a driver route clear each other, and
+  // the two are on screen for different reasons.
+  useEffect(() => {
+    if (!mapRef.current || !leafletRef.current) return;
+
+    connectionLayersRef.current.forEach((layer) => layer.remove());
+    connectionLayersRef.current = [];
+
+    if ((connectionLines ?? []).some((line) => line.animated)) ensureConnectionAnimationStyle();
+
+    (connectionLines ?? []).forEach((line) => {
+      const path = leafletRef.current!.polyline([line.from, line.to], {
+        color: line.color,
+        weight: line.weight ?? 2,
+        opacity: 0.85,
+        // Dashes read as "a relationship", solid reads as "a route you drive".
+        // Matches React Flow's animated edge exactly (stroke-dasharray 5,
+        // dashdraw 0.5s linear infinite), so the map and the diagram panel do
+        // not appear to be showing two different kinds of relationship.
+        dashArray: line.animated ? '5' : line.dashed === false ? undefined : '5 6',
+        lineCap: 'round',
+        className: line.animated ? CONNECTION_ANIMATION_CLASS : undefined,
+        interactive: Boolean(line.label)
+      }).addTo(mapRef.current!);
+      if (line.label) path.bindTooltip(line.label, { direction: 'center', sticky: true });
+      connectionLayersRef.current.push(path);
+    });
+
+    return () => {
+      connectionLayersRef.current.forEach((layer) => layer.remove());
+      connectionLayersRef.current = [];
+    };
+  }, [mapRevision, connectionLines]);
 
 
   useEffect(() => {

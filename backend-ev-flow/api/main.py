@@ -16,7 +16,8 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Query, Request
+from fastapi import (BackgroundTasks, Body, Depends, FastAPI, Header, HTTPException,
+                     Query, Request)
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -61,6 +62,12 @@ from .models import (
     PlannerSavedSitesResponse,
     PlannerCellDetail,
     PlannerCellsGeoJSON,
+    PlannerModelInfo,
+    PlannerPredictResponse,
+    PlannerPrediction,
+    PlannerPredictAreaResponse,
+    PlannerAreaDistribution,
+    PlannerPoisGeoJSON,
     SiteRoiInput,
     SiteRoiResponse,
     PlannerCellScore,
@@ -70,8 +77,14 @@ from .models import (
     SiteWeightsInput,
 )
 from .services import service_area
-from .services import site_economics
-from .services.planner_viewport import METRIC_COLUMNS, parse_bbox
+from .services import resemblance_scale, site_economics, siting_model
+from .services.poi_clustering import cluster_cell_size, should_cluster
+from .services.planner_viewport import (
+    METRIC_COLUMNS,
+    POI_CATEGORIES,
+    parse_bbox,
+    parse_poi_categories,
+)
 from .services.site_scoring import SiteWeights, normalised_weights
 
 # Coordinate masking must not depend on the ASGI lifespan running: with
@@ -2388,16 +2401,46 @@ def planner_score(body: SiteWeightsInput,
 def planner_candidates(body: SiteWeightsInput,
                        clusters: int = Query(15, ge=1, le=50),
                        quantile: float = Query(0.90, ge=0.5, lt=1.0,
-                                               description="Only cells at or above this score quantile are clustered."),
+                                               description="Region-wide search only: keep cells at "
+                                                           "or above this score quantile. Ignored "
+                                                           "when lat/lon are given."),
+                       lat: Optional[float] = Query(None, ge=-90, le=90,
+                                                    description="Search around this point instead "
+                                                                "of the whole region."),
+                       lon: Optional[float] = Query(None, ge=-180, le=180),
+                       radius_km: float = Query(3.0, gt=0, le=25),
                        user: dict = Depends(require_planner)) -> PlannerCandidatesResponse:
     """Group the top-scoring cells and report each group at its best member.
 
     The best member rather than the cluster centroid: a centroid can land in a
     river or on the far side of a toll road, while a real cell is somewhere a
     field survey can actually be sent.
+
+    TWO SEARCHES, ONE SCORE
+
+    Without lat/lon this answers "the best places in Jabodetabek", keeping only
+    cells above `quantile` and clustering them into `clusters` suggestions.
+
+    With lat/lon it answers "the best places within radius_km of here". The
+    quantile gate is dropped, because inside a 3 km circle it usually leaves
+    nothing and an empty answer reads as "no candidates" when the truth is "none
+    of these clears a bar you were never shown". Every cell in the circle is
+    eligible instead.
+
+    The score is computed over the whole region either way, and that is what
+    makes it comparable between places. Ranking inside the circle would make the
+    best cell in a quiet suburb come out identical to the best cell in Sudirman.
+    Measured on four 3 km circles, the region-wide score does separate them:
+    Sudirman 0.673, Cibubur 0.722, Serpong 0.730, south Bogor 0.729.
     """
+    if (lat is None) != (lon is None):
+        raise HTTPException(422, "lat and lon must be given together")
     weights, applied = _planner_weights_or_422(body)
-    rows = planner_repo.candidate_sites(weights, clusters=clusters, quantile=quantile)
+    if lat is not None and lon is not None:
+        rows = planner_repo.candidate_sites_in_radius(
+            weights, lat, lon, radius_km, clusters=min(clusters, 8))
+    else:
+        rows = planner_repo.candidate_sites(weights, clusters=clusters, quantile=quantile)
     return PlannerCandidatesResponse(
         weights_applied={k: round(v, 4) for k, v in applied.items()},
         candidates=[PlannerCandidate(**r) for r in rows],
@@ -2634,6 +2677,281 @@ def planner_roi(body: SiteRoiInput,
         stations_2km=cell["stations_2km"],
         inputs=projection.pop("assumptions"), input_sources=sources,
         demand_basis=demand_basis, **projection,
+    )
+
+
+@app.get("/api/v1/planner/pois.geojson", response_model=PlannerPoisGeoJSON, tags=["planner"],
+         summary="Individual POI points in a viewport, for the map's marker layer (AC Epic 4)",
+         responses={422: {"description": "Malformed bbox or unknown category"}})
+def planner_pois_geojson(
+    bbox: str = Query(..., description="Viewport as 'minLon,minLat,maxLon,maxLat'.",
+                      examples=["106.62,-6.38,106.98,-6.06"]),
+    categories: Optional[str] = Query(
+        None, description=f"Comma separated subset of: {', '.join(POI_CATEGORIES)}. "
+                          "Omit for all seventeen."),
+    limit: int = Query(2000, ge=1, le=50000,
+                       description="Row cap. The cut is round-robin across categories, so a "
+                                   "truncated layer keeps its proportions; read pois_in_viewport "
+                                   "to see what was left out."),
+    user: dict = Depends(require_planner),
+) -> PlannerPoisGeoJSON:
+    """The POIs behind a cell's activity score, as points a planner can see.
+
+    The grid answers "how many"; this answers "which ones, and where". Both come
+    from the same extraction, so the markers on a cell always add up to the
+    poi_total printed for it.
+
+    A `parking_space` marker is worth reading with suspicion: OpenStreetMap tags
+    individual bays with it, so one large car park can contribute hundreds of
+    points to a single cell. It counts mapping effort more than it counts
+    facilities, which is why the model gives it almost no weight.
+    """
+    try:
+        viewport = parse_bbox(bbox)
+        wanted = parse_poi_categories(categories)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+    totals = planner_repo.pois_in_viewport(viewport, wanted)
+    total = sum(totals.values())
+
+    if should_cluster(total, limit):
+        # Too many to draw. Group them rather than cutting them: every POI is
+        # still represented, inside a feature that carries its own count, and
+        # the counts sum back to `total`. Zooming in shrinks the viewport, which
+        # lowers the count, which returns this to point mode with no client
+        # logic involved.
+        cell = cluster_cell_size(viewport.west, viewport.east)
+        rows = planner_repo.pois_clustered(viewport, wanted, cell, limit=limit)
+        features = [{
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [float(r["lon"]), float(r["lat"])]},
+            "properties": {"count": r["n"], "category": r["top_category"],
+                           "cluster": True},
+        } for r in rows]
+        mode = "clustered"
+    else:
+        rows = planner_repo.pois_geojson(viewport, wanted, limit=limit)
+        features = [{
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [float(r["lon"]), float(r["lat"])]},
+            "properties": {
+                "id": r["id"], "osm_id": r["osm_id"], "category": r["category"],
+                "name": r["name"], "cell_id": r["cell_id"], "cluster": False,
+            },
+        } for r in rows]
+        mode = "points"
+
+    return PlannerPoisGeoJSON(
+        type="FeatureCollection", features=features, categories=wanted, mode=mode,
+        pois_returned=len(features), pois_in_viewport=totals,
+        truncated=len(features) >= limit,
+    )
+
+
+_MODEL_MEANS = (
+    "A high probability means this cell resembles the ones that already have a station. "
+    "It does NOT mean the cell is a good site. 1,080 of the 1,236 stations the model "
+    "learned from are PLN placements that follow PLN offices and policy targets, so the "
+    "model has partly learned PLN's siting logic rather than demand. Read it beside the "
+    "weighted score, not instead of it. The prescriptive model, which predicts utilisation "
+    "rather than presence, is not built yet."
+)
+
+
+def _model_info_or_503() -> PlannerModelInfo:
+    try:
+        i = siting_model.info()
+    except FileNotFoundError as exc:
+        raise HTTPException(503, str(exc)) from exc
+    return PlannerModelInfo(
+        trained_at=i.trained_at, n_samples=i.n_samples, n_positive=i.n_positive,
+        loco_auc=i.loco_auc, random_split_auc=i.random_split_auc, label=i.label,
+        sklearn_version=i.sklearn_version, n_features=len(i.feature_names))
+
+
+@app.get("/api/v1/planner/model", response_model=PlannerModelInfo, tags=["planner"],
+         summary="Which trained model the predictions come from",
+         responses={503: {"description": "No model artifact has been built yet"}})
+def planner_model(user: dict = Depends(require_planner)) -> PlannerModelInfo:
+    """What model is loaded, and how well it actually scored.
+
+    Answered separately from the predictions so a dashboard can show its own
+    basis without asking for a prediction first, and so a stale or missing model
+    is visible as a 503 here rather than as a surprise mid-request.
+    """
+    return _model_info_or_503()
+
+
+@app.post("/api/v1/planner/predict", response_model=PlannerPredictResponse, tags=["planner"],
+          summary="Trained-model probability for specific cells (AC Epic 4)",
+          responses={404: {"description": "None of the cell ids exist"},
+                     503: {"description": "No model artifact has been built yet"}})
+def planner_predict(cell_ids: list[str] = Body(..., embed=True, min_length=1, max_length=500,
+                                               examples=[["JBDTBK_22219", "JBDTBK_08697"]]),
+                    user: dict = Depends(require_planner)) -> PlannerPredictResponse:
+    """Run the trained model over specific cells.
+
+    Features are read from planning_cells and assembled in the order the artifact
+    records, by name. scikit-learn predicts positionally, so a column order that
+    drifts from training returns confident, silently wrong probabilities; the
+    service refuses rather than guessing, and a model whose features no longer
+    exist on the table is an error rather than a query that happens to run.
+    """
+    try:
+        meta = siting_model.info()
+    except FileNotFoundError as exc:
+        raise HTTPException(503, str(exc)) from exc
+
+    try:
+        rows = planner_repo.features_for_cells(cell_ids, meta.feature_names)
+    except ValueError as exc:
+        raise HTTPException(503, str(exc)) from exc
+    if not rows:
+        raise HTTPException(404, "none of those cell ids exist")
+
+    feature_rows = [{k: v for k, v in r.items() if k in set(meta.feature_names)} for r in rows]
+    try:
+        probs = siting_model.predict(feature_rows)
+    except ValueError as exc:
+        raise HTTPException(503, str(exc)) from exc
+
+    return PlannerPredictResponse(
+        predictions=[PlannerPrediction(cell_id=r["cell_id"], kota=r["kota"],
+                                       probability=round(p, 4))
+                     for r, p in zip(rows, probs)],
+        model=_model_info_or_503(),
+        interpretation=_MODEL_MEANS,
+    )
+
+
+@app.get("/api/v1/planner/predict.area", response_model=PlannerPredictAreaResponse,
+         tags=["planner"],
+         summary="Run the trained model around a point the planner picked, on demand (AC Epic 4)",
+         responses={404: {"description": "The area holds no scorable cells"},
+                    422: {"description": "Malformed area, or both/neither area form given"},
+                    503: {"description": "No model artifact has been built yet"}})
+def planner_predict_area(
+    lat: Optional[float] = Query(None, ge=-90, le=90,
+                                 description="Latitude of the point to analyse around."),
+    lon: Optional[float] = Query(None, ge=-180, le=180,
+                                 description="Longitude of the point to analyse around."),
+    radius_km: float = Query(3.0, gt=0, le=25,
+                             description="Radius around that point. The ceiling is 25 km "
+                                         "because a larger circle stops being one place."),
+    bbox: Optional[str] = Query(None,
+                                description="Alternative to lat/lon/radius_km: "
+                                            "'minLon,minLat,maxLon,maxLat'."),
+    limit: int = Query(4000, ge=1, le=30000,
+                       description="Cap on cells scored. Read cells_in_area and raise this "
+                                   "rather than act on a truncated area."),
+    top: int = Query(200, ge=1, le=10000,
+                     description="How many scored cells to list, highest resemblance first. "
+                                 "The distribution always covers every scored cell, so "
+                                 "trimming this list does not move the summary."),
+    user: dict = Depends(require_planner)) -> PlannerPredictAreaResponse:
+    """Score the cells around a point the planner chose, at request time.
+
+    WHAT THIS ANSWERS, AND WHAT IT DOES NOT
+
+    The model is descriptive. It learned which cells CONTAIN a station, from a
+    network that is 1,080 PLN placements out of 1,236. Measured across the whole
+    grid, its 500 highest-probability cells are 100% cells that already have one,
+    and among the 26,334 cells with none the highest probability is 0.305.
+
+    So this does not answer "where should a station go". It answers "how much
+    does this place resemble the ones that get built on", which is worth reading
+    NEXT TO the weighted criteria score and never instead of it. The response
+    separates cells that already have a station from those that do not, because
+    a client that cannot tell them apart will rank existing sites as candidates.
+
+    WHY IT IS COMPUTED PER REQUEST
+
+    Scoring the full 28,176-cell grid measures at roughly 155 ms server-side. At
+    that cost a precomputed layer buys no speed and carries staleness nothing on
+    a map can show.
+
+    WHY THE AREA IS SCORED CELL BY CELL
+
+    The model was fitted on 400 m cells. Summing an area into one feature vector
+    puts most of its inputs past anything in the training set: 18 of 33 features
+    for a 10 x 10 km selection. It reported 0.605 where the true per-cell mean
+    was 0.040.
+    """
+    by_point = lat is not None and lon is not None
+    if by_point == bool(bbox):
+        raise HTTPException(422, "give either lat and lon (with radius_km) or bbox, not both "
+                                 "and not neither")
+    if (lat is None) != (lon is None):
+        raise HTTPException(422, "lat and lon must be given together")
+
+    try:
+        meta = siting_model.info()
+    except FileNotFoundError as exc:
+        raise HTTPException(503, str(exc)) from exc
+
+    try:
+        if by_point:
+            rows, matched = planner_repo.features_in_radius(
+                lat, lon, radius_km, meta.feature_names, limit=limit)
+        else:
+            rows, matched = planner_repo.features_in_area(
+                parse_bbox(bbox), meta.feature_names, limit=limit)
+    except ValueError as exc:
+        # parse_bbox raises for a malformed box; the repo raises for a stale model.
+        raise HTTPException(422 if bbox else 503, str(exc)) from exc
+    if not rows:
+        raise HTTPException(404, "that area holds no cells the planner scores")
+
+    wanted = set(meta.feature_names)
+    try:
+        probs = siting_model.predict([{k: v for k, v in r.items() if k in wanted} for r in rows])
+    except ValueError as exc:
+        raise HTTPException(503, str(exc)) from exc
+
+    scored = sorted(
+        (PlannerPrediction(cell_id=r["cell_id"], kota=r["kota"],
+                           probability=round(p, 4),
+                           has_station=bool(r.get("station_count") or 0))
+         for r, p in zip(rows, probs)),
+        key=lambda x: x.probability, reverse=True)
+
+    # Summarised over cells WITHOUT a station only. Mixing the two populations is
+    # what made the previous version of this endpoint report existing stations as
+    # shortlist candidates.
+    # Derived from the model, not written down. See services/resemblance_scale for
+    # why a constant could not stay correct across a retrain. A failure here must
+    # not take the whole answer with it: the per-cell numbers are still valid
+    # without a scale to read them against, so the client is told there is none.
+    try:
+        scale = resemblance_scale.unbuilt_ceiling(
+            meta.trained_at,
+            lambda: planner_repo.features_for_unbuilt_cells(meta.feature_names),
+            siting_model.predict)
+    except (ValueError, FileNotFoundError):
+        scale = None
+
+    empty = sorted(s.probability for s in scored if not s.has_station)
+    n = len(empty)
+    median = None if not n else (empty[n // 2] if n % 2
+                                 else (empty[n // 2 - 1] + empty[n // 2]) / 2)
+
+    return PlannerPredictAreaResponse(
+        distribution=PlannerAreaDistribution(
+            cells_in_area=matched,
+            cells_predicted=len(scored),
+            truncated=matched > len(scored),
+            cells_with_station=sum(1 for s in scored if s.has_station),
+            cells_without_station=n,
+            mean_probability=None if not n else round(sum(empty) / n, 4),
+            median_probability=None if median is None else round(median, 4),
+            max_probability=None if not n else round(empty[-1], 4),
+            resemblance_ceiling=scale.ceiling if scale else None,
+            resemblance_ceiling_cells=scale.cells_scored if scale else None,
+        ),
+        predictions=scored[:top],
+        model=_model_info_or_503(),
+        interpretation=_MODEL_MEANS,
     )
 
 

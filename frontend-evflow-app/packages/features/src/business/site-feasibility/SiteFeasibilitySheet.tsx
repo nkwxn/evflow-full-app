@@ -3,10 +3,12 @@ import { ActivityIndicator, Platform, Pressable, ScrollView, StyleSheet, Text, V
 import { driverMapStyles as mapStyles } from '@evflow/ui';
 import { closeButtonIcon } from '../../ev_driver/components/driverMapIcons';
 import { SvgAssetIcon } from '../../shared/SvgAssetIcon';
+import type { PlannerModelInfoApi } from '@evflow/shared';
 import { FeasibilityScoreTab } from './FeasibilityScoreTab';
 import { FinancialProjectionsTab } from './FinancialProjectionsTab';
 import { LocationScoreSummary } from './LocationScoreSummary';
 import { NearbyStationsTab } from './NearbyStationsTab';
+import { SiteConnectionGraph } from '../site-connection/SiteConnectionGraph';
 import { calculateSiteScores } from './siteFeasibilityLogic';
 import type { SiteFeasibilityData, SiteFeasibilityTab } from './siteFeasibilityTypes';
 
@@ -16,7 +18,7 @@ const tabs: Array<{ key: SiteFeasibilityTab; label: string }> = [
   { key: 'nearby', label: 'Nearby Stations' }
 ];
 
-export function SiteFeasibilitySheet({ activeTab, bottom, data, error, expanded, financial, financialError, financialLoading, height, isSaved, isSaving, loading, onClose, onFinancialRetry, onRetry, onScrollTopChange, onTabChange, onToggleExpanded, onToggleSaved, panHandlers }: {
+export function SiteFeasibilitySheet({ activeTab, bottom, data, error, expanded, financial, financialError, financialLoading, height, interpretation = null, isSaved, isSaving, loading, model = null, onClose, onFinancialRetry, onRetry, onScrollTopChange, onTabChange, onToggleExpanded, onToggleSaved, panHandlers, prediction = null, predictionError = null, predictionLoading = false }: {
   activeTab: SiteFeasibilityTab;
   bottom: number;
   data: SiteFeasibilityData | null;
@@ -26,9 +28,12 @@ export function SiteFeasibilitySheet({ activeTab, bottom, data, error, expanded,
   financialError: string | null;
   financialLoading: boolean;
   height: number;
+  /** Model output is optional: a deployment with no artifact still shows the sheet. */
+  interpretation?: string | null;
   isSaved: boolean;
   isSaving: boolean;
   loading: boolean;
+  model?: PlannerModelInfoApi | null;
   onClose: () => void;
   onFinancialRetry: () => void;
   onRetry: () => void;
@@ -37,15 +42,39 @@ export function SiteFeasibilitySheet({ activeTab, bottom, data, error, expanded,
   onToggleExpanded: () => void;
   onToggleSaved?: () => void;
   panHandlers: GestureResponderHandlers;
+  prediction?: number | null;
+  predictionError?: string | null;
+  predictionLoading?: boolean;
 }) {
   const scores = data ? calculateSiteScores(data) : null;
   let content: ReactNode = null;
   if (data && scores) {
     content = activeTab === 'feasibility'
-      ? <FeasibilityScoreTab data={data} scores={scores} />
+      ? <FeasibilityScoreTab
+          data={data}
+          interpretation={interpretation}
+          model={model}
+          prediction={prediction}
+          predictionError={predictionError}
+          predictionLoading={predictionLoading}
+          scores={scores}
+        />
       : activeTab === 'financial'
         ? <FinancialProjectionsTab error={financialError} financial={financial} loading={financialLoading} onRetry={onFinancialRetry} />
-        : <NearbyStationsTab stations={data.nearbyStations} />;
+        : (
+          <>
+            <SiteConnectionGraph
+              site={{
+                id: data.optimalSiteId,
+                label: data.locationName,
+                score: data.locationScore ?? data.heatmapScore
+              }}
+              stations={data.nearbyStations}
+            />
+            <View style={styles.graphDivider} />
+            <NearbyStationsTab stations={data.nearbyStations} />
+          </>
+        );
   }
 
   return (
@@ -100,6 +129,7 @@ export function SiteFeasibilitySheet({ activeTab, bottom, data, error, expanded,
 }
 
 const styles = StyleSheet.create({
+  graphDivider: { backgroundColor: '#E4EAEC', height: 1, marginBottom: 16, marginTop: 16 },
   sheet: { paddingBottom: 0, paddingHorizontal: 0 },
   header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 12, paddingHorizontal: 16 },
   title: { color: '#172033', flex: 1, fontSize: 18, fontWeight: '800' },

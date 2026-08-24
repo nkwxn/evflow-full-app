@@ -115,6 +115,277 @@ def candidate_sites(weights: SiteWeights, clusters: int = 15,
         return [dict(r) for r in c.execute(text(sql), params).mappings().all()]
 
 
+def candidate_sites_in_radius(weights: SiteWeights, lat: float, lon: float,
+                              radius_km: float, clusters: int = 8,
+                              min_overlap: float = 0.5,
+                              excluded_kota: Optional[list[str]] = None) -> list[dict]:
+    """The best cells within radius_km of a point, scored against the whole region.
+
+    WHY THE CIRCLE IS APPLIED AFTER SCORING, NOT BEFORE
+
+    This is the whole point of the function. PERCENT_RANK in _RANKED runs over
+    every cell in Jabodetabek, and only then is the circle applied. Filter first
+    and the ranks recompute inside the circle, so the best cell in a quiet
+    suburb scores exactly like the best cell in Sudirman and the planner has no
+    way to tell a strong area from a weak one. Scoring globally and filtering
+    afterwards means 62 means the same thing everywhere.
+
+    WHY THERE IS NO QUANTILE GATE HERE
+
+    The region-wide version keeps only cells above the 90th percentile, which is
+    right when the answer is "the best fifteen places in Jabodetabek". Inside a
+    3 km circle that gate usually leaves nothing, and an empty answer reads as
+    "we found no candidates" when the truth is "none of these clears a bar you
+    were never shown". So every cell in the circle is eligible, and the score
+    itself says how good each one really is.
+
+    WHY THERE IS NO PERCENTILE COLUMN
+
+    An earlier version returned each candidate's regional percentile, on the
+    theory that "0.62, which is the 71st percentile" says more than "0.62". It
+    does not, because the number is nearly constant. Measured on four very
+    different 3 km circles -- Sudirman, Cibubur, Serpong and south Bogor -- the
+    best cell scored at the 0.953, 0.991, 0.993 and 0.993 percentile. That is
+    order statistics, not geography: take 115 cells from 27,219 and the maximum
+    lands in the top percentile almost every time. Shipping it would have
+    labelled every place a planner clicked as regionally top-tier.
+
+    `score` is the comparable number, and it is comparable precisely because the
+    ranks behind it are computed over the whole region. The same four circles
+    scored 0.673, 0.722, 0.730 and 0.729, which is a real spread a planner can
+    read.
+    """
+    params = _weight_params(weights)
+    params.update(clusters=clusters, min_overlap=min_overlap,
+                  lat=lat, lon=lon, radius_m=radius_km * 1000.0,
+                  degrees=(radius_km * 1000.0) / 111_320.0,
+                  excluded_kota=excluded_kota if excluded_kota is not None
+                  else DEFAULT_EXCLUDED_KOTA)
+    sql = _RANKED + """,
+    centre AS (SELECT ST_SetSRID(ST_MakePoint(:lon, :lat), 4326) AS g),
+    in_circle AS (
+        SELECT scored.* FROM scored, centre
+         WHERE centroid && ST_Expand(centre.g, :degrees)
+           AND ST_DWithin(centroid::geography, centre.g::geography, :radius_m)
+    ),
+    clustered AS (
+        SELECT *, ST_ClusterKMeans(centroid,
+                    GREATEST(LEAST(:clusters, (SELECT count(*)::int FROM in_circle)), 1))
+                    OVER () AS cluster_id
+          FROM in_circle
+    ),
+    best_per_cluster AS (
+        SELECT DISTINCT ON (cluster_id) *
+          FROM clustered
+      ORDER BY cluster_id, score DESC, cell_id
+    )
+        SELECT cluster_id, cell_id, kota, score,
+               ST_Y(centroid) AS latitude, ST_X(centroid) AS longitude,
+               population, poi_total, station_count,
+               round(nearest_station_m::numeric, 0) AS nearest_station_m, stations_2km,
+               (SELECT count(*) FROM clustered c2
+                 WHERE c2.cluster_id = best_per_cluster.cluster_id) AS cluster_size
+          FROM best_per_cluster
+      ORDER BY score DESC
+    """
+    with engine.connect() as c:
+        return [dict(r) for r in c.execute(text(sql), params).mappings().all()]
+
+
+def features_for_cells(cell_ids: list[str], feature_names: list[str]) -> list[dict]:
+    """Model features for specific cells, keyed by name.
+
+    Columns are selected by name from the model's own feature list, so a
+    retrained model with different features needs no change here. The names come
+    from the artifact rather than from a caller, and every one is checked against
+    the live schema before it reaches SQL -- a feature the table does not have is
+    a mismatch worth an error, not a query that happens to work.
+
+    Rows come back keyed by name, never positionally: see
+    api/services/siting_model for why that distinction matters.
+    """
+    with engine.connect() as c:
+        known = {r[0] for r in c.execute(text("""
+            SELECT column_name FROM information_schema.columns
+             WHERE table_name = 'planning_cells'"""))}
+        unknown = [f for f in feature_names if f not in known]
+        if unknown:
+            raise ValueError(
+                f"the model expects {len(unknown)} column(s) planning_cells does not "
+                f"have: {', '.join(unknown)}. The model is stale relative to the "
+                f"schema; retrain it with ev-planner-study/train_siting_model.py")
+
+        cols = ", ".join(f'"{f}"' for f in feature_names)
+        rows = c.execute(text(f"""
+            SELECT cell_id, kota, {cols}
+              FROM planning_cells
+             WHERE cell_id = ANY(:ids)
+          ORDER BY cell_id
+        """), {"ids": cell_ids}).mappings().all()
+    return [dict(r) for r in rows]
+
+
+def features_in_area(viewport: Viewport, feature_names: list[str],
+                     limit: int = 30000, min_overlap: float = 0.5,
+                     excluded_kota: Optional[list[str]] = None) -> tuple[list[dict], int]:
+    """Model features for every cell inside an area the planner chose, and the true total.
+
+    This is what makes prediction on demand rather than precomputed. The caller
+    hands over whatever rectangle was drawn on the map and gets back the cells to
+    run the model over, at the 400 m resolution the model was trained at.
+
+    WHY THE AREA IS NOT COLLAPSED INTO A SINGLE ROW
+
+    Summing an area's POI counts, population and road length into one feature
+    vector and predicting once is the obvious way to answer "score this area",
+    and it is wrong. Measured on this model, a 10 x 10 km selection puts 18 of
+    its 33 additive features ABOVE the largest value anywhere in the training
+    set, and a random forest cannot extrapolate -- it returns the leaf values of
+    the most extreme cells it ever saw. That reads as 0.605 against a real
+    per-cell mean of 0.040: fifteen times too high, with nothing to signal it.
+    So the area is predicted cell by cell, and summarised afterwards.
+
+    Returns the rows AND the number of cells that matched, which are different
+    numbers once an area is large. Both are needed: a truncated answer that
+    reports only what survived reads exactly like a complete one.
+
+    Ordered by poi_total so a truncated area loses its quietest cells rather than
+    an arbitrary geographic slice, matching what cells_geojson already does.
+    """
+    with engine.connect() as c:
+        known = {r[0] for r in c.execute(text("""
+            SELECT column_name FROM information_schema.columns
+             WHERE table_name = 'planning_cells'"""))}
+        unknown = [f for f in feature_names if f not in known]
+        if unknown:
+            raise ValueError(
+                f"the model expects {len(unknown)} column(s) planning_cells does not "
+                f"have: {', '.join(unknown)}. The model is stale relative to the "
+                f"schema; retrain it with ev-planner-study/train_siting_model.py")
+
+        cols = ", ".join(f'"{f}"' for f in feature_names)
+        # count(*) OVER () is evaluated before LIMIT, so it reports how many cells
+        # the area really holds even when only some of them come back.
+        rows = c.execute(text(f"""
+            SELECT cell_id, kota, station_count, {cols}, count(*) OVER () AS matched
+              FROM planning_cells
+             WHERE geom && ST_MakeEnvelope(:west, :south, :east, :north, 4326)
+               AND ST_Intersects(geom, ST_MakeEnvelope(:west, :south, :east, :north, 4326))
+               AND overlap_frac >= :min_overlap
+               AND kota <> ALL(:excluded_kota)
+          ORDER BY poi_total DESC, cell_id
+             LIMIT :limit
+        """), {"west": viewport.west, "south": viewport.south,
+               "east": viewport.east, "north": viewport.north,
+               "min_overlap": min_overlap, "limit": limit,
+               "excluded_kota": excluded_kota if excluded_kota is not None
+               else DEFAULT_EXCLUDED_KOTA}).mappings().all()
+
+    if not rows:
+        return [], 0
+    matched = int(rows[0]["matched"])
+    return [{k: v for k, v in r.items() if k != "matched"} for r in rows], matched
+
+
+def features_in_radius(lat: float, lon: float, radius_km: float,
+                       feature_names: list[str], limit: int = 30000,
+                       min_overlap: float = 0.5,
+                       excluded_kota: Optional[list[str]] = None) -> tuple[list[dict], int]:
+    """Model features for every cell within radius_km of a point the planner picked.
+
+    A circle rather than the viewport, because "analyse around here" is the
+    question a planner actually asks. A viewport answers "whatever happens to be
+    on screen", which changes when they resize the window and cannot be compared
+    between two locations.
+
+    WHY THE BOUNDING BOX IS STILL IN THE QUERY
+
+    ST_DWithin on geography is exact but cannot use the GIST index on a geometry
+    column. The && against an expanded envelope narrows the scan by index first,
+    then ST_DWithin trims the corners of that box to a true circle. Both are
+    needed: the box alone would include cells up to 41% further away than asked
+    for at the diagonal.
+
+    station_count comes back alongside the features. The endpoint drops it before
+    the model sees it, but the response needs it: this model ranks cells that
+    ALREADY have a station at the very top, so a card that cannot tell the two
+    apart presents existing sites as candidates.
+    """
+    with engine.connect() as c:
+        known = {r[0] for r in c.execute(text("""
+            SELECT column_name FROM information_schema.columns
+             WHERE table_name = 'planning_cells'"""))}
+        unknown = [f for f in feature_names if f not in known]
+        if unknown:
+            raise ValueError(
+                f"the model expects {len(unknown)} column(s) planning_cells does not "
+                f"have: {', '.join(unknown)}. The model is stale relative to the "
+                f"schema; retrain it with ev-planner-study/train_siting_model.py")
+
+        cols = ", ".join(f'"{f}"' for f in feature_names)
+        radius_m = radius_km * 1000.0
+        # One degree of latitude is about 111.32 km. Longitude is shorter, so
+        # using the latitude figure over-expands east-west, which is the safe
+        # direction: the box must never be tighter than the circle it prefilters.
+        degrees = radius_m / 111_320.0
+        rows = c.execute(text(f"""
+            WITH centre AS (SELECT ST_SetSRID(ST_MakePoint(:lon, :lat), 4326) AS g)
+            SELECT cell_id, kota, station_count, {cols}, count(*) OVER () AS matched
+              FROM planning_cells, centre
+             WHERE geom && ST_Expand(centre.g, :degrees)
+               AND ST_DWithin(geom::geography, centre.g::geography, :radius_m)
+               AND overlap_frac >= :min_overlap
+               AND kota <> ALL(:excluded_kota)
+          ORDER BY poi_total DESC, cell_id
+             LIMIT :limit
+        """), {"lat": lat, "lon": lon, "radius_m": radius_m, "degrees": degrees,
+               "min_overlap": min_overlap, "limit": limit,
+               "excluded_kota": excluded_kota if excluded_kota is not None
+               else DEFAULT_EXCLUDED_KOTA}).mappings().all()
+
+    if not rows:
+        return [], 0
+    matched = int(rows[0]["matched"])
+    return [{k: v for k, v in r.items() if k != "matched"} for r in rows], matched
+
+
+def features_for_unbuilt_cells(feature_names: list[str],
+                               min_overlap: float = 0.5,
+                               excluded_kota: Optional[list[str]] = None) -> list[dict]:
+    """Model features for every cell in the region that has NO station.
+
+    Used once, to find the highest resemblance any unbuilt cell reaches. That
+    ceiling is what turns a bare 0.29 into "94% of the best anything unbuilt
+    scores", and without it the number has no scale a planner can read.
+
+    The same filter as the scored population, so the ceiling is drawn from the
+    cells the product actually ranks rather than from Kepulauan Seribu or a
+    sliver cell clipped by the region boundary.
+    """
+    with engine.connect() as c:
+        known = {r[0] for r in c.execute(text("""
+            SELECT column_name FROM information_schema.columns
+             WHERE table_name = 'planning_cells'"""))}
+        unknown = [f for f in feature_names if f not in known]
+        if unknown:
+            raise ValueError(
+                f"the model expects {len(unknown)} column(s) planning_cells does not "
+                f"have: {', '.join(unknown)}. The model is stale relative to the "
+                f"schema; retrain it with ev-planner-study/train_siting_model.py")
+
+        cols = ", ".join(f'"{f}"' for f in feature_names)
+        rows = c.execute(text(f"""
+            SELECT {cols}
+              FROM planning_cells
+             WHERE station_count = 0
+               AND overlap_frac >= :min_overlap
+               AND kota <> ALL(:excluded_kota)
+        """), {"min_overlap": min_overlap,
+               "excluded_kota": excluded_kota if excluded_kota is not None
+               else DEFAULT_EXCLUDED_KOTA}).mappings().all()
+    return [dict(r) for r in rows]
+
+
 def cells_geojson(viewport: Viewport, metric: str = "score",
                   weights: Optional[SiteWeights] = None, limit: int = 1500,
                   min_overlap: float = 0.5,
@@ -154,6 +425,101 @@ def cells_geojson(viewport: Viewport, metric: str = "score",
     """
     with engine.connect() as c:
         return [dict(r) for r in c.execute(text(sql), params).mappings().all()]
+
+
+def pois_geojson(viewport: Viewport, categories: list[str], limit: int = 2000) -> list[dict]:
+    """Individual POI points inside the viewport, for the map's marker layer.
+
+    These are the same POIs the grid's poi_* columns count, so a marker layer
+    and the activity number beside it always describe the same features.
+
+    Truncation is round-robin across categories rather than sequential. Ordering
+    by category and cutting at the limit would fill a busy viewport entirely
+    with parking and school, the two largest categories, and show no malls at
+    all -- a map that is not just incomplete but misleading about what is there.
+    Taking the nth of every category in turn keeps the cut proportional until
+    the small categories run out.
+    """
+    sql = """
+        WITH inside AS (
+            SELECT id, osm_id, category, name, cell_id, geom
+              FROM planning_pois
+             WHERE geom && ST_MakeEnvelope(:west, :south, :east, :north, 4326)
+               AND category = ANY(:categories)
+        ),
+        spread AS (
+            SELECT *, row_number() OVER (PARTITION BY category ORDER BY id) AS rn
+              FROM inside
+        )
+        SELECT id, osm_id, category, name, cell_id,
+               round(ST_X(geom)::numeric, 6) AS lon,
+               round(ST_Y(geom)::numeric, 6) AS lat
+          FROM spread
+      ORDER BY rn, category
+         LIMIT :limit
+    """
+    params = {"west": viewport.west, "south": viewport.south,
+              "east": viewport.east, "north": viewport.north,
+              "categories": categories, "limit": limit}
+    with engine.connect() as c:
+        return [dict(r) for r in c.execute(text(sql), params).mappings().all()]
+
+
+def pois_clustered(viewport: Viewport, categories: list[str], cell: float,
+                   limit: int = 2000) -> list[dict]:
+    """POI points grouped on a grid, one feature per occupied cell.
+
+    Used when the viewport holds more points than can be drawn. Each group
+    reports its own count, so the numbers on screen still sum to the number in
+    the viewport: this aggregates the layer rather than truncating it.
+
+    The marker is placed at the true centroid of its members, not at the grid
+    corner, so a cluster sits where its POIs actually are. `mode()` gives the
+    dominant category so the client can colour the group by what it mostly is.
+    """
+    sql = """
+        WITH inside AS (
+            SELECT geom, category
+              FROM planning_pois
+             WHERE geom && ST_MakeEnvelope(:west, :south, :east, :north, 4326)
+               AND category = ANY(:categories)
+        ),
+        grouped AS (
+            SELECT ST_SnapToGrid(geom, :cell) AS bucket,
+                   count(*) AS n,
+                   ST_Centroid(ST_Collect(geom)) AS centre,
+                   mode() WITHIN GROUP (ORDER BY category) AS top_category
+              FROM inside
+          GROUP BY ST_SnapToGrid(geom, :cell)
+        )
+        SELECT n, top_category,
+               round(ST_X(centre)::numeric, 6) AS lon,
+               round(ST_Y(centre)::numeric, 6) AS lat
+          FROM grouped
+      ORDER BY n DESC
+         LIMIT :limit
+    """
+    params = {"west": viewport.west, "south": viewport.south,
+              "east": viewport.east, "north": viewport.north,
+              "categories": categories, "cell": cell, "limit": limit}
+    with engine.connect() as c:
+        return [dict(r) for r in c.execute(text(sql), params).mappings().all()]
+
+
+def pois_in_viewport(viewport: Viewport, categories: list[str]) -> dict:
+    """Per-category totals before the row limit, so a cut layer can say so."""
+    sql = """
+        SELECT category, count(*) AS n
+          FROM planning_pois
+         WHERE geom && ST_MakeEnvelope(:west, :south, :east, :north, 4326)
+           AND category = ANY(:categories)
+      GROUP BY category
+    """
+    params = {"west": viewport.west, "south": viewport.south,
+              "east": viewport.east, "north": viewport.north,
+              "categories": categories}
+    with engine.connect() as c:
+        return {r["category"]: r["n"] for r in c.execute(text(sql), params).mappings()}
 
 
 def cells_in_viewport(viewport: Viewport, min_overlap: float = 0.5,
@@ -276,6 +642,7 @@ def nearby_stations(cell_id: str, radius_km: float = 5.0, limit: int = 10) -> li
     """Existing stations around a cell, nearest first (Epic 5 benchmarking)."""
     sql = """
         SELECT s.id, s.name, s.operator, s.power_kw, s.speed_tier,
+               ST_Y(s.geom) AS latitude, ST_X(s.geom) AS longitude,
                round(ST_Distance(p.centroid::geography, s.geom::geography)::numeric, 0) AS distance_m,
                count(c.id) FILTER (WHERE c.status = 'available') AS available_connectors,
                count(c.id) AS total_connectors

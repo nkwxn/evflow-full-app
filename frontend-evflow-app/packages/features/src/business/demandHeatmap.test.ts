@@ -2,14 +2,19 @@ import { describe, expect, it } from 'vitest';
 import { defaultPlannerLayers, generateMockOptimalSites, jakartaViewport, prioritySemanticCategory, viabilityTier } from './demandHeatmap';
 
 describe('Demand Heatmap planning state', () => {
-  it('enables recommendations and demand analysis by default, with supplementary layers off', () => {
+  it('opens with every layer off, so the map states no analysis before one is asked for', () => {
     expect(defaultPlannerLayers).toEqual({
-      optimalSites: true,
-      demandHeatmap: true,
+      optimalSites: false,
+      demandHeatmap: false,
       existingSpklus: false,
       commercialPois: false,
       populationDensity: false,
-      landUse: false
+      landUse: false,
+      // Off by default: it issues a request per viewport, and it answers a
+      // different question from the weighted score the map opens on.
+      modelPrediction: false,
+      // Hidden entirely unless VITE_TOMTOM_API_KEY is set.
+      liveTraffic: false
     });
   });
 

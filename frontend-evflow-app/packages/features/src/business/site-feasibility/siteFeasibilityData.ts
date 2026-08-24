@@ -49,6 +49,14 @@ function benchmarkStations(response: PlannerBenchmarkResponse): NearbyStationBen
     id: station.id,
     name: station.name ?? station.operator ?? 'Unnamed SPKLU',
     distanceKm: station.distance_m / 1000,
+    operator: station.operator,
+    powerKw: station.power_kw,
+    speedTier: station.speed_tier,
+    latitude: station.latitude,
+    longitude: station.longitude,
+    // Everything this spread adds is generated. It stays for the existing
+    // performance cards, which label it as prototype; nothing new should read
+    // from it.
     ...getMockNearbyStationPerformance(station),
     availableConnectors: station.available_connectors,
     totalConnectors: station.total_connectors

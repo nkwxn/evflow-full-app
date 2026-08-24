@@ -1,12 +1,27 @@
 import { StyleSheet, Text, View } from 'react-native';
+import type { PlannerModelInfoApi } from '@evflow/shared';
 import { SvgAssetIcon } from '../../shared/SvgAssetIcon';
+import { ModelPredictionCard } from './ModelPredictionCard';
 import { buildingIcon, carIcon, fireIcon, shieldIcon } from './siteFeasibilityIcons';
 import { getActivityDescription, getHeatmapDescription, getOverlapDescription, getPoiDescription } from './siteFeasibilityLogic';
 import type { SiteFeasibilityData, SiteFeasibilityScores } from './siteFeasibilityTypes';
 
 type Metric = { title: string; score: number; description: string; icon: string };
 
-export function FeasibilityScoreTab({ data, scores }: { data: SiteFeasibilityData; scores: SiteFeasibilityScores }) {
+type TabProps = {
+  data: SiteFeasibilityData;
+  scores: SiteFeasibilityScores;
+  interpretation?: string | null;
+  model?: PlannerModelInfoApi | null;
+  prediction?: number | null;
+  predictionError?: string | null;
+  predictionLoading?: boolean;
+};
+
+export function FeasibilityScoreTab({
+  data, scores, interpretation = null, model = null,
+  prediction = null, predictionError = null, predictionLoading = false
+}: TabProps) {
   const metrics: Metric[] = [
     { title: 'Heatmap Zone Score', score: scores.heatmap, description: getHeatmapDescription(scores.heatmap), icon: fireIcon },
     { title: 'POI Density Score', score: scores.poi, description: getPoiDescription(scores.poi, data.commercialPoiCount), icon: buildingIcon },
@@ -15,6 +30,13 @@ export function FeasibilityScoreTab({ data, scores }: { data: SiteFeasibilityDat
   ];
   return (
     <View>
+      <ModelPredictionCard
+        error={predictionError}
+        interpretation={interpretation}
+        loading={predictionLoading}
+        model={model}
+        probability={prediction}
+      />
       <Text style={styles.sectionTitle}>FEASIBILITY BREAKDOWN</Text>
       {metrics.map((metric) => <MetricCard key={metric.title} metric={metric} />)}
     </View>

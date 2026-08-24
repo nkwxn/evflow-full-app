@@ -16,7 +16,7 @@ const detail: PlannerCellDetailApi = {
 };
 const benchmark: PlannerBenchmarkResponse = {
   cell_id: detail.cell_id, radius_km: 5, provenance,
-  stations: [{ id: 'station-a', name: 'Station A', operator: 'PLN', power_kw: 50, speed_tier: 'fast', distance_m: 1200, available_connectors: 2, total_connectors: 4 }]
+  stations: [{ id: 'station-a', latitude: -6.1787, longitude: 106.8183, name: 'Station A', operator: 'PLN', power_kw: 50, speed_tier: 'fast', distance_m: 1200, available_connectors: 2, total_connectors: 4 }]
 };
 
 describe('planner cell feasibility adapter', () => {

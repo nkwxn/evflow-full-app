@@ -18,6 +18,17 @@ export type NearbyStationBenchmark = {
   id: string;
   name: string;
   distanceKm: number;
+  /**
+   * Real fields from the benchmark endpoint, kept apart from the prototype
+   * performance numbers below. The connection graph draws only these: sessions
+   * and revenue are generated, and putting them on a diagram of the competitive
+   * landscape would state something nobody measured.
+   */
+  operator?: string | null;
+  powerKw?: number | null;
+  speedTier?: string | null;
+  latitude?: number;
+  longitude?: number;
   averageDailySessions: number;
   dailySessionsTrendPct: number;
   monthlyRevenueIdr: number;

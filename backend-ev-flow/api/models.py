@@ -1225,6 +1225,160 @@ class PlannerCellDetail(BaseModel):
     provenance: PlannerProvenance = PlannerProvenance()
 
 
+class PlannerPoisGeoJSON(BaseModel):
+    """RFC 7946 FeatureCollection of POI points, for the map's marker layer.
+
+    These are the same features the grid's poi_* columns count, so a marker and
+    the activity figure beside it never describe different things.
+
+    Coordinates are GeoJSON order, longitude before latitude. Leaflet's marker
+    constructor takes latitude first, so a Leaflet client has to swap them.
+    """
+    type: str = Field("FeatureCollection", examples=["FeatureCollection"])
+    features: list[dict[str, Any]]
+    categories: list[str] = Field(..., description="Which categories this response covers.")
+    mode: str = Field(
+        ..., description="'points' when every POI in the viewport is returned individually; "
+                         "'clustered' when there were too many to draw and they have been "
+                         "grouped on a grid instead. In clustered mode each feature carries a "
+                         "`count`, and those counts sum to the viewport total: the layer is "
+                         "aggregated, never truncated. Zooming in returns it to 'points'.")
+    pois_returned: int = Field(
+        ..., description="Features in this response. In clustered mode this is the number of "
+                         "GROUPS, not of POIs; read pois_in_viewport for the POI total.")
+    pois_in_viewport: dict[str, int] = Field(
+        ..., description="Per-category POI totals for the viewport, independent of mode. "
+                         "This is the honest denominator for anything shown on the map.")
+    truncated: bool = Field(
+        ..., description="True only if the limit still bit after clustering, which needs an "
+                         "extraordinarily dense viewport. Normal zoomed-out views cluster "
+                         "instead of truncating.")
+    provenance: PlannerProvenance = PlannerProvenance()
+
+
+class PlannerModelInfo(BaseModel):
+    """What model produced a prediction, and how far it can be trusted.
+
+    Carried in every prediction response. `loco_auc` is the number worth
+    quoting; `random_split_auc` is reported beside it precisely because it is
+    higher and misleading, and omitting it invites someone to rediscover the
+    flattering figure and use it.
+    """
+    trained_at: str
+    n_samples: int
+    n_positive: int
+    loco_auc: float = Field(
+        ..., description="Leave-one-area-out AUC. The honest figure: it holds out a whole "
+                         "kota, which is the question a planner actually asks.")
+    random_split_auc: float = Field(
+        ..., description="Inflated. Neighbouring cells land on both sides of a random split, "
+                         "so the model recalls nearby answers rather than generalising.")
+    label: str
+    sklearn_version: str
+    n_features: int
+
+
+class PlannerPrediction(BaseModel):
+    cell_id: str
+    kota: Optional[str] = None
+    probability: float = Field(
+        ..., description="P(this cell contains a station) under the trained model.")
+    has_station: bool = Field(
+        False, description="Whether this cell ALREADY holds a station. Measured on the full "
+                           "grid, the model's 500 highest-probability cells are 100% cells "
+                           "that already have one, so a client that cannot tell the two apart "
+                           "will present existing sites as candidates.")
+
+
+class PlannerPredictResponse(BaseModel):
+    """Model predictions, with the caveat that has to travel with them.
+
+    The model learns where stations ARE. 1,080 of the 1,236 stations it learned
+    from are PLN placements that follow PLN offices and policy targets, so a high
+    probability means "this looks like somewhere PLN builds", which is not the
+    same claim as "this is a good site". Read it next to the weighted score
+    rather than instead of it.
+    """
+    predictions: list[PlannerPrediction]
+    model: PlannerModelInfo
+    interpretation: str = Field(
+        ..., description="What a high probability does and does not mean.")
+    provenance: PlannerProvenance = PlannerProvenance()
+
+
+class PlannerAreaDistribution(BaseModel):
+    """How the model's probabilities fall across an area, split by what is already there.
+
+    THERE IS NO SINGLE AREA PROBABILITY, AND NO "ABOVE 0.5" COUNT.
+
+    Both were in an earlier version of this response and both were wrong.
+
+    A single area score is wrong because the model was fitted on 400 m cells:
+    summing a 10 x 10 km selection into one feature vector puts 18 of its 33
+    additive features past anything in the training set, where a random forest
+    can only repeat its most extreme leaves. It answered 0.605 where the true
+    per-cell mean was 0.040.
+
+    An "above 0.5" count is wrong for a sharper reason. Measured across all
+    27,219 cells: the model's top 500 are 100% cells that ALREADY have a station,
+    and of the 26,334 cells with none, the highest probability is 0.305 and not
+    one crosses 0.5. So "cells above 0.5" was, in practice, a count of existing
+    stations being offered as candidates.
+
+    What replaces it is the split below. The model is descriptive: it learned
+    where stations ARE, not where they should go. Read the empty-cell figures as
+    "how much does this resemble the places that get built on", and read
+    cells_with_station as the context that makes that number mean anything.
+    """
+    cells_in_area: int = Field(
+        ..., description="Cells the area really holds, before any limit is applied.")
+    cells_predicted: int = Field(
+        ..., description="Cells actually scored. Lower than cells_in_area when truncated.")
+    truncated: bool = Field(
+        ..., description="True when the area held more cells than the request could return. "
+                         "The quietest cells are dropped first, never a geographic slice.")
+    cells_with_station: int = Field(
+        ..., description="Cells here that already hold a station. Not candidates.")
+    cells_without_station: int = Field(
+        ..., description="Cells here with no station. The only ones that could be built on.")
+    mean_probability: Optional[float] = Field(
+        None, description="Mean resemblance among cells WITHOUT a station. Null when every cell here already has one.")
+    median_probability: Optional[float] = Field(
+        None, description="Median resemblance among cells WITHOUT a station. Null when every cell here already has one.")
+    max_probability: Optional[float] = Field(
+        None, description="Highest resemblance among cells WITHOUT a station here. Read it "
+                          "against resemblance_ceiling, never against 0.5 or 1.0. "
+                          "Null when every cell here already has one.")
+    resemblance_ceiling: Optional[float] = Field(
+        None, description="The highest resemblance ANY unbuilt cell in the region reaches, "
+                          "computed from the loaded model rather than written down. This is "
+                          "what turns a bare 0.29 into '94% of the best anything unbuilt "
+                          "scores'. Null when it could not be derived, and a client that gets "
+                          "null must omit the comparison rather than fall back to a guess.")
+    resemblance_ceiling_cells: Optional[int] = Field(
+        None, description="How many unbuilt cells the ceiling was taken over, so the figure "
+                          "is auditable rather than asserted.")
+
+
+class PlannerPredictAreaResponse(BaseModel):
+    """On-demand model predictions for an area the planner chose on the map.
+
+    Computed at request time rather than read from a precomputed layer: the
+    whole grid takes about 110 ms to score, so there is nothing to gain by
+    freezing it in advance and a stale layer to lose.
+
+    Predictions stay at the 400 m resolution the model was trained at. See
+    PlannerAreaDistribution for why the area is not scored as a single unit.
+    """
+    distribution: PlannerAreaDistribution
+    predictions: list[PlannerPrediction] = Field(
+        ..., description="Per-cell probabilities, highest first.")
+    model: PlannerModelInfo
+    interpretation: str = Field(
+        ..., description="What a high probability does and does not mean.")
+    provenance: PlannerProvenance = PlannerProvenance()
+
+
 class SiteRoiInput(BaseModel):
     """What a payback projection needs, split by who is entitled to know it.
 
@@ -1347,6 +1501,9 @@ class PlannerCellsGeoJSON(BaseModel):
 class PlannerNearbyStation(BaseModel):
     id: str
     name: Optional[str] = None
+    latitude: float = Field(
+        ..., description="Needed to draw the link on a map, not only to list the distance.")
+    longitude: float
     operator: Optional[str] = None
     power_kw: Optional[float] = None
     speed_tier: Optional[str] = None

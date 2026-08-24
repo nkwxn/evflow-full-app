@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, Optional
 
 #: Layer name as the map asks for it -> the column that carries it.
 #: Values are bare identifiers on purpose. An expression here would be an
@@ -89,3 +89,50 @@ def parse_bbox(raw: str) -> Viewport:
         raise ValueError(f"bbox south ({south}) must be less than north ({north})")
 
     return Viewport(west=west, south=south, east=east, north=north)
+
+#: The seventeen POI categories the grid counts, in the order the ETL wrote
+#: them. Each name is also the suffix of a planning_cells column (poi_mall,
+#: poi_restaurant, ...), which is what keeps a marker layer and the number
+#: beside it describing the same thing.
+POI_CATEGORIES: tuple[str, ...] = (
+    # The original seventeen, which the grid has counted since 0018.
+    "parking", "parking_space", "restaurant", "park", "school", "university",
+    "cinema", "library", "community_centre", "place_of_worship", "townhall",
+    "government", "civic", "fuel", "mall", "hospital", "rest_area",
+    # Added for dwell time. A 50 kW charge takes 30 to 45 minutes, so a place
+    # people stay is worth more than a place people pass, and the original
+    # seventeen covered that badly: school and place_of_worship alone were 54%
+    # of all POIs and both mark "people live nearby" rather than "cars stop
+    # here". These fill the long and medium dwell bands.
+    "hotel", "office_commercial", "fitness_centre", "sports_centre",
+    "cafe", "fast_food", "supermarket", "department_store", "marketplace",
+    "railway_station", "bus_station", "airport_terminal", "highway_rest_area",
+)
+
+
+def parse_poi_categories(raw: Optional[str]) -> list[str]:
+    """Resolve a comma separated category filter, or return all of them.
+
+    Unlike a layer name, a category reaches SQL as a bound value rather than as
+    a column, so injection is not the danger here. The danger is silence: an
+    unrecognised name would filter to nothing and the map would show an empty
+    layer, which reads as "there are none here" rather than "you asked for
+    something that does not exist". So a typo is refused.
+    """
+    if raw is None or not raw.strip():
+        return list(POI_CATEGORIES)
+
+    known = set(POI_CATEGORIES)
+    out: list[str] = []
+    for part in raw.split(","):
+        name = part.strip()
+        if not name:
+            continue
+        if name not in known:
+            raise ValueError(
+                f"unknown POI category '{name}'; expected one of {', '.join(sorted(known))}")
+        if name not in out:  # a repeated category is a client bug, not a filter
+            out.append(name)
+    if not out:
+        return list(POI_CATEGORIES)
+    return out

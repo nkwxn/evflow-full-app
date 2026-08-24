@@ -210,6 +210,8 @@ const savedSitesOnlyLayers: PlannerLayerState = {
   demandHeatmap: false,
   existingSpklus: false,
   landUse: false,
+  liveTraffic: false,
+  modelPrediction: false,
   optimalSites: true,
   populationDensity: false
 };

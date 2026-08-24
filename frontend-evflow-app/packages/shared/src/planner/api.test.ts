@@ -10,6 +10,7 @@ import {
   fetchPlannerCandidates,
   fetchPlannerCell,
   fetchPlannerCells,
+  fetchPlannerAreaPrediction,
   fetchPlannerRoi,
   fetchPlannerSavedSites,
   fetchPlannerSavedSiteStatus,
@@ -139,5 +140,106 @@ describe('planner API client', () => {
       cell_id: 'cell', capex_per_connector_idr: 1,
       opex_monthly_idr: 1, utilisation_target: 0.2
     }, fetcher)).rejects.toEqual(new PlannerApiError(422, 'supply exactly one demand input'));
+  });
+});
+
+describe('on-demand area prediction', () => {
+  const body = {
+    distribution: {
+      cells_in_area: 136, cells_predicted: 136, truncated: false,
+      cells_with_station: 75, cells_without_station: 61,
+      mean_probability: 0.08, median_probability: 0.05, max_probability: 0.26
+    },
+    predictions: [{ cell_id: 'JBDTBK_19690', kota: 'Kota Jakarta Selatan', probability: 0.97, has_station: true }],
+    model: { loco_auc: 0.814 },
+    interpretation: 'resembles somewhere PLN builds',
+    provenance: {}
+  };
+
+  it('sends the chosen point and radius, not a viewport', async () => {
+    // A viewport moves when the planner resizes the window, so two places could
+    // never be compared. A circle around a chosen point does not.
+    const fetcher = fetcherReturning(response(body));
+    await fetchPlannerAreaPrediction({ latitude: -6.2088, longitude: 106.8206, radiusKm: 3 }, fetcher);
+    const [url, options] = (fetcher as unknown as ReturnType<typeof vi.fn>).mock.calls[0];
+    const parsed = new URL(url);
+    expect(parsed.pathname).toBe('/api/v1/planner/predict.area');
+    expect(parsed.searchParams.get('lat')).toBe('-6.2088');
+    expect(parsed.searchParams.get('lon')).toBe('106.8206');
+    expect(parsed.searchParams.get('radius_km')).toBe('3');
+    expect(parsed.searchParams.get('bbox')).toBeNull();
+    expect(options.headers).toMatchObject(auth);
+  });
+
+  it('is a GET, because a place is a question and not a submission', async () => {
+    const fetcher = fetcherReturning(response(body));
+    await fetchPlannerAreaPrediction({ latitude: 1, longitude: 2, radiusKm: 1 }, fetcher);
+    const [, options] = (fetcher as unknown as ReturnType<typeof vi.fn>).mock.calls[0];
+    expect(options.method).toBeUndefined();
+    expect(options.body).toBeUndefined();
+  });
+
+  it('carries the built/unbuilt split, which is what the circle is read by', async () => {
+    // A lone area-wide probability would be extrapolated, and a count of cells
+    // above 0.5 would be counting existing stations.
+    const fetcher = fetcherReturning(response(body));
+    const out = await fetchPlannerAreaPrediction({ latitude: 1, longitude: 2, radiusKm: 1 }, fetcher);
+    expect(out.distribution.cells_with_station).toBe(75);
+    expect(out.distribution.cells_without_station).toBe(61);
+    expect(out.predictions[0]?.has_station).toBe(true);
+    expect(out).not.toHaveProperty('probability');
+    expect(out.distribution).not.toHaveProperty('cells_above_half');
+  });
+
+  it('defaults limit and top rather than leaving the backend to guess', async () => {
+    const fetcher = fetcherReturning(response(body));
+    await fetchPlannerAreaPrediction({ latitude: 1, longitude: 2, radiusKm: 1 }, fetcher);
+    const parsed = new URL((fetcher as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0]);
+    expect(parsed.searchParams.get('limit')).toBe('4000');
+    expect(parsed.searchParams.get('top')).toBe('200');
+  });
+
+  it('needs a planner session before it reaches the network', async () => {
+    mockedGetAuthHeaders.mockReturnValue(null);
+    const fetcher = fetcherReturning(response(body));
+    await expect(fetchPlannerAreaPrediction({ latitude: 1, longitude: 2, radiusKm: 1 }, fetcher))
+      .rejects.toMatchObject({ status: 401 });
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+});
+
+describe('candidates within a radius', () => {
+  const body = { weights_applied: {}, candidates: [], excluded_areas: [] };
+
+  it('sends the point and radius, and asks for fewer clusters than region-wide', async () => {
+    // Fifteen suggestions inside 3 km would be one every 400 m, which is the
+    // grid resolution: every cell would become its own suggestion.
+    const fetcher = fetcherReturning(response(body));
+    await fetchPlannerCandidates(
+      { centre: { latitude: -6.2088, longitude: 106.8206, radiusKm: 3 } }, fetcher);
+    const parsed = new URL((fetcher as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0]);
+    expect(parsed.searchParams.get('lat')).toBe('-6.2088');
+    expect(parsed.searchParams.get('lon')).toBe('106.8206');
+    expect(parsed.searchParams.get('radius_km')).toBe('3');
+    expect(parsed.searchParams.get('clusters')).toBe('8');
+  });
+
+  it('still supports the region-wide search, with no point and fifteen clusters', async () => {
+    // Not removed: "the best places anywhere" is a real question, it was just
+    // the wrong thing to open the dashboard with.
+    const fetcher = fetcherReturning(response(body));
+    await fetchPlannerCandidates({}, fetcher);
+    const parsed = new URL((fetcher as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0]);
+    expect(parsed.searchParams.get('lat')).toBeNull();
+    expect(parsed.searchParams.get('clusters')).toBe('15');
+  });
+
+  it('sends the weights as the body either way', async () => {
+    const fetcher = fetcherReturning(response(body));
+    await fetchPlannerCandidates(
+      { centre: { latitude: 1, longitude: 2, radiusKm: 1 } }, fetcher);
+    const [, options] = (fetcher as unknown as ReturnType<typeof vi.fn>).mock.calls[0];
+    expect(JSON.parse(options.body)).toEqual(
+      { coverage: 0.35, population: 0.35, activity: 0.2, roads: 0.1 });
   });
 });

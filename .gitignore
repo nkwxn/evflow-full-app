@@ -45,3 +45,15 @@ AGENTS.md
 SKILL.md
 .codex/
 graphify-out/
+
+# Derived artefacts from ev-planner-study. The scripts that produce them are
+# tracked; the outputs are not. siting_model.joblib alone is 5.9 MB, and it is
+# rebuilt by ev-planner-study/train_siting_model.py. Without one the planner's
+# model endpoints answer 503, which the API and the dashboard both handle.
+ev-planner-study/output/
+
+# Screenshots and scratch notes from local verification runs.
+area-prediction-on-demand.png
+planner-local.png
+sheet.md
+A Geocoded Dataset of Public EV Charging Stations/

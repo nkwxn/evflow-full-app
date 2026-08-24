@@ -92,3 +92,71 @@ def test_every_mapped_column_is_a_bare_identifier():
     # harmless looking entry turns into an injection point later.
     for name, column in METRIC_COLUMNS.items():
         assert column.replace("_", "").isalnum(), f"{name} maps to {column!r}"
+
+
+# ------------------------------------------------------ the POI marker layer
+
+def test_every_poi_category_is_a_bare_identifier():
+    # Each name is also a planning_cells column suffix (poi_mall, poi_cafe, ...).
+    from api.services.planner_viewport import POI_CATEGORIES
+    for name in POI_CATEGORIES:
+        assert name.replace("_", "").isalnum(), f"{name!r} is not a bare identifier"
+
+
+def test_the_api_whitelist_matches_what_the_database_allows():
+    # Two lists of the same categories, one in Python and one in a CHECK
+    # constraint. Drift between them fails in opposite directions and both are
+    # quiet: a category the API accepts but the DB rejects blows up on insert,
+    # and one the DB allows but the API does not is data nobody can ever see.
+    # Pinning them to each other is cheaper than remembering.
+    import re
+    from pathlib import Path
+    from api.services.planner_viewport import POI_CATEGORIES
+
+    src = (Path(__file__).parents[1]
+           / "alembic/versions/0022_poi_dwell_categories.py").read_text()
+    in_migration = set(re.findall(r'"([a-z_]+)"', src.split("ALL_CATEGORIES")[0]))
+    in_migration -= {"revision", "down_revision", "branch_labels", "depends_on"}
+    assert in_migration == set(POI_CATEGORIES), (
+        f"only in migration: {sorted(in_migration - set(POI_CATEGORIES))}; "
+        f"only in API: {sorted(set(POI_CATEGORIES) - in_migration)}")
+
+
+def test_the_dwell_categories_that_motivated_the_expansion_are_present():
+    # The seventeen we started with had school and place_of_worship as 54% of
+    # every POI, and only restaurant and mall on the commercial side. These are
+    # the ones added to fix that; losing one silently would undo the point.
+    from api.services.planner_viewport import POI_CATEGORIES
+    for name in ("cafe", "fast_food", "supermarket", "hotel",
+                 "office_commercial", "railway_station", "marketplace"):
+        assert name in POI_CATEGORIES
+
+
+def test_a_typo_in_a_category_is_refused_rather_than_returning_nothing():
+    # Silently returning an empty layer for "restaurants" would look exactly
+    # like "there are no restaurants here", which is a different claim.
+    from api.services.planner_viewport import parse_poi_categories
+    with pytest.raises(ValueError, match="unknown"):
+        parse_poi_categories("restaurants")
+    with pytest.raises(ValueError, match="unknown"):
+        parse_poi_categories("mall,nope")
+
+
+def test_no_category_filter_means_every_category():
+    from api.services.planner_viewport import POI_CATEGORIES, parse_poi_categories
+    assert parse_poi_categories(None) == list(POI_CATEGORIES)
+    assert parse_poi_categories("") == list(POI_CATEGORIES)
+
+
+def test_categories_are_parsed_as_a_list_and_deduplicated():
+    from api.services.planner_viewport import parse_poi_categories
+    assert parse_poi_categories("mall") == ["mall"]
+    assert parse_poi_categories(" mall , restaurant ") == ["mall", "restaurant"]
+    assert parse_poi_categories("mall,mall") == ["mall"]
+
+
+def test_a_category_cannot_smuggle_sql():
+    from api.services.planner_viewport import parse_poi_categories
+    for attack in ("mall'; DROP TABLE planning_pois --", "mall OR 1=1", "*"):
+        with pytest.raises(ValueError, match="unknown"):
+            parse_poi_categories(attack)

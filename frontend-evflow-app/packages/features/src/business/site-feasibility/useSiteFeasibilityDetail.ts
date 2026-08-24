@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   deletePlannerSavedSite,
+  fetchPlannerPredictions,
   fetchPlannerSavedSiteStatus,
   PlannerApiError,
-  savePlannerSite
+  savePlannerSite,
+  type PlannerModelInfoApi
 } from '@evflow/shared';
 import { getSiteFeasibility } from './siteFeasibilityData';
 import {
@@ -33,6 +35,47 @@ export function useSiteFeasibilityDetail(siteId: string | null, options: DetailO
   const [activeTab, setActiveTab] = useState<SiteFeasibilityTab>('feasibility');
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [prediction, setPrediction] = useState<number | null>(null);
+  const [model, setModel] = useState<PlannerModelInfoApi | null>(null);
+  const [interpretation, setInterpretation] = useState<string | null>(null);
+  const [predictionLoading, setPredictionLoading] = useState(false);
+  const [predictionError, setPredictionError] = useState<string | null>(null);
+
+  // Fetched separately from the cell detail rather than folded into it. The
+  // model is optional: a deployment with no artifact answers 503, and that must
+  // leave the rest of the sheet working rather than blanking the whole panel.
+  useEffect(() => {
+    setPrediction(null);
+    setModel(null);
+    setInterpretation(null);
+    setPredictionError(null);
+    if (!siteId || isMock) return undefined;
+
+    let cancelled = false;
+    setPredictionLoading(true);
+    fetchPlannerPredictions([siteId])
+      .then((res) => {
+        if (cancelled) return;
+        setPrediction(res.predictions[0]?.probability ?? null);
+        setModel(res.model);
+        setInterpretation(res.interpretation);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        setPredictionError(
+          err instanceof PlannerApiError && err.status === 503
+            ? 'No trained model is deployed yet.'
+            : plannerErrorCopy(err)
+        );
+      })
+      .finally(() => {
+        if (!cancelled) setPredictionLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [siteId, isMock]);
 
   useEffect(() => {
     setActiveTab('feasibility');
@@ -67,11 +110,24 @@ export function useSiteFeasibilityDetail(siteId: string | null, options: DetailO
     let active = true;
     setLoading(true);
     setError(null);
+    // The sheet shows its spinner on `loading || !data`, so a run that finishes
+    // with neither set spins for ever and says nothing. That state was reached
+    // in the real dashboard: the API answered both requests with 200 in under a
+    // second, nothing retried, and "Loading site analysis..." stayed on screen.
+    // Whatever caused it, a dead end with no message and no Retry is not
+    // something a planner can act on, so it becomes a visible, recoverable
+    // error instead.
+    const stall = setTimeout(() => {
+      if (active) {
+        setLoading(false);
+        setError('Site analysis did not finish loading. Retry, or close and pick the site again.');
+      }
+    }, 15_000);
     void getSiteFeasibility(siteId)
       .then((result) => { if (active) setData(result); })
       .catch((requestError: unknown) => { if (active) setError(plannerErrorCopy(requestError)); })
-      .finally(() => { if (active) setLoading(false); });
-    return () => { active = false; };
+      .finally(() => { if (active) { clearTimeout(stall); setLoading(false); } });
+    return () => { active = false; clearTimeout(stall); };
   }, [retry, siteId]);
 
   useEffect(() => {
@@ -120,10 +176,15 @@ export function useSiteFeasibilityDetail(siteId: string | null, options: DetailO
     financial,
     financialError,
     financialLoading,
+    interpretation,
     isMock,
     isSaved,
     isSaving,
     loading,
+    model,
+    prediction,
+    predictionError,
+    predictionLoading,
     retry: () => setRetry((value) => value + 1),
     retryFinancial: () => setFinancialRetry((value) => value + 1),
     setActiveTab,
