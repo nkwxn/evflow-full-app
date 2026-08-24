@@ -67,9 +67,19 @@ BEGIN
     --    15-minute window. Thresholds are per-window, derived from an hourly
     --    demand curve (the comments give the original hourly figure).
     FOR conn IN
-        SELECT id, station_id, type, power_kw
-        FROM connectors
-        WHERE status = 'available'
+        -- LEFT JOIN, and COALESCE below, so an empty station_demand_factor leaves
+        -- this procedure behaving exactly as it did before. The table is
+        -- populated by refresh_station_demand_factor() (migration 0023), which
+        -- means the code change and the behaviour change roll out separately and
+        -- a rollback is a DELETE rather than a revert.
+        --
+        -- Joined here rather than looked up per row: this loop walks every free
+        -- connector, about 6,700 of them, every 15 minutes.
+        SELECT c.id, c.station_id, c.type, c.power_kw,
+               COALESCE(f.factor, 1.0) AS demand_factor
+        FROM connectors c
+        LEFT JOIN station_demand_factor f ON f.station_id = c.station_id
+        WHERE c.status = 'available'
     LOOP
         random_int := floor(random() * 100)::INT;
 
@@ -98,6 +108,26 @@ BEGIN
                 req_threshold := 10;  -- 35%/hr
             END IF;
         END IF;
+
+        -- Scale the time-of-day threshold by where the station is.
+        --
+        -- WITHOUT THIS every connector in Jabodetabek shares one probability, so
+        -- a station's occupancy is random sessions divided by its connector
+        -- count and nothing else. Measured: 37 location features predict that
+        -- occupancy at R2 = -0.063 under leave-one-area-out, worse than guessing
+        -- the mean, while connector count alone scores +0.437. No prescriptive
+        -- utilisation model can be trained on a target that carries no
+        -- information about place.
+        --
+        -- The factor averages exactly 1.0 across stations, so the TOTAL number of
+        -- simulated sessions is unchanged and only its distribution moves. The
+        -- busiest location draws about 3.2x the quietest.
+        --
+        -- What this produces is a SCENARIO, not a forecast. The weights inside
+        -- refresh_station_demand_factor() are an assumption about demand, and a
+        -- model trained on the result recovers that assumption rather than
+        -- discovering anything. Label it that way wherever it surfaces.
+        req_threshold := LEAST(100, GREATEST(0, round(req_threshold * conn.demand_factor)::INT));
 
         IF random_int < req_threshold THEN
             -- Prefer accounts that exist only to own simulated sessions. Without
