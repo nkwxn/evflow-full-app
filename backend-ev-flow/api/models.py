@@ -1278,6 +1278,55 @@ class PlannerModelInfo(BaseModel):
     n_features: int
 
 
+#: The classes the map draws, in the priority order that resolved them. Kept
+#: beside the schema rather than in the endpoint so the response model, the
+#: validation and the OpenAPI description cannot list different sets.
+LANDUSE_CLASSES = ("retail", "commercial", "industrial", "residential")
+
+
+class PlannerLandUseFeature(BaseModel):
+    """One land-use polygon, as drawn.
+
+    Not a cell and not a share. planning_cells carries lu_*_share -- how much of
+    a 500 m square each class covers -- which is a model feature and a poor map:
+    a city block and the road beside it come out the same colour. This is the
+    shape the share was measured from.
+    """
+    landuse: str = Field(
+        ..., description=f"One of: {', '.join(LANDUSE_CLASSES)}. Classes never overlap: "
+                         "every square metre belongs to exactly one, the most specific that "
+                         "claims it, so drawing order cannot change what is seen.")
+    geojson: str = Field(
+        ..., description="Polygon geometry as a GeoJSON string, WGS84. A string rather than "
+                         "a parsed object: it is passed straight to the map, and parsing it "
+                         "twice on the way through buys nothing.")
+    area_m2: float = Field(..., description="Ground area in square metres.")
+
+
+class PlannerLandUseResponse(BaseModel):
+    """Land-use polygons for a viewport, with what the limit left out.
+
+    `polygons_in_viewport` is counted before the limit for the same reason the
+    cell layers report theirs: a client that cannot tell a complete layer from a
+    truncated one will present a partial map as the whole picture, and land use
+    is the layer where that is least visible -- missing polygons look like
+    unclassified ground, which is a real and common state here.
+    """
+    features: list[PlannerLandUseFeature]
+    polygons_returned: int
+    polygons_in_viewport: int
+    truncated: bool = Field(
+        ..., description="True when the viewport held more polygons than the limit returned. "
+                         "The smallest are dropped first, never a geographic slice.")
+    classes: list[str] = Field(..., description="Classes present in this response.")
+    coverage_note: str = Field(
+        ..., description="How much of the ground is classified at all. OSM land use in "
+                         "Jabodetabek is patchy, and blank ground means 'not mapped', not "
+                         "'nothing there'. Stated in the response because a map cannot show "
+                         "the difference.")
+    provenance: PlannerProvenance = PlannerProvenance()
+
+
 class PlannerUtilisationInfo(BaseModel):
     """Provenance for the prescriptive model, which answers a different question.
 

@@ -506,6 +506,67 @@ def pois_clustered(viewport: Viewport, categories: list[str], cell: float,
         return [dict(r) for r in c.execute(text(sql), params).mappings().all()]
 
 
+def landuse_in_viewport(viewport: Viewport, classes: Optional[list[str]] = None,
+                        limit: int = 4000, simplify_m: float = 0.0) -> tuple[list[dict], int]:
+    """Land-use polygons inside the viewport, and the true total before the limit.
+
+    THIS IS THE SHAPE, NOT THE SHARE
+
+    planning_cells carries lu_*_share: how much of a 500 m cell each class
+    covers. That is a model feature and a poor map -- a city block and the road
+    beside it come out the same colour. These are the polygons those shares were
+    measured from, so what is drawn and what is scored describe the same land.
+
+    Classes do not overlap: every square metre belongs to exactly one, resolved
+    by priority upstream. So drawing order cannot change what a planner sees,
+    which is the difference between a legend that can be trusted and one that
+    happens to be right at the current zoom.
+
+    WHY simplify_m EXISTS AND WHY IT DEFAULTS TO OFF
+
+    Zoomed out, these are tens of thousands of polygons whose vertices are finer
+    than a screen pixel, and the response, not the query, is the cost. The caller
+    passes a tolerance matched to its zoom. It defaults to 0 because a wrong
+    tolerance silently deforms boundaries, and a caller that has not thought
+    about zoom should get the truth rather than a guess.
+
+    The count is taken before the limit for the same reason cells_geojson does
+    it: a client that cannot tell a complete layer from a cut one will present a
+    partial map as the whole picture.
+    """
+    where = ["geom && ST_MakeEnvelope(:west, :south, :east, :north, 4326)"]
+    params = {"west": viewport.west, "south": viewport.south,
+              "east": viewport.east, "north": viewport.north, "limit": limit}
+    if classes:
+        where.append("landuse = ANY(:classes)")
+        params["classes"] = classes
+    clause = " AND ".join(where)
+
+    # ST_Simplify can collapse a sliver to an empty or non-polygonal geometry, so
+    # the result is filtered rather than emitted as a null feature the client has
+    # to defend against.
+    geom_expr = ("ST_Simplify(geom, :tolerance)" if simplify_m > 0 else "geom")
+    if simplify_m > 0:
+        params["tolerance"] = simplify_m
+
+    with engine.connect() as c:
+        total = c.execute(text(f"SELECT count(*) FROM planning_landuse WHERE {clause}"),
+                          {k: v for k, v in params.items() if k != "limit"}).scalar()
+        rows = c.execute(text(f"""
+            SELECT landuse,
+                   ST_AsGeoJSON({geom_expr}) AS geojson,
+                   ST_Area(geom::geography)  AS area_m2
+              FROM planning_landuse
+             WHERE {clause}
+               AND NOT ST_IsEmpty({geom_expr})
+             -- Biggest first, so a truncated layer loses slivers rather than
+             -- whichever rows the planner happened to insert last.
+             ORDER BY ST_Area(geom) DESC
+             LIMIT :limit
+        """), params).mappings().all()
+    return [dict(r) for r in rows], int(total or 0)
+
+
 def pois_in_viewport(viewport: Viewport, categories: list[str]) -> dict:
     """Per-category totals before the row limit, so a cut layer can say so."""
     sql = """

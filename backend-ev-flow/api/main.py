@@ -41,6 +41,7 @@ from . import planner_repo
 from . import rate_limit
 from . import cors_policy
 from .models import (
+    LANDUSE_CLASSES,
     EVModel, EVModelList, GeoJSONFeatureCollection, Health, NameCount,
     NearestStationRoute, Route, SourceCount, SpeedTier, Station,
     StationAvailability, StationConnector, ConnectorStatusUpdate,
@@ -62,6 +63,8 @@ from .models import (
     PlannerSavedSitesResponse,
     PlannerCellDetail,
     PlannerCellsGeoJSON,
+    PlannerLandUseFeature,
+    PlannerLandUseResponse,
     PlannerModelInfo,
     PlannerUtilisationInfo,
     PlannerPredictResponse,
@@ -2678,6 +2681,79 @@ def planner_roi(body: SiteRoiInput,
         stations_2km=cell["stations_2km"],
         inputs=projection.pop("assumptions"), input_sources=sources,
         demand_basis=demand_basis, **projection,
+    )
+
+
+@app.get("/api/v1/planner/landuse.geojson", response_model=PlannerLandUseResponse,
+         tags=["planner"],
+         summary="Land-use polygons in a viewport, as shapes rather than cell shading",
+         responses={422: {"description": "Malformed bbox or unknown class"}})
+def planner_landuse_geojson(
+    bbox: str = Query(..., description="Viewport as 'minLon,minLat,maxLon,maxLat'.",
+                      examples=["106.78,-6.22,106.87,-6.13"]),
+    classes: Optional[str] = Query(
+        None, description=f"Comma separated subset of: {', '.join(LANDUSE_CLASSES)}. "
+                          "Omit for all four."),
+    limit: int = Query(4000, ge=1, le=20000,
+                       description="Row cap. The smallest polygons are dropped first, so a "
+                                   "truncated layer loses slivers rather than a slice of the "
+                                   "map. Read polygons_in_viewport before calling it complete."),
+    simplify_m: float = Query(
+        0.0, ge=0, le=200,
+        description="Douglas-Peucker tolerance in DEGREES of the source CRS, applied before "
+                    "the response is built. Zoomed out, polygon vertices are finer than a "
+                    "screen pixel and the response, not the query, is the cost. Default 0: a "
+                    "wrong tolerance deforms boundaries silently, so a caller that has not "
+                    "thought about zoom gets the truth."),
+    user: dict = Depends(require_planner),
+) -> PlannerLandUseResponse:
+    """The land use behind lu_*_share, as the shapes it was measured from.
+
+    WHY THIS EXISTS SEPARATELY FROM THE CELL LAYERS
+
+    planning_cells carries four land-use SHARES per 500 m cell. They are model
+    features and a poor map: the layer could only tint squares by four blended
+    proportions, so a city block and the road beside it came out the same colour
+    and no legend could name what a colour meant.
+
+    These polygons are what those shares were measured from, written by the same
+    pass, so the map and the features cannot describe different land.
+
+    WHAT BLANK GROUND MEANS
+
+    Not "nothing there". Measured 2026-08-25, half of Jabodetabek's cells carry
+    no land-use polygon of any class, and on the cells that do, about 21% of the
+    area is classified. That is OSM's coverage, not an error, and it is stated in
+    coverage_note because a map cannot show the difference between unmapped and
+    empty.
+    """
+    try:
+        viewport = parse_bbox(bbox)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+    wanted = None
+    if classes:
+        wanted = [c.strip() for c in classes.split(",") if c.strip()]
+        unknown = [c for c in wanted if c not in LANDUSE_CLASSES]
+        if unknown:
+            raise HTTPException(422, f"unknown land-use class(es): {', '.join(unknown)}; "
+                                     f"expected {', '.join(LANDUSE_CLASSES)}")
+
+    rows, total = planner_repo.landuse_in_viewport(
+        viewport, classes=wanted, limit=limit, simplify_m=simplify_m)
+
+    features = [PlannerLandUseFeature(landuse=r["landuse"], geojson=r["geojson"],
+                                      area_m2=float(r["area_m2"] or 0.0)) for r in rows]
+    return PlannerLandUseResponse(
+        features=features,
+        polygons_returned=len(features),
+        polygons_in_viewport=total,
+        truncated=total > len(features),
+        classes=sorted({f.landuse for f in features}),
+        coverage_note="OSM land use in Jabodetabek is patchy: about half of all cells carry "
+                      "no polygon of any class, and blank ground means unmapped rather than "
+                      "empty.",
     )
 
 

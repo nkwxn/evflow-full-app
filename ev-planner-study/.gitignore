@@ -19,3 +19,16 @@ __pycache__/
 # The corrected grid is grid_jabodetabek_500m.gpkg, which IS committed.
 grid_before_landuse_fix.gpkg
 *.backup.gpkg
+
+# Working copy kept while the land use double counting was fixed. The corrected
+# grid is grid_jabodetabek_500m.gpkg, which IS committed.
+grid_jabodetabek_500m.before_landuse_fix.gpkg
+
+# Derived, 37 MB, and regenerated in about eight minutes by recompute_landuse.py
+# from the committed grid and the PBF named above. Same reasoning as the raw
+# sources: large, reproducible, and better rebuilt than pulled from history.
+#
+# The copy currently on disk PREDATES the study-area clipping and holds 51,141
+# polygons stretching to Bali; the corrected export is 9,460. Regenerate before
+# loading it anywhere.
+landuse_jabodetabek.gpkg

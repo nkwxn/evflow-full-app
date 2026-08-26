@@ -278,7 +278,83 @@ POI_TAGS = {
     "hospital":         ("amenity", "hospital"),
     "rest_area":        ("highway", "services"),
 }
+#: Ordered MOST specific first, and the order is the fix.
+#:
+#: Shares are proportions of one cell's area, so they cannot sum above 1. They
+#: did: measured 2026-08-25, 657 of 27,219 cells summed over 1.0. Dissolving each
+#: class (below) removes overlap WITHIN a class, but OSM also nests classes --
+#: a retail park drawn inside a residential district, a commercial block inside
+#: an industrial estate -- and that land was counted once per class it fell in.
+#:
+#: So each square metre is now awarded to exactly ONE class, the most specific
+#: that claims it, and the rest are cut against what is already taken. Retail
+#: and commercial win because they are the smaller, deliberately drawn polygons;
+#: residential is the broad backdrop mappers paint first and refine later.
+LANDUSE_PRIORITY = ["retail", "commercial", "industrial", "residential"]
+
+#: The column order the rest of the pipeline expects. Priority above decides who
+#: owns contested land; this decides nothing but the order columns appear in.
 LANDUSE_SHARE = ["commercial", "retail", "residential", "industrial"]
+
+
+def landuse_shares(grid, lu, grid_size=GRID_SIZE, with_geometry=False):
+    """Per-cell area share of each land-use class, mutually exclusive.
+
+    `lu` is the raw landuse layer. Returns a dict of class -> Series indexed by
+    cell_id, and every cell's shares sum to at most 1 by construction rather
+    than by luck.
+
+    With `with_geometry`, also returns the resolved polygon per class. Those are
+    the same geometries the shares are measured from, so a map drawn with them
+    and a feature computed from them cannot disagree -- which is the whole
+    reason this returns them instead of a second pass rebuilding them.
+
+    Kept as a function so the focused re-computation script and the full PBF
+    pass run the same code. Two copies of this would drift, and the drift would
+    be invisible: both produce numbers between 0 and 1.
+    """
+    import geopandas as gpd
+    from shapely.ops import unary_union
+
+    lu = lu[lu.geometry.geom_type.isin(["Polygon", "MultiPolygon"])]
+    lu = lu.explode(index_parts=False)
+    lu = lu[lu.geometry.geom_type == "Polygon"]
+
+    # OSM carries self-intersecting rings -- a mapper closing a way over itself.
+    # GEOS refuses to union them: "TopologyException: side location conflict",
+    # which aborts the whole pass rather than skipping the offending polygon. So
+    # repair before any set operation, and re-explode because make_valid turns a
+    # bow-tie into a MultiPolygon or a GeometryCollection.
+    broken = ~lu.geometry.is_valid
+    if broken.any():
+        lu = lu.copy()
+        lu.loc[broken, "geometry"] = lu.loc[broken, "geometry"].make_valid()
+        lu = lu.explode(index_parts=False)
+        lu = lu[lu.geometry.geom_type == "Polygon"]
+
+    # Within-class overlap next: a residential estate drawn inside a wider
+    # residential area is one piece of land, not two.
+    lu = lu.dissolve(by="landuse", as_index=False)
+
+    shares, geoms, claimed = {}, {}, None
+    for cls in LANDUSE_PRIORITY:
+        sub = lu[lu["landuse"] == cls]
+        if sub.empty:
+            shares[cls] = geoms[cls] = None
+            continue
+        geom = unary_union(sub.geometry.values)
+        if claimed is not None:
+            geom = geom.difference(claimed)
+        claimed = geom if claimed is None else unary_union([claimed, geom])
+        if geom.is_empty:
+            shares[cls] = geoms[cls] = None
+            continue
+        geoms[cls] = geom
+        piece = gpd.GeoDataFrame(geometry=[geom], crs=lu.crs)
+        ov = gpd.overlay(grid[["cell_id", "geometry"]], piece,
+                         how="intersection", keep_geom_type=True)
+        shares[cls] = ov.assign(a=ov.area).groupby("cell_id")["a"].sum() / (grid_size ** 2)
+    return (shares, geoms) if with_geometry else shares
 
 
 def poi_features(pbf_path):
@@ -316,30 +392,18 @@ def poi_features(pbf_path):
     log("checkpoint written after POI counts")
 
     # --- landuse area share per cell ---
-    lu = osm.get_landuse().to_crs(CRS_METRIC)
     # get_landuse() returns Polygon AND MultiPolygon (and occasionally point or
-    # line features tagged landuse=*). gpd.overlay refuses mixed types, so keep
-    # the polygonal rows and explode multiparts into single polygons.
-    lu = lu[lu.geometry.geom_type.isin(["Polygon", "MultiPolygon"])]
-    lu = lu.explode(index_parts=False)
-    lu = lu[lu.geometry.geom_type == "Polygon"]
-    log(f"landuse polygons after type filter: {len(lu):,}")
-    # Dissolve each class into a single geometry before intersecting. OSM often
-    # carries overlapping polygons of the same class (a residential estate drawn
-    # inside a wider residential area), and intersecting them separately counts
-    # the overlap once per polygon. That produced shares above 1.0 in 1,062 cells
-    # for residential alone, which is impossible for a proportion of cell area.
-    lu = lu.dissolve(by="landuse", as_index=False)
+    # line features tagged landuse=*); landuse_shares keeps the polygonal rows.
+    lu = osm.get_landuse().to_crs(CRS_METRIC)
+    log(f"landuse rows from PBF: {len(lu):,}")
+    shares = landuse_shares(grid, lu)
     for cls in LANDUSE_SHARE:
-        sub = lu[lu["landuse"] == cls]
-        if sub.empty:
-            grid[f"lu_{cls}_share"] = 0.0
-            continue
-        ov = gpd.overlay(grid[["cell_id", "geometry"]], sub[["geometry"]],
-                         how="intersection", keep_geom_type=True)
-        share = ov.assign(a=ov.area).groupby("cell_id")["a"].sum() / (GRID_SIZE ** 2)
-        grid[f"lu_{cls}_share"] = grid["cell_id"].map(share).fillna(0.0).round(4)
+        share = shares.get(cls)
+        grid[f"lu_{cls}_share"] = (0.0 if share is None
+                                   else grid["cell_id"].map(share).fillna(0.0).round(4))
         log(f"lu_{cls}: mean share {grid[f'lu_{cls}_share'].mean():.4f}")
+    total = sum(grid[f"lu_{c}_share"] for c in LANDUSE_SHARE)
+    log(f"cells whose shares sum above 1.0: {(total > 1.0001).sum()} (must be 0)")
 
     # --- road network nodes / edges (reference-study variables) ---
     nodes, edges = osm.get_network(nodes=True, network_type="driving")
