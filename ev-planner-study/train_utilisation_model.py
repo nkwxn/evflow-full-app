@@ -86,8 +86,12 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from training_run import dataset_fingerprint, describe_fingerprint, track  # noqa: E402
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "output")
+GRID_GPKG = os.path.join(HERE, "grid_jabodetabek_500m.gpkg")
 MODEL_PATH = os.path.join(OUT, "utilisation_model.joblib")
 
 RANDOM_STATE = 42
@@ -392,6 +396,10 @@ def main() -> int:
             w = weighted_window(c)
             ratio = w["ratio"]
             df, feats = pull(c, w)
+            # Taken inside the same connection that produced the training rows,
+            # so it describes the data this run actually saw rather than the
+            # database's state a few seconds later.
+            fingerprint = dataset_fingerprint(c, GRID_GPKG)
     except OperationalError as e:
         log("  cannot reach the database.")
         if "refused" in str(e) or "closed the connection" in str(e):
@@ -424,92 +432,123 @@ def main() -> int:
         f"+/- {df.sessions_per_conn_day.std():.2f}")
     log(f"  duty cycle                  : {df.duty.mean():.3f}")
     log(f"  location features           : {len(feats)}  (+{len(HARDWARE)} hardware)")
+    log(f"  data fingerprint            : {describe_fingerprint(fingerprint)}")
 
-    groups, n_kota = df.kota.values, df.kota.nunique()
-    weights = df.sessions.astype(float).values
-    # duty is occupancy computed properly: real busy minutes over real capacity,
-    # with no days-with-sessions denominator and no 60-minute cap. It is in the
-    # ablation to settle defect 1 with the metric that decides, rather than with
-    # the correlation that first suggested it.
-    targets = ["sessions_per_conn_day", "sessions_per_free_conn_day", "duty"]
-    arms = [("location only", feats), ("location + hardware", feats + HARDWARE)]
+    # Everything from here is one tracked run: the ablation that chooses the
+    # target, the fit, and the artifact. Opened after the guards above so a
+    # refused training does not leave an empty run in the registry claiming a
+    # model exists.
+    run_name = f"utilisation-{w['days']}d-{fingerprint['digest']}"
+    with track("ev-planner-utilisation", run_name) as run:
+        for key, value in fingerprint.items():
+            run.param(f"data.{key}", value)
+        run.param("window_days", w["days"])
+        run.param("window_start", w["w_start"].isoformat())
+        run.param("dose_response", round(ratio, 4))
+        run.param("n_location_features", len(feats))
+        run.param("min_dose_response", MIN_DOSE_RESPONSE)
+        run.param("min_sessions_per_cell", MIN_SESSIONS_PER_CELL)
+        run.metric("cells", len(df))
+        run.metric("median_sessions_per_cell", median_cell)
+        run.metric("counting_noise_pct", noise)
 
-    log("")
-    log("  ablation (leave-one-area-out R2; the random split is shown to expose it)")
-    log(f"  {'target':<28} {'features':<22} {'LOCO':>8} {'random':>8}")
-    results = []
-    for t in targets:
-        y = df[t].astype(float).values
-        for name, cols in arms:
-            X = df[cols].astype(float).values
-            loco, rand = evaluate(X, y, groups, n_kota, weights)
-            log(f"  {t:<28} {name:<22} {loco:>+8.4f} {rand:>+8.4f}")
-            results.append({"target": t, "arm": name, "cols": cols, "loco": loco, "random": rand})
+        groups, n_kota = df.kota.values, df.kota.nunique()
+        weights = df.sessions.astype(float).values
+        # duty is occupancy computed properly: real busy minutes over real capacity,
+        # with no days-with-sessions denominator and no 60-minute cap. It is in the
+        # ablation to settle defect 1 with the metric that decides, rather than with
+        # the correlation that first suggested it.
+        targets = ["sessions_per_conn_day", "sessions_per_free_conn_day", "duty"]
+        arms = [("location only", feats), ("location + hardware", feats + HARDWARE)]
 
-    best = max(results, key=lambda r: r["loco"])
-    log("")
-    log(f"  best: {best['target']} / {best['arm']}  LOCO R2 {best['loco']:+.4f}")
-
-    if best["loco"] <= 0:
         log("")
-        log("  No arm beats guessing the mean. Do NOT ship a model from this run.")
-        log(f"  The dose-response was {ratio:.2f}, so the weighting IS reaching the")
-        log("  sessions; the failure is downstream of it. Next thing to check is")
-        log("  whether the features still carry the factor: the factor is built")
-        log("  from percentile ranks of population, poi_total and road_nodes, so")
-        log("  a model that cannot recover it cannot see those columns either.")
-        return 1
+        log("  ablation (leave-one-area-out R2; the random split is shown to expose it)")
+        log(f"  {'target':<28} {'features':<22} {'LOCO':>8} {'random':>8}")
+        results = []
+        for t in targets:
+            y = df[t].astype(float).values
+            for name, cols in arms:
+                X = df[cols].astype(float).values
+                loco, rand = evaluate(X, y, groups, n_kota, weights)
+                log(f"  {t:<28} {name:<22} {loco:>+8.4f} {rand:>+8.4f}")
+                results.append({"target": t, "arm": name, "cols": cols, "loco": loco, "random": rand})
+            slug = f"{t}.{name.replace(' ', '_').replace('+', 'and')}"
+            run.metric(f"loco_r2.{slug}", loco)
+            run.metric(f"random_r2.{slug}", rand)
 
-    X = df[best["cols"]].astype(float).values
-    y = df[best["target"]].astype(float).values
-    model = RandomForestRegressor(n_estimators=400, random_state=RANDOM_STATE, n_jobs=-1)
-    model.fit(X, y, sample_weight=weights)
+        best = max(results, key=lambda r: r["loco"])
+        log("")
+        log(f"  best: {best['target']} / {best['arm']}  LOCO R2 {best['loco']:+.4f}")
 
-    imp = sorted(zip(best["cols"], model.feature_importances_), key=lambda kv: -kv[1])
-    log("")
-    log("  top features")
-    for name, v in imp[:8]:
-        log(f"    {name:<34} {v:.4f}")
+        if best["loco"] <= 0:
+            log("")
+            log("  No arm beats guessing the mean. Do NOT ship a model from this run.")
+            log(f"  The dose-response was {ratio:.2f}, so the weighting IS reaching the")
+            log("  sessions; the failure is downstream of it. Next thing to check is")
+            log("  whether the features still carry the factor: the factor is built")
+            log("  from percentile ranks of population, poi_total and road_nodes, so")
+            log("  a model that cannot recover it cannot see those columns either.")
+            return 1
 
-    # Held at the median of what is actually built, so a scored cell reads as
-    # "a typical site here", and every cell is compared on equal hardware.
-    reference = {"connectors": float(df.connectors.median()),
-                 "avg_kw": float(df.avg_kw.median())}
+        X = df[best["cols"]].astype(float).values
+        y = df[best["target"]].astype(float).values
+        model = RandomForestRegressor(n_estimators=400, random_state=RANDOM_STATE, n_jobs=-1)
+        model.fit(X, y, sample_weight=weights)
 
-    os.makedirs(OUT, exist_ok=True)
-    joblib.dump({
-        "model": model,
-        "feature_names": best["cols"],
-        "target": best["target"],
-        "target_units": "simulated charging sessions per connector per day",
-        "reference_spec": reference if best["arm"].endswith("hardware") else None,
-        "trained_at": dt.datetime.now(dt.timezone.utc).isoformat(),
-        "window_start": w["w_start"].isoformat(),
-        "window_end": w["w_end"].isoformat(),
-        "window_days": w["days"],
-        "factors_computed_at": w["computed_at"].isoformat(),
-        "window_selected_by": "measured dose-response per day, not computed_at",
-        "dose_response_q4_over_q1": ratio,
-        "n_samples": len(df),
-        "median_sessions_per_cell": median_cell,
-        "counting_noise_pct": noise,
-        "fitted_weighted_by": "sessions per cell",
-        "loco_r2": best["loco"],
-        "random_split_r2": best["random"],
-        "ablation": [{k: r[k] for k in ("target", "arm", "loco", "random")} for r in results],
-        "sklearn_version": sklearn.__version__,
-        "label": "utilisation SCENARIO (recovers the demand assumption in migrations "
-                 "0023/0024, not a forecast)",
-    }, MODEL_PATH)
+        imp = sorted(zip(best["cols"], model.feature_importances_), key=lambda kv: -kv[1])
+        log("")
+        log("  top features")
+        for name, v in imp[:8]:
+            log(f"    {name:<34} {v:.4f}")
 
-    log("")
-    log(f"  saved {MODEL_PATH}")
-    if reference and best["arm"].endswith("hardware"):
-        log(f"  score unbuilt cells at the reference spec: {reference['connectors']:.0f} "
-            f"connectors, {reference['avg_kw']:.0f} kW mean.")
-    log("  label: utilisation SCENARIO. It predicts the assumption encoded in the")
-    log("  simulation, not observed demand. Say so wherever the number appears.")
-    log(f"  Trained on {w['days']} days; the window grows nightly, so retrain as it does.")
+        # Held at the median of what is actually built, so a scored cell reads as
+        # "a typical site here", and every cell is compared on equal hardware.
+        reference = {"connectors": float(df.connectors.median()),
+                     "avg_kw": float(df.avg_kw.median())}
+
+        os.makedirs(OUT, exist_ok=True)
+        joblib.dump({
+            "model": model,
+            "feature_names": best["cols"],
+            "target": best["target"],
+            "target_units": "simulated charging sessions per connector per day",
+            "reference_spec": reference if best["arm"].endswith("hardware") else None,
+            "trained_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+            "window_start": w["w_start"].isoformat(),
+            "window_end": w["w_end"].isoformat(),
+            "window_days": w["days"],
+            "factors_computed_at": w["computed_at"].isoformat(),
+            "window_selected_by": "measured dose-response per day, not computed_at",
+            "dose_response_q4_over_q1": ratio,
+            "n_samples": len(df),
+            # What this was fitted ON, not just when. services/utilisation_model
+            # compares it against the live database at load time.
+            "dataset_fingerprint": fingerprint,
+            "median_sessions_per_cell": median_cell,
+            "counting_noise_pct": noise,
+            "fitted_weighted_by": "sessions per cell",
+            "loco_r2": best["loco"],
+            "random_split_r2": best["random"],
+            "ablation": [{k: r[k] for k in ("target", "arm", "loco", "random")} for r in results],
+            "sklearn_version": sklearn.__version__,
+            "label": "utilisation SCENARIO (recovers the demand assumption in migrations "
+                     "0023/0024, not a forecast)",
+        }, MODEL_PATH)
+
+        log("")
+        run.tag("target", best["target"])
+        run.tag("arm", best["arm"])
+        run.tag("label", "SCENARIO: recovers the demand assumption in 0023/0024")
+        run.metric("loco_r2", best["loco"])
+        run.metric("random_split_r2", best["random"])
+        run.saved("ev-planner-utilisation", MODEL_PATH)
+        log(f"  saved {MODEL_PATH}")
+        if reference and best["arm"].endswith("hardware"):
+            log(f"  score unbuilt cells at the reference spec: {reference['connectors']:.0f} "
+                f"connectors, {reference['avg_kw']:.0f} kW mean.")
+        log("  label: utilisation SCENARIO. It predicts the assumption encoded in the")
+        log("  simulation, not observed demand. Say so wherever the number appears.")
+        log(f"  Trained on {w['days']} days; the window grows nightly, so retrain as it does.")
     return 0
 
 

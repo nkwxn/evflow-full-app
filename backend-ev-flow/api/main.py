@@ -321,11 +321,31 @@ def _bbox(bbox: Optional[str]):
 # ----------------------------------------------------------------------------- endpoints
 @app.get("/health", response_model=Health, tags=["system"], summary="Liveness + dataset size")
 def health() -> Health:
+    """Report the two failures that used to hide behind a 200.
+
+    Neither is raised. A missing model does not stop the station and routing
+    surface from working, and a probe that 500s tells a load balancer to take
+    the process out when the process is fine. The distinction goes in the body,
+    where something can read it.
+    """
     try:
         n = repo.count()
     except Exception:
         n = 0
-    return Health(status="ok", stations_loaded=n, version=__version__)
+
+    models: dict[str, str] = {}
+    for name, service in (("siting", siting_model), ("utilisation", utilisation_model)):
+        try:
+            service.info()
+            models[name] = "loaded"
+        except FileNotFoundError:
+            models[name] = "missing"
+        except Exception as exc:  # a corrupt or stale artifact, not an absent one
+            models[name] = f"unreadable: {type(exc).__name__}"
+
+    healthy = n > 0 and all(v == "loaded" for v in models.values())
+    return Health(status="ok" if healthy else "degraded",
+                  stations_loaded=n, version=__version__, models=models)
 
 
 @app.get("/api/v1/stations", response_model=StationList, tags=["stations"],

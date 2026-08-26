@@ -114,12 +114,13 @@ def _delete_stations(*ids: str) -> None:
 def test_health_reports_version_and_station_count(client):
     from api import __version__
     body = client.get("/health").json()
-    assert body["status"] == "ok"
     assert body["version"] == __version__
     assert isinstance(body["stations_loaded"], int) and body["stations_loaded"] >= 0
+    # Both subsystems that can fail on their own are named, whatever the verdict.
+    assert set(body["models"]) == {"siting", "utilisation"}
 
 
-def test_health_stays_up_and_reports_zero_when_the_station_count_fails(client, monkeypatch):
+def test_health_stays_up_when_the_station_count_fails(client, monkeypatch):
     """Liveness must not depend on the database (DEPLOY.md: 'stations_loaded: 0')."""
     from api import stations_repo
 
@@ -130,7 +131,37 @@ def test_health_stays_up_and_reports_zero_when_the_station_count_fails(client, m
     r = client.get("/health")
     assert r.status_code == 200
     assert r.json()["stations_loaded"] == 0
-    assert r.json()["status"] == "ok"
+
+
+def test_health_says_degraded_rather_than_ok_when_it_cannot_do_its_job(client, monkeypatch):
+    """The failure this replaces looked exactly like success.
+
+    An SSH tunnel dropping leaves the process answering while stations_loaded
+    falls to 0, and the map renders empty behind a healthy probe. Separately the
+    deployed image carries no model artifact, so every planner ML endpoint 503s
+    while /health still said ok. Both are now visible without reading the body.
+    """
+    from api import stations_repo
+
+    monkeypatch.setattr(stations_repo, "count", lambda: 0)
+    assert client.get("/health").json()["status"] == "degraded"
+
+
+def test_health_names_a_missing_model_without_taking_the_api_down(client, monkeypatch, tmp_path):
+    """A missing artifact is reported, never raised.
+
+    The station and routing surface works without it, and a probe that 500s
+    tells a load balancer to remove a process that is fine.
+    """
+    from api.services import siting_model
+
+    monkeypatch.setattr(siting_model, "DEFAULT_MODEL_PATH", str(tmp_path / "absent.joblib"))
+    siting_model.reset_cache()
+    r = client.get("/health")
+    assert r.status_code == 200
+    assert r.json()["models"]["siting"] == "missing"
+    assert r.json()["status"] == "degraded"
+    siting_model.reset_cache()
 
 
 # ----------------------------------------------------------------------- bbox

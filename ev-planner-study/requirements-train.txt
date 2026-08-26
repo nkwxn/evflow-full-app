@@ -1,0 +1,29 @@
+# What the training scripts need, declared.
+#
+# Until now they ran against whatever the ambient anaconda install happened to
+# carry: .venv-etl has geopandas and pyrosm but no scikit-learn, no sqlalchemy
+# and no psycopg, so `python3 train_utilisation_model.py` was resolving against
+# a base environment nobody had written down. The artifact records the sklearn
+# version it was fitted with, which tells you what trained a model AFTER the
+# fact; this tells you what will.
+#
+#     python3 -m venv .venv-train
+#     .venv-train/bin/pip install -r requirements-train.txt
+#
+# Separate from backend-ev-flow/requirements-api.txt on purpose. The API serves
+# a fitted artifact and needs 14 packages to do it; nothing here belongs in that
+# image, mlflow least of all.
+
+scikit-learn>=1.5
+joblib>=1.4
+pandas>=2.2
+numpy>=1.26
+sqlalchemy>=2.0
+psycopg[binary]>=3.1
+
+# No mlflow. It answers this well but wants a server, a backend store and an
+# artifact store, and the need here is one appendable line per run that a human
+# and a diff can both read. training_run.py writes training_runs.jsonl instead:
+# nothing to keep running, nothing to back up, nothing that can be down at the
+# moment someone needs to retrain. The fields map onto MLflow's params/metrics/
+# tags directly, so moving later is a port rather than a rewrite.

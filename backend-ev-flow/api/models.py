@@ -155,9 +155,31 @@ class GeoJSONFeatureCollection(BaseModel):
 
 
 class Health(BaseModel):
-    status: str = Field(..., examples=["ok"])
+    """Liveness, and the two things that silently look like liveness.
+
+    `status` was always "ok" as long as the process answered. Twice that hid a
+    real outage. An SSH tunnel dropping leaves the API up with stations_loaded
+    at 0, and the map renders empty behind a healthy-looking probe -- that shape
+    cost nine rounds of debugging in one week. Separately, the deployed image
+    carries no model artifact at all, so every planner ML endpoint answers 503
+    while /health still says ok.
+
+    So status is now "degraded" when the process is up but cannot do its job,
+    and the two subsystems that can fail independently are reported separately.
+    A caller that only reads status still gets a truthful answer.
+    """
+    status: str = Field(..., examples=["ok"],
+                        description="'ok' only when the database and the models are both "
+                                    "usable; 'degraded' when the process is up and one of "
+                                    "them is not.")
     stations_loaded: int = Field(..., examples=[3569])
     version: str = Field(..., examples=["1.0.0"])
+    models: dict[str, str] = Field(
+        default_factory=dict,
+        description="Per model: 'loaded', 'missing', or the reason it could not be read. "
+                    "Missing is not fatal for the rest of the API, which is why it is "
+                    "reported rather than raised.",
+        examples=[{"siting": "loaded", "utilisation": "missing"}])
 
 
 # ---- routing (Epic 2.0: shortest path via Dijkstra) -------------------------

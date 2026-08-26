@@ -32,15 +32,30 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import sys
 import warnings
 
 warnings.filterwarnings("ignore")
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from training_run import dataset_fingerprint, describe_fingerprint, track  # noqa: E402
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "output")
+GRID_GPKG = os.path.join(HERE, "grid_jabodetabek_500m.gpkg")
+
+#: Below this the model is not worth serving.
+#:
+#: train_utilisation_model refuses to save when its LOCO R2 is not above zero;
+#: this script had no gate at all and would write an artifact whatever the AUC,
+#: so a bad retrain would silently replace a good model. 0.65 is deliberately
+#: lenient -- the measured figure is 0.814 and the reference study reports 0.893,
+#: so anything near this floor means something broke rather than drifted.
+MIN_LOCO_AUC = 0.65
 INPUT_PARQUET = os.path.join(OUT, "model_input_jabodetabek.parquet")
+FINGERPRINT_PATH = os.path.join(OUT, "model_input_fingerprint.json")
 MODEL_PATH = os.path.join(OUT, "siting_model.joblib")
 
 RANDOM_STATE = 42  # fixed so the reported numbers are reproducible
@@ -94,8 +109,14 @@ def pull() -> "pd.DataFrame":  # noqa: F821
            f"(station_count > 0)::int AS has_station "
            f"FROM planning_cells WHERE {WHERE}")
     df = pd.read_sql(text(sql), engine)
+    with engine.connect() as c:
+        fp = dataset_fingerprint(c, GRID_GPKG)
     os.makedirs(OUT, exist_ok=True)
     df.to_parquet(INPUT_PARQUET, index=False)
+    # Beside the parquet, so --from-parquet can still say what it is training on.
+    # A cached pull with no provenance is the same problem one layer down.
+    with open(FINGERPRINT_PATH, "w") as f:
+        json.dump(fp, f, indent=2)
     log(f"pulled {len(df):,} cells -> {os.path.relpath(INPUT_PARQUET, HERE)}")
     return df
 
@@ -113,119 +134,161 @@ def main(from_parquet: bool) -> int:
                                  f1_score, roc_auc_score)
 
     df = pd.read_parquet(INPUT_PARQUET) if from_parquet else pull()
-    cols = [c for c in df.columns if c not in ("cell_id", "kota", "has_station")]
-    X, y = df[cols].fillna(0.0), df["has_station"]
+    try:
+        with open(FINGERPRINT_PATH) as f:
+            fingerprint = json.load(f)
+    except (OSError, ValueError):
+        # --from-parquet against a parquet older than this feature. Recorded as
+        # unknown rather than omitted: a missing key reads as "nobody thought
+        # about it", an explicit unknown reads as "the input predates the check".
+        fingerprint = {"digest": "unknown", "note": "no fingerprint beside the parquet"}
+    log(f"data fingerprint: {describe_fingerprint(fingerprint)}"
+        if fingerprint.get("cells") is not None else
+        "data fingerprint: unknown (parquet predates fingerprinting)")
+    # One tracked run covering the model comparison, the ablation, the fit and
+    # the artifact. The comparison is the part worth keeping: which four
+    # estimators were tried and how they ranked is a decision, and until now it
+    # lived in a terminal scrollback.
+    run_name = f"siting-{fingerprint.get('digest', 'unknown')}"
+    with track("ev-planner-siting", run_name) as run:
+        for key, value in fingerprint.items():
+            run.param(f"data.{key}", value)
+        run.param("min_loco_auc", MIN_LOCO_AUC)
 
-    log(f"\n{len(df):,} cells x {len(cols)} features | positive class {y.mean():.1%} "
-        f"({int(y.sum()):,} cells with a station) | {df.kota.nunique()} areas")
-    log("reference for comparison: 10,824 German cells x 19 features, 11.3% positive")
+        cols = [c for c in df.columns if c not in ("cell_id", "kota", "has_station")]
+        X, y = df[cols].fillna(0.0), df["has_station"]
 
-    models = {
-        "LogisticRegression": make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000)),
-        "KNN (k=15)":         make_pipeline(StandardScaler(), KNeighborsClassifier(15)),
-        "RandomForest":       RandomForestClassifier(200, random_state=RANDOM_STATE, n_jobs=-1),
-        "GradientBoosting":   GradientBoostingClassifier(random_state=RANDOM_STATE),
-    }
+        log(f"\n{len(df):,} cells x {len(cols)} features | positive class {y.mean():.1%} "
+            f"({int(y.sum()):,} cells with a station) | {df.kota.nunique()} areas")
+        log("reference for comparison: 10,824 German cells x 19 features, 11.3% positive")
 
-    log("\n== random split (the flattering number) ==")
-    Xtr, Xte, ytr, yte = train_test_split(
-        X, y, test_size=0.2, random_state=RANDOM_STATE, stratify=y)
-    log(f"  {'model':<20}{'AUC':>8}{'PR-AUC':>9}{'F1':>7}{'bal.acc':>9}")
-    best_random = 0.0
-    for name, m in models.items():
-        m.fit(Xtr, ytr)
-        p, pred = m.predict_proba(Xte)[:, 1], m.predict(Xte)
-        auc = roc_auc_score(yte, p)
-        best_random = max(best_random, auc)
-        log(f"  {name:<20}{auc:>8.3f}{average_precision_score(yte, p):>9.3f}"
-            f"{f1_score(yte, pred):>7.3f}{balanced_accuracy_score(yte, pred):>9.3f}")
-    log(f"  PR-AUC baseline (always predict 'no station'): {y.mean():.3f}")
+        models = {
+            "LogisticRegression": make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000)),
+            "KNN (k=15)":         make_pipeline(StandardScaler(), KNeighborsClassifier(15)),
+            "RandomForest":       RandomForestClassifier(200, random_state=RANDOM_STATE, n_jobs=-1),
+            "GradientBoosting":   GradientBoostingClassifier(random_state=RANDOM_STATE),
+        }
 
-    log("\n== leave-one-area-out (the honest number) ==")
-    rows = []
-    for kota in sorted(df.kota.dropna().unique()):
-        tr, te = df.kota != kota, df.kota == kota
-        if y[te].nunique() < 2 or te.sum() < 30:
-            rows.append([kota, int(te.sum()), y[te].mean(), np.nan])
-            continue
-        m = RandomForestClassifier(200, random_state=RANDOM_STATE, n_jobs=-1).fit(X[tr], y[tr])
-        rows.append([kota, int(te.sum()), y[te].mean(),
-                     roc_auc_score(y[te], m.predict_proba(X[te])[:, 1])])
-    loco = pd.DataFrame(rows, columns=["area", "cells", "positive_rate", "AUC"])
-    log(f"  {'area':<24}{'cells':>7}{'positive':>10}{'AUC':>8}")
-    for _, r in loco.iterrows():
-        auc = f"{r.AUC:.3f}" if pd.notna(r.AUC) else "-"
-        log(f"  {str(r.area)[:22]:<24}{r.cells:>7}{r.positive_rate:>10.1%}{auc:>8}")
-    log(f"\n  leave-one-area-out mean AUC : {loco.AUC.mean():.3f}   <-- report this one")
-    log(f"  random split (best)         : {best_random:.3f}")
-    log(f"  German reference            : LOCO 0.893 / random 0.905")
-    log("  The gap is the finding: our areas differ far more than German cities did.")
+        log("\n== random split (the flattering number) ==")
+        Xtr, Xte, ytr, yte = train_test_split(
+            X, y, test_size=0.2, random_state=RANDOM_STATE, stratify=y)
+        log(f"  {'model':<20}{'AUC':>8}{'PR-AUC':>9}{'F1':>7}{'bal.acc':>9}")
+        best_random = 0.0
+        for name, m in models.items():
+            m.fit(Xtr, ytr)
+            p, pred = m.predict_proba(Xte)[:, 1], m.predict(Xte)
+            auc = roc_auc_score(yte, p)
+            best_random = max(best_random, auc)
+            log(f"  {name:<20}{auc:>8.3f}{average_precision_score(yte, p):>9.3f}"
+                f"{f1_score(yte, pred):>7.3f}{balanced_accuracy_score(yte, pred):>9.3f}")
+        log(f"  PR-AUC baseline (always predict 'no station'): {y.mean():.3f}")
 
-    # Ablation. RandomForest's own importance ranks population second, but a
-    # model given ONLY population scores 0.507 across held-out areas -- a coin
-    # flip. Impurity importance is not evidence of generalisation; this is.
-    log("\n== which feature families actually transfer ==")
-    fam = {
-        "population only":            ["population"],
-        "roads only":                 ["road_nodes", "road_length_m"],
-        "land use only":              [c for c in cols if c.startswith("lu_")],
-        "POI only":                   [c for c in cols if c.startswith("poi_")],
-        "population + roads":         ["population", "road_nodes", "road_length_m"],
-        "pop + roads + land use":     ["population", "road_nodes", "road_length_m"]
-                                      + [c for c in cols if c.startswith("lu_")],
-        "everything":                 cols,
-    }
-    abl = []
-    for name, feats in fam.items():
-        scores = []
+        log("\n== leave-one-area-out (the honest number) ==")
+        rows = []
         for kota in sorted(df.kota.dropna().unique()):
             tr, te = df.kota != kota, df.kota == kota
             if y[te].nunique() < 2 or te.sum() < 30:
+                rows.append([kota, int(te.sum()), y[te].mean(), np.nan])
                 continue
-            m = RandomForestClassifier(120, random_state=RANDOM_STATE, n_jobs=-1) \
-                .fit(df.loc[tr, feats], y[tr])
-            scores.append(roc_auc_score(y[te], m.predict_proba(df.loc[te, feats])[:, 1]))
-        abl.append([name, len(feats), float(np.mean(scores))])
-        log(f"  {name:<26}{len(feats):>4} feats{float(np.mean(scores)):>9.3f}")
-    pd.DataFrame(abl, columns=["feature_set", "n_features", "loco_auc"]) \
-        .to_csv(os.path.join(OUT, "ablation_jabodetabek.csv"), index=False)
+            m = RandomForestClassifier(200, random_state=RANDOM_STATE, n_jobs=-1).fit(X[tr], y[tr])
+            rows.append([kota, int(te.sum()), y[te].mean(),
+                         roc_auc_score(y[te], m.predict_proba(X[te])[:, 1])])
+        loco = pd.DataFrame(rows, columns=["area", "cells", "positive_rate", "AUC"])
+        log(f"  {'area':<24}{'cells':>7}{'positive':>10}{'AUC':>8}")
+        for _, r in loco.iterrows():
+            auc = f"{r.AUC:.3f}" if pd.notna(r.AUC) else "-"
+            log(f"  {str(r.area)[:22]:<24}{r.cells:>7}{r.positive_rate:>10.1%}{auc:>8}")
+        log(f"\n  leave-one-area-out mean AUC : {loco.AUC.mean():.3f}   <-- report this one")
+        log(f"  random split (best)         : {best_random:.3f}")
+        log("  German reference            : LOCO 0.893 / random 0.905")
+        log("  The gap is the finding: our areas differ far more than German cities did.")
 
-    rf = RandomForestClassifier(200, random_state=RANDOM_STATE, n_jobs=-1).fit(X, y)
-    imp = pd.Series(rf.feature_importances_, index=cols).sort_values(ascending=False)
-    log("\n== top 10 by impurity importance (read alongside the ablation, not instead) ==")
-    for k, v in imp.head(10).items():
-        log(f"  {k:<26}{v:.4f}")
+        # Ablation. RandomForest's own importance ranks population second, but a
+        # model given ONLY population scores 0.507 across held-out areas -- a coin
+        # flip. Impurity importance is not evidence of generalisation; this is.
+        log("\n== which feature families actually transfer ==")
+        fam = {
+            "population only":            ["population"],
+            "roads only":                 ["road_nodes", "road_length_m"],
+            "land use only":              [c for c in cols if c.startswith("lu_")],
+            "POI only":                   [c for c in cols if c.startswith("poi_")],
+            "population + roads":         ["population", "road_nodes", "road_length_m"],
+            "pop + roads + land use":     ["population", "road_nodes", "road_length_m"]
+                                          + [c for c in cols if c.startswith("lu_")],
+            "everything":                 cols,
+        }
+        abl = []
+        for name, feats in fam.items():
+            scores = []
+            for kota in sorted(df.kota.dropna().unique()):
+                tr, te = df.kota != kota, df.kota == kota
+                if y[te].nunique() < 2 or te.sum() < 30:
+                    continue
+                m = RandomForestClassifier(120, random_state=RANDOM_STATE, n_jobs=-1) \
+                    .fit(df.loc[tr, feats], y[tr])
+                scores.append(roc_auc_score(y[te], m.predict_proba(df.loc[te, feats])[:, 1]))
+            abl.append([name, len(feats), float(np.mean(scores))])
+            run.metric(f"ablation_loco_auc.{name.replace(' ', '_')}", float(np.mean(scores)))
+            log(f"  {name:<26}{len(feats):>4} feats{float(np.mean(scores)):>9.3f}")
+        pd.DataFrame(abl, columns=["feature_set", "n_features", "loco_auc"]) \
+            .to_csv(os.path.join(OUT, "ablation_jabodetabek.csv"), index=False)
 
-    imp.to_csv(os.path.join(OUT, "feature_importance_jabodetabek.csv"))
-    loco.to_csv(os.path.join(OUT, "loco_jabodetabek.csv"), index=False)
+        rf = RandomForestClassifier(200, random_state=RANDOM_STATE, n_jobs=-1).fit(X, y)
+        imp = pd.Series(rf.feature_importances_, index=cols).sort_values(ascending=False)
+        log("\n== top 10 by impurity importance (read alongside the ablation, not instead) ==")
+        for k, v in imp.head(10).items():
+            log(f"  {k:<26}{v:.4f}")
 
-    # Persist the fitted model for the API to serve. `rf` above is fitted on the
-    # WHOLE dataset, not the 80% train split: the split exists to measure, and a
-    # model that is going to be served should learn from everything it can.
-    #
-    # feature_names travels with the model and is not optional. sklearn predicts
-    # on positional arrays, so a column order that differs from training produces
-    # confident, silently wrong probabilities -- no exception, no warning, just
-    # population being read as road_length. The loader refuses to predict unless
-    # the order matches exactly.
-    import joblib
-    artifact = {
-        "model": rf,
-        "feature_names": list(cols),
-        "trained_at": pd.Timestamp.utcnow().isoformat(),
-        "n_samples": int(len(df)),
-        "n_positive": int(y.sum()),
-        "loco_auc": float(loco.AUC.mean()),
-        "random_split_auc": float(best_random),
-        "label": "station presence (descriptive, not prescriptive -- see module docstring)",
-        "sklearn_version": __import__("sklearn").__version__,
-    }
-    joblib.dump(artifact, MODEL_PATH, compress=3)
-    log(f"\nmodel saved: {os.path.relpath(MODEL_PATH, HERE)} "
-        f"({os.path.getsize(MODEL_PATH)/1024:.0f} KB, {len(cols)} features, "
-        f"LOCO AUC {loco.AUC.mean():.3f})")
-    log(f"\nwrote feature_importance_jabodetabek.csv, loco_jabodetabek.csv, "
-        f"ablation_jabodetabek.csv to {os.path.relpath(OUT, HERE)}/")
+        imp.to_csv(os.path.join(OUT, "feature_importance_jabodetabek.csv"))
+        loco.to_csv(os.path.join(OUT, "loco_jabodetabek.csv"), index=False)
+
+        # Persist the fitted model for the API to serve. `rf` above is fitted on the
+        # WHOLE dataset, not the 80% train split: the split exists to measure, and a
+        # model that is going to be served should learn from everything it can.
+        #
+        # feature_names travels with the model and is not optional. sklearn predicts
+        # on positional arrays, so a column order that differs from training produces
+        # confident, silently wrong probabilities -- no exception, no warning, just
+        # population being read as road_length. The loader refuses to predict unless
+        # the order matches exactly.
+        import joblib
+        loco_auc = float(loco.AUC.mean())
+        if loco_auc < MIN_LOCO_AUC:
+            run.metric("loco_auc", loco_auc)
+            run.tag("refused", "loco_auc below floor")
+            log(f"\nREFUSING to save: LOCO AUC {loco_auc:.3f} is below {MIN_LOCO_AUC}.")
+            log("The existing artifact is left in place. A figure this low means an")
+            log("input changed, not that the model drifted -- check that planning_cells")
+            log("was reloaded after the last grid rebuild and that the label still")
+            log("comes from the merged station footprint.")
+            return 1
+
+        artifact = {
+            "model": rf,
+            "feature_names": list(cols),
+            "trained_at": pd.Timestamp.utcnow().isoformat(),
+            "n_samples": int(len(df)),
+            "n_positive": int(y.sum()),
+            "loco_auc": loco_auc,
+            "random_split_auc": float(best_random),
+            "label": "station presence (descriptive, not prescriptive -- see module docstring)",
+            "sklearn_version": __import__("sklearn").__version__,
+            # What this was fitted ON. Without it there is no way to ask a loaded
+            # model whether it saw the pre-fix or post-fix land-use shares.
+            "dataset_fingerprint": fingerprint,
+        }
+        run.metric("loco_auc", loco_auc)
+        run.metric("random_split_auc", float(best_random))
+        run.metric("n_samples", int(len(df)))
+        run.metric("n_positive", int(y.sum()))
+        run.tag("label", "descriptive: station presence, not a recommendation")
+        joblib.dump(artifact, MODEL_PATH, compress=3)
+        run.saved("ev-planner-siting", MODEL_PATH)
+        log(f"\nmodel saved: {os.path.relpath(MODEL_PATH, HERE)} "
+            f"({os.path.getsize(MODEL_PATH)/1024:.0f} KB, {len(cols)} features, "
+            f"LOCO AUC {loco.AUC.mean():.3f})")
+        log(f"\nwrote feature_importance_jabodetabek.csv, loco_jabodetabek.csv, "
+            f"ablation_jabodetabek.csv to {os.path.relpath(OUT, HERE)}/")
     return 0
 
 
