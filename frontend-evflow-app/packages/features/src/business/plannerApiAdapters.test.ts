@@ -3,8 +3,9 @@ import type { PlannerCandidateApi, PlannerCellsGeoJsonResponse, StationApiItem }
 import {
   plannerCandidateToOptimalSite,
   plannerCellsToMetricPolygons,
+  landUseColors,
   plannerCellsToPolygons,
-  plannerLandUseToPolygons,
+  plannerLandUsePolygons,
   plannerPredictionsToPolygons,
   plannerStationsToMarkers,
   scoreToDemandPriority
@@ -59,12 +60,43 @@ describe('planner API adapters', () => {
     expect(scale?.max).toBe(25);
   });
 
-  it('classifies each cell by its dominant land-use API metric', () => {
-    const [polygon] = plannerLandUseToPolygons({
-      commercial: metricResponse('cell-1', 0.2),
-      residential: metricResponse('cell-1', 0.8)
+  it('draws land use as its own polygon, in its own class colour', () => {
+    // The old layer blended four per-cell SHARES into one tint per 500 m square,
+    // so a colour meant "mostly residential, a bit commercial" and no legend
+    // could name it. These are polygons of exactly one class, so the colour is
+    // the class and nothing else.
+    const [polygon] = plannerLandUsePolygons({
+      features: [{
+        landuse: 'retail',
+        geojson: JSON.stringify({
+          type: 'Polygon',
+          coordinates: [[[106.8, -6.2], [106.81, -6.2], [106.8, -6.21], [106.8, -6.2]]]
+        }),
+        area_m2: 1234
+      }],
+      polygons_returned: 1, polygons_in_viewport: 1, truncated: false,
+      classes: ['retail'], coverage_note: '', provenance: {} as never
     });
-    expect(polygon?.fillColor).toBe('#8B5CF6');
+    expect(polygon?.fillColor).toBe(landUseColors.retail);
+    // Leaflet wants [lat, lon]; GeoJSON gives [lon, lat]. Swapping these puts
+    // Jabodetabek in the Indian Ocean, and the map still renders.
+    expect(polygon?.coordinates[0]).toEqual([-6.2, 106.8]);
+  });
+
+  it('drops one unparseable polygon rather than the whole layer', () => {
+    const polygons = plannerLandUsePolygons({
+      features: [
+        { landuse: 'retail', geojson: '{not json', area_m2: 1 },
+        { landuse: 'commercial', geojson: JSON.stringify({
+          type: 'Polygon',
+          coordinates: [[[106.8, -6.2], [106.81, -6.2], [106.8, -6.21], [106.8, -6.2]]]
+        }), area_m2: 2 }
+      ],
+      polygons_returned: 2, polygons_in_viewport: 2, truncated: false,
+      classes: ['retail', 'commercial'], coverage_note: '', provenance: {} as never
+    });
+    expect(polygons).toHaveLength(1);
+    expect(polygons[0]?.fillColor).toBe(landUseColors.commercial);
   });
 
   it('prefixes real station IDs so station taps cannot resolve as optimal sites', () => {
@@ -118,8 +150,11 @@ describe('on-demand prediction polygons', () => {
       }))
     } as PlannerCellsGeoJsonResponse;
   }
+  // sessions_per_connector_day is null here on purpose: this file is about
+  // joining RESEMBLANCE onto cells, and the prescriptive number rides along
+  // without taking part in that join.
   const pred = (cell_id: string, probability: number, has_station = false) =>
-    ({ cell_id, kota: null, probability, has_station });
+    ({ cell_id, kota: null, probability, has_station, sessions_per_connector_day: null });
 
   it('joins probabilities onto the cells they belong to', () => {
     const out = plannerPredictionsToPolygons([pred('b', 0.25)], cells('a', 'b'), CEILING);

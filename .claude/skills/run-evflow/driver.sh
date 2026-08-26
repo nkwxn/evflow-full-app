@@ -70,15 +70,36 @@ tunnel_up() {
 
 # ------------------------------------------------------------------- api
 
+# uvicorn runs here WITHOUT --reload, so an API left over from an earlier session
+# keeps answering /health with the code it was started with. That failure is
+# silent and reads exactly like a broken feature: the planner smoke reported
+# "no utilisation artifact loaded" for a model that had been sitting on disk the
+# whole time, because the process answering had been started before the service
+# that loads it existed.
+api_stale() {
+  local stamp="$RUN_DIR/api.started"
+  [ -f "$stamp" ] || return 0   # not started by this driver: assume stale
+  [ -n "$(find "$ROOT/backend-ev-flow/api" -name '*.py' -newer "$stamp" -print -quit 2>/dev/null)" ]
+}
+
 api_up() {
   if curl -sf -o /dev/null --max-time 4 "http://127.0.0.1:${API_PORT}/health" 2>/dev/null; then
-    green "API already up on :${API_PORT}"
-    return 0
+    if api_stale; then
+      info "API is serving older code than the tree; restarting it"
+      pkill -f "uvicorn api.main" 2>/dev/null
+      sleep 1
+    else
+      green "API already up on :${API_PORT}"
+      return 0
+    fi
   fi
   cd "$ROOT/backend-ev-flow" || return 1
   [ -f .env ] || { red ".env missing; cp .env.example .env and set JWT_SECRET"; return 1; }
   # --env-file loads .env, but python-dotenv does NOT override variables that
   # are already exported, so the DATABASE_URL below wins over the file's.
+  # Stamped before launch, not after: a file edited while uvicorn is booting is
+  # not in the process that comes up, and must still count as newer.
+  touch "$RUN_DIR/api.started"
   DATABASE_URL="${DATABASE_URL:-$DEFAULT_DB}" \
     nohup python3 -m uvicorn api.main:app --env-file .env \
       --host 127.0.0.1 --port "$API_PORT" >"$API_LOG" 2>&1 &
@@ -195,6 +216,28 @@ assert d["payback_years"] is None and d["breaks_even"] is False, \
 assert d["net_at_horizon_idr"] < 0, "the loss must still be reported"
 print(f"     {'POST /planner/roi (loss case)':<38}200  payback null, as it must be")
 PY
+
+  # The prescriptive model. That a number comes back is not the check: the whole
+  # point of this model is that it can rank a cell nobody has built on, so what
+  # is asserted is that the ORDER comes from it and that the scenario caveat
+  # travels with it. If utilisation_model is null the API loaded no artifact and
+  # is quietly answering with the descriptive model alone -- which ranks existing
+  # stations first and looks entirely normal.
+  body=$(curl -s --max-time 60 -H "$A" "$base/api/v1/planner/predict.area?lat=-6.175&lon=106.827&radius_km=3&top=50")
+  python3 - "$body" <<'UTIL' || fail=1
+import json, sys
+d = json.loads(sys.argv[1])
+m = d.get("utilisation_model")
+assert m, "utilisation_model is null: no artifact loaded, so this is the descriptive model alone"
+u = [p["sessions_per_connector_day"] for p in d["predictions"]]
+assert u, "no predictions came back"
+assert all(v is not None for v in u), "some cells returned without a utilisation prediction"
+assert u == sorted(u, reverse=True), "predictions are not ordered by predicted utilisation"
+assert "SCENARIO" in m["label"], "the scenario caveat is missing from the provenance"
+print(f"     {'GET  /planner/predict.area':<38}200  top {u[0]:.2f} sessions/conn/day, "
+      f"{m['window_days']}d window, dose-response {m['dose_response']:.2f}, "
+      f"spec {m['reference_spec']['connectors']:.0f}x{m['reference_spec']['avg_kw']:.0f}kW")
+UTIL
 
   # Rejections. These are the contract, not decoration.
   check "  reject unknown metric" 422 \

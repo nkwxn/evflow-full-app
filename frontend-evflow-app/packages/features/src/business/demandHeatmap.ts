@@ -1,7 +1,7 @@
 import type { LeafletMapMarker, LeafletPointLayer, LeafletPolygonLayer, MapViewport } from '@evflow/ui';
 
 export type DemandPriority = 'high' | 'moderate' | 'low';
-export type PlannerLayerKey = 'optimalSites' | 'demandHeatmap' | 'existingSpklus' | 'commercialPois' | 'populationDensity' | 'landUse' | 'modelPrediction' | 'liveTraffic';
+export type PlannerLayerKey = 'optimalSites' | 'demandHeatmap' | 'existingSpklus' | 'commercialPois' | 'populationDensity' | 'landUse' | 'liveTraffic';
 export type PlannerLayerState = Record<PlannerLayerKey, boolean>;
 export type OptimalSite = { id: string; latitude: number; longitude: number; score: number; district: string };
 
@@ -10,7 +10,7 @@ export const defaultPlannerLayers: PlannerLayerState = {
   // across the whole of Jabodetabek, which states an analysis nobody asked for
   // before the planner has said which place they care about. They choose an
   // area first, then turn on what they want to see over it.
-  optimalSites: false, demandHeatmap: false, existingSpklus: false, commercialPois: false, populationDensity: false, landUse: false, modelPrediction: false, liveTraffic: false
+  optimalSites: false, demandHeatmap: false, existingSpklus: false, commercialPois: false, populationDensity: false, landUse: false, liveTraffic: false
 };
 
 export const jakartaViewport: MapViewport = { north: -6.06, south: -6.38, east: 106.98, west: 106.62, zoom: 11 };
@@ -46,7 +46,6 @@ export function plannerPolygons(
     commercialPois?: LeafletPolygonLayer[];
     demandHeatmap?: LeafletPolygonLayer[];
     landUse?: LeafletPolygonLayer[];
-    modelPrediction?: LeafletPolygonLayer[];
     populationDensity?: LeafletPolygonLayer[];
   } = {}
 ): LeafletPolygonLayer[] {
@@ -54,7 +53,6 @@ export function plannerPolygons(
     ...(layers.landUse ? overlays.landUse ?? [] : []),
     ...(layers.populationDensity ? overlays.populationDensity ?? [] : []),
     ...(layers.demandHeatmap ? overlays.demandHeatmap ?? demandHeatmapPolygons() : []),
-    ...(layers.modelPrediction ? overlays.modelPrediction ?? [] : []),
     ...(layers.commercialPois ? overlays.commercialPois ?? [] : [])
   ];
 }

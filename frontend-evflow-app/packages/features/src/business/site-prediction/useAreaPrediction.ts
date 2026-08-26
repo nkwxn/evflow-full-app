@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { fetchPlannerAreaPrediction, fetchPlannerCells } from '@evflow/shared';
 import type {
   PlannerAreaDistributionApi,
-  PlannerModelInfoApi
+  PlannerModelInfoApi, PlannerUtilisationInfoApi
 } from '@evflow/shared';
 import type { LeafletPolygonLayer } from '@evflow/ui';
 import { plannerPredictionsToPolygons } from '../plannerApiAdapters';
@@ -15,13 +15,15 @@ export type AreaPredictionState = {
   drawnCells: number;
   distribution: PlannerAreaDistributionApi | null;
   model: PlannerModelInfoApi | null;
+  /** Prescriptive-model provenance. Null when no artifact is loaded. */
+  utilisationModel: PlannerUtilisationInfoApi | null;
   interpretation: string | null;
   loading: boolean;
   error: string | null;
 };
 
 const idle: AreaPredictionState = {
-  polygons: [], drawnCells: 0, distribution: null, model: null,
+  polygons: [], drawnCells: 0, distribution: null, model: null, utilisationModel: null,
   interpretation: null, loading: false, error: null
 };
 
@@ -95,6 +97,7 @@ export function useAreaPrediction(
             drawnCells: prediction.predictions.length,
             distribution: prediction.distribution,
             model: prediction.model,
+            utilisationModel: prediction.utilisation_model,
             interpretation: prediction.interpretation,
             loading: false,
             error: null

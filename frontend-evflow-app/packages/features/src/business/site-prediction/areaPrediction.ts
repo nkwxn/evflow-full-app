@@ -59,12 +59,32 @@ export const BUILT_COLOUR = '#64748B';
  * empty cell anywhere near Sudirman, and calling it red would state a
  * recommendation the model cannot make.
  */
+/**
+ * The bands, in one place, because the legend renders from this array and the
+ * fill is chosen from it.
+ *
+ * They were separate: three hex values in a colour function and three more in
+ * whatever explained them. A legend that drifts from the shading it describes is
+ * worse than no legend, because it is believed.
+ *
+ * Thresholds are fractions of the REGIONAL CEILING, not of 1.0. The best unbuilt
+ * cell in Jabodetabek reaches about 0.31, so a scale anchored at 1.0 would paint
+ * the entire grid pale and say nothing. `label` is written as a share of that
+ * best for the same reason the card says "69% of the highest any unbuilt cell
+ * reaches": 0.21 reads as poor against 1.0 and as near the top against 0.31.
+ */
+export const RESEMBLANCE_BANDS = [
+  { colour: '#7C3AED', floor: 0.66, label: '66-100% of the regional best' },
+  { colour: '#A78BFA', floor: 0.33, label: '33-66%' },
+  { colour: '#DDD6FE', floor: 0, label: 'under 33%' }
+] as const;
+
 export function resemblanceColour(probability: number, ceiling: number | null): string {
   const top = Math.max(ceiling ?? 0, MIN_SCALE_DIVISOR);
   const t = Math.min(Math.max(probability, 0), top) / top;
-  if (t >= 0.66) return '#7C3AED';
-  if (t >= 0.33) return '#A78BFA';
-  return '#DDD6FE';
+  // Ordered high to low, so the first floor cleared is the right band.
+  return (RESEMBLANCE_BANDS.find((band) => t >= band.floor) ?? RESEMBLANCE_BANDS[
+    RESEMBLANCE_BANDS.length - 1]).colour;
 }
 
 /** Opacity that keeps a near-zero cell visible without implying a reading. */

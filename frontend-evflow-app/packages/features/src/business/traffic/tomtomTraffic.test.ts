@@ -58,6 +58,22 @@ describe('the overlay', () => {
   it('stops at the base map zoom so it never floats over blank tiles', () => {
     expect(trafficOverlay('abc123')!.maxZoom).toBe(19);
   });
+
+  it('asks for thinner lines than TomTom draws by default', () => {
+    // The tiles are raster, so width cannot be set in CSS or Leaflet -- this
+    // parameter is the only handle. TomTom's default is 10, which at Jakarta's
+    // road density paints bands wide enough to bury the demand cells and site
+    // markers this layer is meant to sit behind.
+    //
+    // Verified against the live API on tile 14/13053/8473: thickness=10 is
+    // byte-identical to omitting the parameter (27,605 bytes), 4 returns 25,430,
+    // and 99 is rejected with HTTP 400 -- so the parameter is real and
+    // validated, not silently ignored.
+    const url = trafficOverlay('abc123')!.url;
+    const thickness = Number(new URL(url).searchParams.get('thickness'));
+    expect(thickness).toBeGreaterThan(0);
+    expect(thickness).toBeLessThan(10);
+  });
 });
 
 describe('the legend', () => {

@@ -171,6 +171,23 @@ describe('on-demand area prediction', () => {
     expect(options.headers).toMatchObject(auth);
   });
 
+  it('sends a bbox instead when the caller gives one, and never both', async () => {
+    // The Demand Heatmap layer covers the viewport, so it asks by rectangle. The
+    // endpoint answers 422 if a circle and a rectangle arrive together, so the
+    // caller's choice is passed through rather than merged -- and a stray lat
+    // would turn a working layer into a 422 that only appears when panning.
+    const fetcher = fetcherReturning(response(body));
+    await fetchPlannerAreaPrediction(
+      { bbox: '106.78,-6.22,106.87,-6.13', limit: 10_000, top: 10_000 }, fetcher);
+    const parsed = new URL((fetcher as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0]);
+    expect(parsed.searchParams.get('bbox')).toBe('106.78,-6.22,106.87,-6.13');
+    expect(parsed.searchParams.get('lat')).toBeNull();
+    expect(parsed.searchParams.get('lon')).toBeNull();
+    expect(parsed.searchParams.get('radius_km')).toBeNull();
+    expect(parsed.searchParams.get('limit')).toBe('10000');
+    expect(parsed.searchParams.get('top')).toBe('10000');
+  });
+
   it('is a GET, because a place is a question and not a submission', async () => {
     const fetcher = fetcherReturning(response(body));
     await fetchPlannerAreaPrediction({ latitude: 1, longitude: 2, radiusKm: 1 }, fetcher);

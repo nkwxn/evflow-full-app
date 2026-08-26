@@ -22,8 +22,14 @@ import {
   type LeafletPolygonLayer,
   type MapViewport
 } from '@evflow/ui';
-import { fetchPlannerCandidates, fetchPlannerCells, fetchPlannerPois, fetchStations } from '@evflow/shared';
+import {
+  fetchPlannerAreaPrediction, fetchPlannerCandidates, fetchPlannerCells, fetchPlannerLandUse,
+  fetchPlannerPois, fetchStations
+} from '@evflow/shared';
+import { PLANNER_LANDUSE_CLASSES } from '@evflow/shared';
+import type { PlannerLandUseResponse } from '@evflow/shared';
 import { AreaPredictionCard } from './site-prediction/AreaPredictionCard';
+import { BUILT_COLOUR, RESEMBLANCE_BANDS } from './site-prediction/areaPrediction';
 import { useAreaPrediction } from './site-prediction/useAreaPrediction';
 import { RADIUS_CHOICES } from './site-prediction/areaPrediction';
 import { plannerConnectionLines } from './site-connection/connectionLines';
@@ -55,7 +61,6 @@ import {
   currentLocationIcon,
   heatmapLayerIcon,
   landUseIcon,
-  modelPredictionIcon,
   trafficIcon,
   layersIcon,
   optimalSiteIcon,
@@ -69,7 +74,6 @@ import {
   plannerMarkers,
   poiPoints,
   plannerPolygons,
-  prioritySemanticCategory,
   type OptimalSite,
   type PlannerLayerKey,
   type PlannerLayerState
@@ -78,7 +82,9 @@ import {
   plannerCandidateToOptimalSite,
   plannerCellsToMetricPolygons,
   plannerCellsToPolygons,
-  plannerLandUseToPolygons,
+  plannerPredictionsToPolygons,
+  landUseColors,
+  plannerLandUsePolygons,
   plannerStationsToMarkers,
   plannerViewportBbox,
   type PlannerLandUseMetric
@@ -124,12 +130,11 @@ const mockLocations: Record<string, Coordinates> = {
 
 const layerRows: LayerRow[] = [
   { key: 'optimalSites', icon: optimalSiteIcon, title: 'Optimal Sites', subtitle: 'Tap a place · weighted criteria' },
-  { key: 'demandHeatmap', icon: heatmapLayerIcon, title: 'Demand Heatmap', subtitle: 'Weighted score' },
+  { key: 'demandHeatmap', icon: heatmapLayerIcon, title: 'Demand Heatmap', subtitle: 'Trained model' },
   { key: 'existingSpklus', icon: spkluLayerIcon, title: 'Existing SPKLUs', subtitle: 'Active Network' },
   { key: 'commercialPois', icon: commercialPoiIcon, title: 'Commercial POIs', subtitle: 'Activity Density' },
   { key: 'populationDensity', icon: populationIcon, title: 'Population Density', subtitle: 'Census Data' },
   { key: 'landUse', icon: landUseIcon, title: 'Land Use', subtitle: 'Grid & Land Use' },
-  { key: 'modelPrediction', icon: modelPredictionIcon, title: 'Model Prediction', subtitle: 'Tap a place · model check' },
   { key: 'liveTraffic', icon: trafficIcon, title: 'Live Traffic', subtitle: 'TomTom · real-time' }
 ];
 
@@ -156,6 +161,10 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
   // failed request reads exactly like a real recommendation.
   const [sites, setSites] = useState<OptimalSite[]>([]);
   const [demandPolygons, setDemandPolygons] = useState(demandHeatmapPolygons);
+  // Carried out of the fetch so the legend is drawn from the same numbers the
+  // cells were painted with. Read from a constant, the two would drift apart the
+  // first time the model was retrained and the ceiling moved.
+  const [demandScale, setDemandScale] = useState<{ ceiling: number | null; built: number } | null>(null);
   const [existingSpkluMarkers, setExistingSpkluMarkers] = useState<LeafletMapMarker[]>([]);
   const [commercialPoiPoints, setCommercialPoiPoints] = useState<LeafletPointLayer[]>([]);
   const [populationPolygons, setPopulationPolygons] = useState<LeafletPolygonLayer[]>([]);
@@ -165,6 +174,9 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
   // way this layer could still mislead.
   const [populationScale, setPopulationScale] = useState<DensityScale | null>(null);
   const [landUsePolygons, setLandUsePolygons] = useState<LeafletPolygonLayer[]>([]);
+  // Kept so the legend lists the classes actually on screen and can say what
+  // blank ground means. Cleared with the layer, like populationScale.
+  const [landUseCoverage, setLandUseCoverage] = useState<PlannerLandUseResponse | null>(null);
   const [layerStatus, setLayerStatus] = useState<string | null>(null);
   const [sheetMode, setSheetMode] = useState<PlannerSheetMode>('layers');
   const [selectedSite, setSelectedSite] = useState<OptimalSite | null>(null);
@@ -221,7 +233,7 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
     : response), [analysisCentre, analysisRadiusKm]);
 
   const areaPrediction = useAreaPrediction(
-    analysisCentre, analysisRadiusKm, layers.modelPrediction && !selectedSite);
+    analysisCentre, analysisRadiusKm, layers.demandHeatmap && !selectedSite);
   const selectedSiteId = selectedSite?.id ?? null;
   const detail = useSiteFeasibilityDetail(selectedSiteId, { onMessage: setStatus });
   const expandedRef = useRef(expanded);
@@ -295,15 +307,35 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
     };
   }, [analysisCentre, analysisRadiusKm, layers.optimalSites, selectedSite]);
 
+  // The heatmap is the MODEL's answer now, not the weighted criteria score.
+  //
+  // It used to colour cells by score = 0.35*coverage + 0.35*population +
+  // 0.20*activity + 0.10*roads, a formula with no learning in it. The same
+  // endpoint the Model Prediction layer uses takes a bbox as well as a circle,
+  // so the viewport-wide behaviour survives the swap: pan and the whole visible
+  // grid is scored, exactly as before.
+  //
+  // Two requests, not one: predict.area returns the values and cells.geojson
+  // returns the geometry to paint them on. The prediction is what changed; the
+  // geometry request is the same one this effect always made.
   useEffect(() => {
     if (!layers.demandHeatmap || selectedSite) return;
 
     const controller = new AbortController();
     setHeatmapUpdating(true);
     const timer = setTimeout(() => {
-      void fetchPlannerCells({ ...layerBounds, limit: 10_000, metric: 'score', signal: controller.signal })
-        .then((response) => {
-          setDemandPolygons(plannerCellsToPolygons(clipCells(response)));
+      const bbox = [layerBounds.west, layerBounds.south,
+                    layerBounds.east, layerBounds.north].join(',');
+      void Promise.all([
+        fetchPlannerAreaPrediction({ bbox, limit: 10_000, top: 10_000, signal: controller.signal }),
+        fetchPlannerCells({ ...layerBounds, limit: 10_000, metric: 'score', signal: controller.signal })
+      ])
+        .then(([prediction, response]) => {
+          setDemandPolygons(plannerPredictionsToPolygons(
+            prediction.predictions, clipCells(response),
+            prediction.distribution.resemblance_ceiling));
+          setDemandScale({ ceiling: prediction.distribution.resemblance_ceiling,
+                           built: prediction.distribution.cells_with_station });
           setStatus(response.truncated
             ? `Planning API: Showing ${response.cells_returned.toLocaleString()} highest-scoring of ${response.cells_in_viewport.toLocaleString()} cells. Zoom in for full coverage.`
             : null);
@@ -402,22 +434,33 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
     });
   }, [clipCells, layerBounds, layers.populationDensity, selectedSite]);
 
+  // Shapes, not shaded squares.
+  //
+  // This used to fetch four per-cell SHARE layers and blend them into one tint
+  // per 500 m cell, so a city block and the road beside it came out the same
+  // colour and no legend could name what a colour meant. The polygons those
+  // shares were measured from now live in planning_landuse, so the layer draws
+  // the land itself.
   useEffect(() => {
-    if (!layers.landUse || selectedSite) return;
+    if (!layers.landUse || selectedSite) {
+      setLandUseCoverage(null);
+      return undefined;
+    }
 
     const controller = new AbortController();
     const timer = setTimeout(() => {
-      const metrics: PlannerLandUseMetric[] = ['residential', 'commercial', 'retail', 'industrial'];
-      void Promise.all(metrics.map(async (metric) => [
-        metric,
-        clipCells(await fetchPlannerCells({ ...layerBounds, limit: 10_000, metric, signal: controller.signal }))
-      ] as const))
-        .then((responses) => {
-          setLandUsePolygons(plannerLandUseToPolygons(Object.fromEntries(responses)));
-          setLayerStatus(null);
+      void fetchPlannerLandUse({ ...layerBounds, limit: 6_000, signal: controller.signal })
+        .then((response) => {
+          setLandUsePolygons(plannerLandUsePolygons(response));
+          setLandUseCoverage(response);
+          setLayerStatus(response.truncated
+            ? `Land use: showing the ${response.polygons_returned.toLocaleString()} largest of `
+              + `${response.polygons_in_viewport.toLocaleString()} polygons. Zoom in for the rest.`
+            : null);
         })
-        .catch(() => {
-          if (!controller.signal.aborted) setLayerStatus('Land-use coverage could not be loaded for this area.');
+        .catch((error: unknown) => {
+          if (controller.signal.aborted || (error as Error)?.name === 'AbortError') return;
+          setLayerStatus('Land-use coverage could not be loaded for this area.');
         });
     }, 280);
 
@@ -560,7 +603,6 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
   const polygons = useMemo(() => plannerPolygons(layers, {
     demandHeatmap: demandPolygons,
     landUse: landUsePolygons,
-    modelPrediction: areaPrediction.polygons,
     populationDensity: populationPolygons
   }), [areaPrediction.polygons, demandPolygons, landUsePolygons, layers, populationPolygons]);
   const expandedSheetHeight = getExpandedSheetHeight(height, topInset, bottomOffset);
@@ -678,7 +720,16 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
               title="PEOPLE PER CELL"
             />
           ) : null}
-          {layers.demandHeatmap && !expanded ? <DemandHeatmapLegend /> : null}
+          {layers.landUse && landUseCoverage ? (
+            <LandUseLegend coverage={landUseCoverage} />
+          ) : null}
+          {layers.demandHeatmap && !expanded && demandScale ? (
+            <ModelPredictionLegend
+              ceiling={demandScale.ceiling}
+              builtCells={demandScale.built}
+              title="DEMAND HEATMAP"
+            />
+          ) : null}
         </View>
       ) : null}
 
@@ -774,7 +825,7 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
                     Tap the map to place the circle. Until then every layer follows the view.
                   </Text>
                 )}
-                {layers.modelPrediction ? (
+                {layers.demandHeatmap ? (
                 <AreaPredictionCard
                   distribution={areaPrediction.distribution}
                   drawnCells={areaPrediction.drawnCells}
@@ -782,6 +833,7 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
                   interpretation={areaPrediction.interpretation}
                   loading={areaPrediction.loading}
                   model={areaPrediction.model}
+                  utilisationModel={areaPrediction.utilisationModel}
                   radiusKm={analysisRadiusKm}
                 />
                 ) : null}
@@ -900,6 +952,103 @@ function TrafficLegend() {
   );
 }
 
+/**
+ * What the purple squares mean, which nothing on screen said before.
+ *
+ * Population Density and Live Traffic both carried legends; the model's shading
+ * did not, and it is the layer whose colours are least guessable. Until commit
+ * f72afdd this layer and Population Density were both #7C3AED, so with the two
+ * on there was no way to tell which shading was which -- a planner asked exactly
+ * that, and was right to.
+ *
+ * THE TWO THINGS THIS HAS TO SEPARATE
+ *
+ * The shading is RESEMBLANCE: how much a cell looks like the ones that already
+ * hold a station. The numbered circles are OPTIMAL SITES, the weighted criteria
+ * score, which is a different quantity and partly an opposing one -- coverage is
+ * 35% of it and rewards being FAR from existing stations, while resemblance
+ * rewards looking like where they already are. A high-scoring site on a pale
+ * cell is the normal case, not a contradiction, and without this note it reads
+ * as the map disagreeing with itself.
+ *
+ * Built cells are named rather than left as an unexplained fourth colour: they
+ * are the cells the model scores highest, so a reader who assumes slate is "very
+ * good" has inverted the one thing this layer must not be read as.
+ */
+function ModelPredictionLegend({ ceiling, builtCells, title = 'MODEL PREDICTION' }: {
+  ceiling: number | null;
+  builtCells: number;
+  title?: string;
+}) {
+  return (
+    <View style={plannerStyles.legend}>
+      <Text style={plannerStyles.legendTitle}>{title}</Text>
+      {RESEMBLANCE_BANDS.map((band) => (
+        <View key={band.colour} style={plannerStyles.legendRow}>
+          <View style={[plannerStyles.legendSwatch, { backgroundColor: band.colour }]} />
+          <Text style={plannerStyles.legendText}>{band.label}</Text>
+        </View>
+      ))}
+      <View style={plannerStyles.legendRow}>
+        <View style={[plannerStyles.legendSwatch, { backgroundColor: BUILT_COLOUR }]} />
+        <Text style={plannerStyles.legendText}>
+          {builtCells > 0 ? `${builtCells.toLocaleString()} already built` : 'already built'}
+        </Text>
+      </View>
+      <Text style={plannerStyles.legendNote}>
+        {ceiling === null
+          // No ceiling means no denominator, and a share of an unknown best is
+          // not a number to print. Say the scale is unanchored instead.
+          ? 'Resembles cells that already have a station. Scale unanchored this time.'
+          : `Resembles cells that already have a station — not a recommendation. `
+            + `"Regional best" is ${ceiling.toFixed(2)}, the highest any unbuilt cell in `
+            + `Jabodetabek reaches. Numbered circles are Optimal Sites, a different score.`}
+      </Text>
+    </View>
+  );
+}
+
+/**
+ * A list, not a gradient, because land use is a category and not a quantity.
+ *
+ * The previous layer shaded each 500 m cell by four blended shares, so its
+ * colours could not be listed: a square meant "mostly residential, a bit
+ * commercial" and every square meant something slightly different. These are
+ * polygons of exactly one class, so the legend is four rows and each row is
+ * true everywhere on the map.
+ *
+ * It lists only the classes PRESENT in this viewport. A legend naming four
+ * classes over a screen showing two invites the reader to hunt for colours that
+ * are not there.
+ *
+ * The coverage note is not decoration. Measured 2026-08-25, half of Jabodetabek
+ * has no land-use polygon of any class, so blank ground means UNMAPPED, and a
+ * planner reading it as open land would be reading the absence of a volunteer's
+ * work as a fact about the city.
+ */
+function LandUseLegend({ coverage }: { coverage: PlannerLandUseResponse }) {
+  const present = PLANNER_LANDUSE_CLASSES.filter((c) => coverage.classes.includes(c));
+  if (!present.length) return null;
+  return (
+    <View style={plannerStyles.legend}>
+      <Text style={plannerStyles.legendTitle}>LAND USE</Text>
+      {present.map((cls) => (
+        <View key={cls} style={plannerStyles.legendRow}>
+          <View style={[plannerStyles.legendSwatch,
+                        { backgroundColor: landUseColors[cls] }]} />
+          <Text style={plannerStyles.legendText}>
+            {cls.charAt(0).toUpperCase() + cls.slice(1)}
+          </Text>
+        </View>
+      ))}
+      <Text style={plannerStyles.legendNote}>
+        {coverage.polygons_returned.toLocaleString()} polygons drawn. Unshaded ground is
+        unmapped in OpenStreetMap, not empty.
+      </Text>
+    </View>
+  );
+}
+
 function DensityLegend({ colour, scale, title }: {
   colour: string;
   scale: DensityScale;
@@ -921,23 +1070,6 @@ function DensityLegend({ colour, scale, title }: {
   );
 }
 
-function DemandHeatmapLegend() {
-  return (
-    <View style={plannerStyles.legend}>
-      {(['high', 'moderate', 'low'] as const).map((priority) => (
-        <View key={priority} style={plannerStyles.legendRow}>
-          <View
-            style={[
-              plannerStyles.legendDot,
-              { backgroundColor: priority === 'high' ? '#EF4444' : priority === 'moderate' ? '#F59E0B' : '#10B981' }
-            ]}
-          />
-          <Text style={plannerStyles.legendText}>{prioritySemanticCategory(priority)}</Text>
-        </View>
-      ))}
-    </View>
-  );
-}
 
 function LayerToggleRow({ enabled, onToggle, row }: { enabled: boolean; onToggle: () => void; row: LayerRow }) {
   return (

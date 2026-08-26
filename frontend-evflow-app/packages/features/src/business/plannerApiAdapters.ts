@@ -1,4 +1,5 @@
 import type {
+  PlannerLandUseResponse,
   PlannerCandidateApi,
   PlannerPredictionApi,
   PlannerCellsGeoJsonResponse,
@@ -18,12 +19,57 @@ const priorityColors: Record<DemandPriority, string> = {
 
 export type PlannerLandUseMetric = 'commercial' | 'industrial' | 'residential' | 'retail';
 
-const landUseColors: Record<PlannerLandUseMetric, string> = {
+/**
+ * One colour per class, opaque enough to read as a category.
+ *
+ * The old layer tinted 500 m squares by a blended share, so a colour meant
+ * "mostly residential, a bit commercial" and no legend could name it. These are
+ * polygons of exactly one class each, so a colour means one thing and the
+ * legend is a list rather than a gradient.
+ *
+ * Chosen apart from every other layer on this map: the heatmap is purple, live
+ * traffic is red/amber/green, population is magenta, built cells are slate. Land
+ * use had to avoid all four and still separate four classes from each other.
+ */
+export const landUseColors: Record<PlannerLandUseMetric, string> = {
   commercial: '#0EA5E9',
-  industrial: '#64748B',
-  residential: '#8B5CF6',
+  industrial: '#78716C',
+  residential: '#FCD34D',
   retail: '#F97316'
 };
+
+/**
+ * Filled, not tinted.
+ *
+ * A share-shaded square had to stay faint or it hid the base map underneath.
+ * A polygon that follows a real boundary can carry colour, and needs to: the
+ * shapes are the information now.
+ */
+const LAND_USE_FILL_OPACITY = 0.55;
+
+export function plannerLandUsePolygons(
+  response: PlannerLandUseResponse
+): LeafletPolygonLayer[] {
+  return response.features.flatMap((feature, index) => {
+    let geometry: PlannerCellsGeoJsonResponse['features'][number]['geometry'];
+    try {
+      geometry = JSON.parse(feature.geojson);
+    } catch {
+      // A polygon the server could not serialise is one polygon, not a reason to
+      // drop the layer. Skipping it leaves a hole; failing loses the city.
+      return [];
+    }
+    const colour = landUseColors[feature.landuse as PlannerLandUseMetric] ?? '#94A3B8';
+    return geometryOuterRings(geometry).map((ring, ringIndex) => ({
+      id: `land-use-${index}-${ringIndex}`,
+      coordinates: toLeafletCoordinates(ring),
+      fillColor: colour,
+      fillOpacity: LAND_USE_FILL_OPACITY,
+      color: colour,
+      weight: 0.3
+    }));
+  });
+}
 
 export function plannerCandidateToOptimalSite(candidate: PlannerCandidateApi): OptimalSite {
   return {
@@ -96,36 +142,6 @@ export function plannerCellsToMetricPolygons(
   return { polygons, scale };
 }
 
-export function plannerLandUseToPolygons(
-  responses: Partial<Record<PlannerLandUseMetric, PlannerCellsGeoJsonResponse>>
-): LeafletPolygonLayer[] {
-  const cells = new Map<string, {
-    feature: PlannerCellsGeoJsonResponse['features'][number];
-    metric: PlannerLandUseMetric;
-    value: number;
-  }>();
-
-  (Object.entries(responses) as Array<[PlannerLandUseMetric, PlannerCellsGeoJsonResponse]>).forEach(([metric, response]) => {
-    response.features.forEach((feature) => {
-      const value = feature.properties.value ?? 0;
-      const existing = cells.get(feature.properties.cell_id);
-      if (value > 0 && (!existing || value > existing.value)) {
-        cells.set(feature.properties.cell_id, { feature, metric, value });
-      }
-    });
-  });
-
-  return Array.from(cells.values()).flatMap(({ feature, metric, value }) =>
-    geometryOuterRings(feature.geometry).map((ring, index) => ({
-      id: `land-use-${feature.properties.cell_id}-${index}`,
-      coordinates: toLeafletCoordinates(ring),
-      fillColor: landUseColors[metric],
-      fillOpacity: 0.12 + Math.min(value, 1) * 0.26,
-      color: landUseColors[metric],
-      weight: 0.4
-    }))
-  );
-}
 
 /**
  * Model probabilities drawn on the cells they belong to.

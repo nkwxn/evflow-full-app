@@ -7,6 +7,7 @@ import {
   distributionSummary,
   drawTruncationNote,
   resemblanceCaption,
+  RESEMBLANCE_BANDS,
   resemblanceColour,
   resemblanceOpacity,
   truncationWarning
@@ -23,6 +24,11 @@ function distribution(over: Partial<PlannerAreaDistributionApi> = {}): PlannerAr
     mean_probability: 0.08, median_probability: 0.05, max_probability: 0.26,
     // Supplied by the API now, measured at 0.305 across all 26,334 unbuilt cells.
     resemblance_ceiling: 0.31, resemblance_ceiling_cells: 26_334,
+    // The prescriptive figures. About 5 sessions per connector per day is what
+    // the model returns for central Jakarta at the 2-connector, 22 kW spec.
+    mean_sessions_per_connector_day: 5.49,
+    median_sessions_per_connector_day: 5.4,
+    max_sessions_per_connector_day: 6.86,
     ...over
   };
 }
@@ -174,5 +180,32 @@ describe('request limits', () => {
 
   it('offers radii small enough to describe one place', () => {
     expect(RADIUS_CHOICES.every((km) => km > 0 && km <= 25)).toBe(true);
+  });
+});
+
+describe('the legend renders from the same bands the fill is chosen from', () => {
+  it('keeps them ordered high to low, which resemblanceColour relies on', () => {
+    // The colour is picked with .find on the first floor cleared. Reorder this
+    // array and every cell gets the wrong band, with nothing to catch it: the
+    // map still renders, in colours that mean something else.
+    const floors = RESEMBLANCE_BANDS.map((b) => b.floor);
+    expect(floors).toEqual([...floors].sort((a, b) => b - a));
+    expect(floors[floors.length - 1]).toBe(0);
+  });
+
+  it('gives each band its own colour, so the legend has no duplicate rows', () => {
+    const colours = new Set(RESEMBLANCE_BANDS.map((b) => b.colour));
+    expect(colours.size).toBe(RESEMBLANCE_BANDS.length);
+  });
+
+  it('paints a cell at the ceiling in the band the legend calls the top one', () => {
+    // Ties the legend to the fill at the one value a reader is most likely to
+    // check: the best cell on screen.
+    expect(resemblanceColour(CEILING, CEILING)).toBe(RESEMBLANCE_BANDS[0].colour);
+  });
+
+  it('paints a near-zero cell in the band the legend calls the bottom one', () => {
+    expect(resemblanceColour(0.001, CEILING))
+      .toBe(RESEMBLANCE_BANDS[RESEMBLANCE_BANDS.length - 1].colour);
   });
 });

@@ -1,5 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
-import type { PlannerAreaDistributionApi, PlannerModelInfoApi } from '@evflow/shared';
+import type {
+  PlannerAreaDistributionApi, PlannerModelInfoApi, PlannerUtilisationInfoApi
+} from '@evflow/shared';
 import {
   BUILT_COLOUR,
   distributionSummary,
@@ -14,6 +16,8 @@ type Props = {
   drawnCells: number;
   radiusKm: number;
   model: PlannerModelInfoApi | null;
+  /** The prescriptive model. Null when no utilisation artifact is loaded. */
+  utilisationModel: PlannerUtilisationInfoApi | null;
   interpretation: string | null;
   loading: boolean;
   error: string | null;
@@ -46,7 +50,7 @@ type Props = {
  * on", which is worth reading beside it and never instead of it.
  */
 export function AreaPredictionCard({
-  distribution, drawnCells, radiusKm, model, interpretation, loading, error
+  distribution, drawnCells, radiusKm, model, utilisationModel, interpretation, loading, error
 }: Props) {
   if (loading) {
     return (
@@ -98,6 +102,30 @@ export function AreaPredictionCard({
         </View>
       ) : null}
 
+      {utilisationModel && distribution.median_sessions_per_connector_day !== null ? (
+        <>
+          <View style={styles.statRow}>
+            <Stat
+              label="BUSIEST UNBUILT"
+              value={distribution.max_sessions_per_connector_day}
+              digits={1}
+            />
+            <Stat
+              label="TYPICAL UNBUILT"
+              value={distribution.median_sessions_per_connector_day}
+              digits={1}
+            />
+          </View>
+          <Text style={styles.scaleNote}>
+            Simulated sessions per connector per day, every cell scored at the same{' '}
+            {formatSpec(utilisationModel.reference_spec)} site so what differs is the place
+            and not the hardware. A SCENARIO recovered from the simulation&rsquo;s own demand
+            assumption, not a forecast. Across the whole grid this model separates cells by
+            about 1.7x, so read two cells as close unless they are far apart.
+          </Text>
+        </>
+      ) : null}
+
       {best !== null ? (
         <>
           <View style={styles.statRow}>
@@ -116,22 +144,60 @@ export function AreaPredictionCard({
 
       {model ? (
         <Text style={styles.provenance}>
-          {model.label} · trained on {model.n_samples.toLocaleString()} cells
+          Resemblance: {model.label} · trained on {model.n_samples.toLocaleString()} cells
           ({model.n_positive.toLocaleString()} with a station) · {model.n_features} features
           · scored on request, not precomputed
+        </Text>
+      ) : null}
+
+      {/*
+        The prescriptive model gets its own line rather than sharing the one
+        above. They were trained on different targets over different windows, and
+        a single provenance line describing one of them read as if it described
+        the whole card — which is exactly how the screen came to say "station
+        presence (descriptive)" underneath a utilisation number.
+      */}
+      {utilisationModel ? (
+        <Text style={styles.provenance}>
+          Utilisation: {utilisationModel.label} · {utilisationModel.n_samples.toLocaleString()}{' '}
+          cells over {utilisationModel.window_days}{' '}
+          {utilisationModel.window_days === 1 ? 'day' : 'days'} of demand-weighted simulation
+          · dose-response {utilisationModel.dose_response.toFixed(2)}x
+          {utilisationModel.counting_noise_pct !== null
+            ? ` · ±${Math.round(utilisationModel.counting_noise_pct)}% counting noise`
+            : ''}
         </Text>
       ) : null}
     </View>
   );
 }
 
-function Stat({ label, value }: { label: string; value: number | null }) {
+/**
+ * Reference hardware as a phrase a planner reads, e.g. "2-connector, 22 kW".
+ *
+ * The spec travels with every response because moving it moves every number at
+ * once: charger power carries most of what decides how many sessions a connector
+ * turns over. Printing it beside the figure is what stops two screenshots taken
+ * at different specs from being compared as if they were the same measurement.
+ */
+function formatSpec(spec: Record<string, number>): string {
+  const connectors = spec.connectors;
+  const kw = spec.avg_kw;
+  if (connectors === undefined || kw === undefined) return 'reference';
+  return `${connectors.toFixed(0)}-connector, ${kw.toFixed(0)} kW`;
+}
+
+function Stat({ label, value, digits = 2 }:
+  { label: string; value: number | null; digits?: number }) {
   return (
     <View style={styles.stat}>
       <Text style={styles.statLabel}>{label}</Text>
-      {/* Two decimals, not a percentage. A percentage invites comparison with
-          the weighted criteria score, which is a different quantity entirely. */}
-      <Text style={styles.statValue}>{value === null ? '—' : value.toFixed(2)}</Text>
+      {/* Two decimals by default, and never a percentage: a percentage invites
+          comparison with the weighted criteria score, which is a different
+          quantity entirely. Utilisation passes digits=1 because a tenth of a
+          session per connector per day is already past what a 3-day window
+          with ~19% counting noise can resolve. */}
+      <Text style={styles.statValue}>{value === null ? '—' : value.toFixed(digits)}</Text>
     </View>
   );
 }

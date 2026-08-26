@@ -211,7 +211,6 @@ const savedSitesOnlyLayers: PlannerLayerState = {
   existingSpklus: false,
   landUse: false,
   liveTraffic: false,
-  modelPrediction: false,
   optimalSites: true,
   populationDensity: false
 };

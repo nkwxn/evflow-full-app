@@ -324,6 +324,56 @@ export type PlannerModelInfoApi = {
   n_features: number;
 };
 
+/**
+ * Provenance for the PRESCRIPTIVE model, which answers a different question
+ * from PlannerModelInfoApi above.
+ *
+ * That one scores how much a cell resembles the ones that already hold a
+ * station, and its 500 highest cells are 100% cells that already do — so it
+ * cannot rank a place nobody has built on. This one predicts how busy a
+ * connector at a place would be, and can.
+ *
+ * It is a SCENARIO, not a forecast. Every session it learned from is simulation
+ * output, and that simulation distributes demand by a formula we wrote:
+ * 0.53·rank(population) + 0.30·rank(poi_total) + 0.17·rank(road_nodes). The
+ * model recovers that assumption. Show the caveat wherever the number appears.
+ */
+export type PlannerUtilisationInfoApi = {
+  trained_at: string;
+  n_samples: number;
+  /**
+   * Leave-one-area-out R2 on the training target, hardware variation included.
+   *
+   * NOT a measure of place-ranking skill: 57% of the model's importance is
+   * charger power, which is held constant when cells are compared. What speaks
+   * to ranking is the spread across the grid, 1.66x against the simulation's
+   * own 1.64x.
+   */
+  loco_r2: number;
+  random_split_r2: number;
+  label: string;
+  target_units: string;
+  sklearn_version: string;
+  n_features: number;
+  /**
+   * The hardware every cell is scored at, so what differs between cells is
+   * location and nothing else. Sessions per connector depend heavily on charger
+   * power; comparing cells at different specs compares the chargers.
+   */
+  reference_spec: Record<string, number>;
+  window_start: string;
+  window_end: string;
+  /** Complete local days of demand-weighted simulation behind the fit. */
+  window_days: number;
+  /**
+   * Measured ratio of sessions per connector between the top and bottom
+   * demand-factor quartile. The evidence that the weighting reached the sessions
+   * the model learned from; around 1.0 would mean it did not.
+   */
+  dose_response: number;
+  counting_noise_pct: number | null;
+};
+
 export type PlannerPredictionApi = {
   cell_id: string;
   kota: string | null;
@@ -336,11 +386,22 @@ export type PlannerPredictionApi = {
    * that ignores this flag ranks existing sites as candidates.
    */
   has_station: boolean;
+  /**
+   * Prescriptive model: simulated sessions a connector here would turn over per
+   * day, at the reference spec in PlannerUtilisationInfoApi.
+   *
+   * Null when no utilisation artifact is loaded. A client that gets null must
+   * say so rather than fall back to `probability`, which answers a different
+   * question.
+   */
+  sessions_per_connector_day: number | null;
 };
 
 export type PlannerPredictResponse = {
   predictions: PlannerPredictionApi[];
   model: PlannerModelInfoApi;
+  /** Null when no utilisation artifact is loaded; every prediction's field is null too. */
+  utilisation_model: PlannerUtilisationInfoApi | null;
   /** What a high probability does and does not mean. Show it; do not summarise it. */
   interpretation: string;
   provenance: PlannerProvenance;
@@ -393,17 +454,105 @@ export type PlannerAreaDistributionApi = {
   resemblance_ceiling: number | null;
   /** How many unbuilt cells the ceiling was taken over, so it is auditable. */
   resemblance_ceiling_cells: number | null;
+  /**
+   * Predicted sessions per connector per day among cells WITHOUT a station.
+   *
+   * Unbuilt cells only, for the same reason the resemblance figures are: a
+   * summary that mixes in built cells describes the network that exists rather
+   * than the opportunity being assessed.
+   */
+  mean_sessions_per_connector_day: number | null;
+  median_sessions_per_connector_day: number | null;
+  /**
+   * Highest predicted utilisation among unbuilt cells here.
+   *
+   * Read it against the grid-wide spread of about 1.66x between the 5th and 95th
+   * percentile. This model separates places by well under an order of magnitude,
+   * and a scale implying more overstates the difference between two cells.
+   */
+  max_sessions_per_connector_day: number | null;
 };
 
 export type PlannerPredictAreaResponse = {
   distribution: PlannerAreaDistributionApi;
-  /** Per-cell probabilities, highest first. Trimmed by `top`; the distribution is not. */
+  /**
+   * Per-cell predictions, ordered by predicted utilisation, highest first —
+   * that is the question a planner asks and the only one of the two models that
+   * can answer it for an unbuilt cell. Falls back to resemblance order when no
+   * utilisation artifact is loaded. Trimmed by `top`; the distribution is not.
+   */
   predictions: PlannerPredictionApi[];
   model: PlannerModelInfoApi;
+  /** Provenance for sessions_per_connector_day and for the ordering. */
+  utilisation_model: PlannerUtilisationInfoApi | null;
   /** What a high probability does and does not mean. Show it; do not summarise it. */
   interpretation: string;
   provenance: PlannerProvenance;
 };
+
+/**
+ * The land-use classes the map draws, in the priority order that resolved them.
+ *
+ * They never overlap: every square metre belongs to exactly one, the most
+ * specific that claims it. OSM nests them -- a retail park inside a residential
+ * district -- and unresolved, drawing order would decide what a planner sees.
+ */
+export const PLANNER_LANDUSE_CLASSES = ['retail', 'commercial', 'industrial', 'residential'] as const;
+export type PlannerLandUseClass = (typeof PLANNER_LANDUSE_CLASSES)[number];
+
+export type PlannerLandUseFeatureApi = {
+  landuse: string;
+  /** Polygon geometry as a GeoJSON string, WGS84. Parse once, at the draw site. */
+  geojson: string;
+  area_m2: number;
+};
+
+/**
+ * Land-use polygons for a viewport.
+ *
+ * These are SHAPES, not the lu_*_share columns on planning_cells. The shares say
+ * how much of a 500 m square each class covers -- a model feature and a poor
+ * map, because a city block and the road beside it come out the same colour.
+ * These are the polygons those shares were measured from.
+ */
+export type PlannerLandUseResponse = {
+  features: PlannerLandUseFeatureApi[];
+  polygons_returned: number;
+  /** Counted BEFORE the limit. Compare with polygons_returned before calling the layer complete. */
+  polygons_in_viewport: number;
+  truncated: boolean;
+  classes: string[];
+  /**
+   * Why blank ground is blank. Half of Jabodetabek's cells carry no land-use
+   * polygon at all, so unmapped and empty look identical on screen. Show this
+   * rather than letting a planner read absence as open ground.
+   */
+  coverage_note: string;
+  provenance: PlannerProvenance;
+};
+
+/**
+ * Land-use polygons inside a viewport.
+ *
+ * `simplifyM` is a Douglas-Peucker tolerance in degrees, matched to zoom.
+ * Zoomed out, polygon vertices are finer than a screen pixel and the response,
+ * not the query, is the cost. Zoomed in it must be 0 or boundaries deform.
+ */
+export function fetchPlannerLandUse(
+  request: { west: number; south: number; east: number; north: number;
+             classes?: readonly string[]; limit?: number; simplifyM?: number;
+             signal?: AbortSignal },
+  fetcher: typeof fetch = fetch
+) {
+  const query = new URLSearchParams({
+    bbox: [request.west, request.south, request.east, request.north].join(','),
+    limit: String(request.limit ?? 4000)
+  });
+  if (request.classes?.length) query.set('classes', request.classes.join(','));
+  if (request.simplifyM) query.set('simplify_m', String(request.simplifyM));
+  return plannerRequest<PlannerLandUseResponse>(
+    `/api/v1/planner/landuse.geojson?${query}`, { signal: request.signal }, fetcher);
+}
 
 export type PlannerPoiProperties = {
   /** Present in 'points' mode only. */
@@ -504,17 +653,26 @@ export function fetchPlannerPredictions(cellIds: string[], fetcher: typeof fetch
  * covered.
  */
 export function fetchPlannerAreaPrediction(
-  request: { latitude: number; longitude: number; radiusKm: number;
+  request: { latitude?: number; longitude?: number; radiusKm?: number;
+             /** 'minLon,minLat,maxLon,maxLat'. Give this OR the point, never both. */
+             bbox?: string;
              limit?: number; top?: number; signal?: AbortSignal },
   fetcher: typeof fetch = fetch
 ) {
-  const query = new URLSearchParams({
-    lat: String(request.latitude),
-    lon: String(request.longitude),
-    radius_km: String(request.radiusKm),
-    limit: String(request.limit ?? 4000),
-    top: String(request.top ?? 200)
-  });
+  // The endpoint takes a circle or a rectangle and refuses both at once with a
+  // 422, so the caller's choice is passed through rather than merged. The
+  // rectangle is what a viewport-wide layer needs; the circle is what a planner
+  // tapping one place needs.
+  const query = new URLSearchParams(
+    request.bbox
+      ? { bbox: request.bbox }
+      : {
+          lat: String(request.latitude),
+          lon: String(request.longitude),
+          radius_km: String(request.radiusKm)
+        });
+  query.set('limit', String(request.limit ?? 4000));
+  query.set('top', String(request.top ?? 200));
   return plannerRequest<PlannerPredictAreaResponse>(
     `/api/v1/planner/predict.area?${query}`, { signal: request.signal }, fetcher);
 }

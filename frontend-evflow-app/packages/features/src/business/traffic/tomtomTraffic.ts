@@ -62,6 +62,23 @@ import type { LeafletTileOverlay } from '@evflow/ui';
  */
 const FLOW_STYLE = 'relative-delay';
 
+/**
+ * Line width, in TomTom's own units.
+ *
+ * The tiles are raster, so this cannot be set in CSS or Leaflet -- the width is
+ * drawn server-side and the only handle is this parameter. TomTom's default is
+ * 10, which at Jakarta's road density paints bands wide enough to hide the
+ * street grid, the demand cells and the site markers underneath them. The layer
+ * is context for the planner's own data, so it must not outweigh it.
+ *
+ * Measured against tile 14/13053/8473 (central Jakarta): thickness 10 returns
+ * 27,605 bytes and is byte-identical to omitting the parameter, confirming 10 is
+ * the default; 4 returns 25,430 and 2 returns 22,567. The API validates the
+ * range -- 99 is rejected with HTTP 400 -- so this is a real parameter and not
+ * one silently ignored.
+ */
+const LINE_THICKNESS = 4;
+
 /** v4 is the generally available Traffic API. Orbis v2 needs a separate entitlement. */
 const VERSION = 4;
 
@@ -87,7 +104,7 @@ export function trafficOverlay(key: string | null, opacity = 0.85): LeafletTileO
   return {
     id: 'tomtom-traffic-flow',
     url: `https://api.tomtom.com/traffic/map/${VERSION}/tile/flow/${FLOW_STYLE}/{z}/{x}/{y}.png`
-      + `?key=${encodeURIComponent(key)}`,
+      + `?key=${encodeURIComponent(key)}&thickness=${LINE_THICKNESS}`,
     attribution: TOMTOM_ATTRIBUTION,
     opacity,
     // TomTom serves flow tiles to z22; the base map stops at 19, and a traffic

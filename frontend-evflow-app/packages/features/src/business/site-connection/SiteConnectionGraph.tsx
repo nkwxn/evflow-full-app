@@ -10,13 +10,25 @@ type Props = {
 };
 
 /**
- * The native half of the competitive landscape view.
+ * The candidate site and what it would be competing with, as an ordered list.
  *
- * React Flow is DOM-based, so on Expo the same facts are laid out as an ordered
- * list rather than a diagram. It reads from buildGraph, not from the raw
- * stations, so both platforms show the same competitors in the same order with
- * the same distances and the same pressure banding: a difference between them
- * would be a difference nobody could explain.
+ * WHY A LIST AND NOT THE DIAGRAM IT USED TO BE
+ *
+ * There was a React Flow sibling for web that arranged competitors in a ring,
+ * radius tracking real distance, so "am I hemmed in" could be read at a glance.
+ * On a phone that ring collapses: ten 150 px nodes overlap inside a 320 px box,
+ * labels sit on top of each other, and the thing it was drawn to communicate is
+ * the first thing lost. This app renders on phone browsers as well as Expo, so
+ * the diagram was failing exactly where it was needed most.
+ *
+ * The list keeps every fact the diagram carried -- competitor, operator, power,
+ * connectors, distance, pressure band down the left edge -- and pressureSummary
+ * states the crowding in words above it ("2 SPKLU within 1 km ... closest is
+ * 854 m"), which is the sentence the ring existed to draw.
+ *
+ * It reads from buildGraph rather than the raw stations because that is where
+ * ordering and pressure banding live, and both must stay identical to whatever
+ * else consumes them.
  */
 export function SiteConnectionGraph({ site, stations }: Props) {
   const { nodes } = buildGraph(site, stations);
