@@ -63,6 +63,7 @@ from .models import (
     PlannerCellDetail,
     PlannerCellsGeoJSON,
     PlannerModelInfo,
+    PlannerUtilisationInfo,
     PlannerPredictResponse,
     PlannerPrediction,
     PlannerPredictAreaResponse,
@@ -77,7 +78,7 @@ from .models import (
     SiteWeightsInput,
 )
 from .services import service_area
-from .services import resemblance_scale, site_economics, siting_model
+from .services import resemblance_scale, site_economics, siting_model, utilisation_model
 from .services.poi_clustering import cluster_cell_size, should_cluster
 from .services.planner_viewport import (
     METRIC_COLUMNS,
@@ -2754,9 +2755,57 @@ _MODEL_MEANS = (
     "It does NOT mean the cell is a good site. 1,080 of the 1,236 stations the model "
     "learned from are PLN placements that follow PLN offices and policy targets, so the "
     "model has partly learned PLN's siting logic rather than demand. Read it beside the "
-    "weighted score, not instead of it. The prescriptive model, which predicts utilisation "
-    "rather than presence, is not built yet."
+    "weighted score, not instead of it. Beside it, sessions_per_connector_day comes from the "
+    "prescriptive model, which predicts how busy a connector at a place would be and is the "
+    "one of the two that can rank a cell nobody has built on -- but it is a SCENARIO recovered "
+    "from the simulation's own demand assumption, not a forecast, and every session behind it "
+    "is simulated."
 )
+
+
+def _utilisation_info() -> Optional[PlannerUtilisationInfo]:
+    """Prescriptive-model provenance, or None when no artifact is loaded.
+
+    Deliberately not a 503. The descriptive answer is complete on its own and was
+    the whole endpoint until this model existed; taking it away because the
+    second artifact is missing would turn an added capability into an outage. The
+    client is told the field is null instead.
+    """
+    try:
+        i = utilisation_model.info()
+    except (FileNotFoundError, KeyError):
+        return None
+    return PlannerUtilisationInfo(
+        trained_at=i.trained_at, n_samples=i.n_samples, loco_r2=i.loco_r2,
+        random_split_r2=i.random_split_r2, label=i.label,
+        target_units=i.target_units, sklearn_version=i.sklearn_version,
+        n_features=len(i.feature_names), reference_spec=i.reference_spec,
+        window_start=i.window_start, window_end=i.window_end,
+        window_days=i.window_days, dose_response=i.dose_response,
+        counting_noise_pct=i.counting_noise_pct)
+
+
+def _utilisation_for(rows: list[dict]) -> list[Optional[float]]:
+    """Predicted sessions per connector per day, aligned with `rows`.
+
+    Returns a list of Nones rather than raising when the artifact is missing or
+    the rows cannot satisfy it. A utilisation number is an addition to this
+    response, and an addition that can fail must fail quietly enough to leave the
+    rest standing -- the same reasoning as resemblance_scale below.
+
+    The hardware features are never read from the rows: the model needs
+    `connectors` and `avg_kw`, planning_cells has neither, and they describe the
+    site a planner would build rather than the place. The service fills them from
+    its reference spec so every cell is compared on equal hardware.
+    """
+    if not rows:
+        return []
+    try:
+        wanted = set(utilisation_model.info().location_features)
+        return list(utilisation_model.predict(
+            [{k: v for k, v in r.items() if k in wanted} for r in rows]))
+    except (FileNotFoundError, KeyError, ValueError):
+        return [None] * len(rows)
 
 
 def _model_info_or_503() -> PlannerModelInfo:
@@ -2803,8 +2852,16 @@ def planner_predict(cell_ids: list[str] = Body(..., embed=True, min_length=1, ma
     except FileNotFoundError as exc:
         raise HTTPException(503, str(exc)) from exc
 
+    # The union of both models' columns, fetched once. The two were trained
+    # separately and their feature lists differ -- the prescriptive one needs
+    # poi_total, which the descriptive one excludes as the sum of its parts -- so
+    # asking for only one model's list silently starves the other.
+    util_info = _utilisation_info()
+    needed = list(dict.fromkeys(
+        list(meta.feature_names)
+        + (list(utilisation_model.info().location_features) if util_info else [])))
     try:
-        rows = planner_repo.features_for_cells(cell_ids, meta.feature_names)
+        rows = planner_repo.features_for_cells(cell_ids, needed)
     except ValueError as exc:
         raise HTTPException(503, str(exc)) from exc
     if not rows:
@@ -2815,12 +2872,16 @@ def planner_predict(cell_ids: list[str] = Body(..., embed=True, min_length=1, ma
         probs = siting_model.predict(feature_rows)
     except ValueError as exc:
         raise HTTPException(503, str(exc)) from exc
+    util = _utilisation_for(rows)
 
     return PlannerPredictResponse(
         predictions=[PlannerPrediction(cell_id=r["cell_id"], kota=r["kota"],
-                                       probability=round(p, 4))
-                     for r, p in zip(rows, probs)],
+                                       probability=round(p, 4),
+                                       sessions_per_connector_day=(
+                                           None if u is None else round(u, 3)))
+                     for r, p, u in zip(rows, probs, util)],
         model=_model_info_or_503(),
+        utilisation_model=util_info,
         interpretation=_MODEL_MEANS,
     )
 
@@ -2852,18 +2913,27 @@ def planner_predict_area(
     user: dict = Depends(require_planner)) -> PlannerPredictAreaResponse:
     """Score the cells around a point the planner chose, at request time.
 
-    WHAT THIS ANSWERS, AND WHAT IT DOES NOT
+    TWO MODELS ANSWER TWO QUESTIONS, AND THE ORDER COMES FROM THE SECOND
 
-    The model is descriptive. It learned which cells CONTAIN a station, from a
-    network that is 1,080 PLN placements out of 1,236. Measured across the whole
-    grid, its 500 highest-probability cells are 100% cells that already have one,
-    and among the 26,334 cells with none the highest probability is 0.305.
+    `probability` is descriptive. It learned which cells CONTAIN a station, from
+    a network that is 1,080 PLN placements out of 1,236. Measured across the
+    whole grid, its 500 highest-probability cells are 100% cells that already
+    have one, and among the 26,334 cells with none the highest probability is
+    0.305. It answers "how much does this place resemble the ones that get built
+    on" -- worth reading NEXT TO the weighted criteria score, never instead of
+    it, and useless for ranking a cell nobody has built on.
 
-    So this does not answer "where should a station go". It answers "how much
-    does this place resemble the ones that get built on", which is worth reading
-    NEXT TO the weighted criteria score and never instead of it. The response
-    separates cells that already have a station from those that do not, because
-    a client that cannot tell them apart will rank existing sites as candidates.
+    `sessions_per_connector_day` is prescriptive: how busy a connector at this
+    place would be, at one reference spec so that what differs between cells is
+    location rather than hardware. It is the only one of the two that can rank an
+    unbuilt cell, so it decides the ordering. It is also a SCENARIO -- every
+    session behind it is simulated, and the simulation distributes demand by a
+    formula we wrote -- so it recovers an assumption rather than measuring
+    demand. Null, with the old ordering, when no utilisation artifact is loaded.
+
+    The response separates cells that already have a station from those that do
+    not, because a client that cannot tell them apart will rank existing sites as
+    candidates.
 
     WHY IT IS COMPUTED PER REQUEST
 
@@ -2890,13 +2960,17 @@ def planner_predict_area(
     except FileNotFoundError as exc:
         raise HTTPException(503, str(exc)) from exc
 
+    util_info = _utilisation_info()
+    needed = list(dict.fromkeys(
+        list(meta.feature_names)
+        + (list(utilisation_model.info().location_features) if util_info else [])))
     try:
         if by_point:
             rows, matched = planner_repo.features_in_radius(
-                lat, lon, radius_km, meta.feature_names, limit=limit)
+                lat, lon, radius_km, needed, limit=limit)
         else:
             rows, matched = planner_repo.features_in_area(
-                parse_bbox(bbox), meta.feature_names, limit=limit)
+                parse_bbox(bbox), needed, limit=limit)
     except ValueError as exc:
         # parse_bbox raises for a malformed box; the repo raises for a stale model.
         raise HTTPException(422 if bbox else 503, str(exc)) from exc
@@ -2909,12 +2983,23 @@ def planner_predict_area(
     except ValueError as exc:
         raise HTTPException(503, str(exc)) from exc
 
+    util = _utilisation_for(rows)
+
+    # Ordered by predicted utilisation, not resemblance. Resemblance cannot rank
+    # an unbuilt cell -- its 500 highest are 100% cells that already hold a
+    # station -- so ordering by it hands the planner a shortlist of places
+    # already built on. When no utilisation artifact is loaded every value is
+    # None and the sort falls back to the old order rather than to an arbitrary
+    # one, so the endpoint degrades to what it was instead of breaking.
     scored = sorted(
         (PlannerPrediction(cell_id=r["cell_id"], kota=r["kota"],
                            probability=round(p, 4),
-                           has_station=bool(r.get("station_count") or 0))
-         for r, p in zip(rows, probs)),
-        key=lambda x: x.probability, reverse=True)
+                           has_station=bool(r.get("station_count") or 0),
+                           sessions_per_connector_day=(None if u is None else round(u, 3)))
+         for r, p, u in zip(rows, probs, util)),
+        key=lambda x: (x.sessions_per_connector_day is not None,
+                       x.sessions_per_connector_day or 0.0, x.probability),
+        reverse=True)
 
     # Summarised over cells WITHOUT a station only. Mixing the two populations is
     # what made the previous version of this endpoint report existing stations as
@@ -2936,6 +3021,15 @@ def planner_predict_area(
     median = None if not n else (empty[n // 2] if n % 2
                                  else (empty[n // 2 - 1] + empty[n // 2]) / 2)
 
+    # Unbuilt cells only, for the same reason the resemblance figures are: a
+    # summary that mixes in cells which already hold a station describes the
+    # network that exists rather than the opportunity being assessed.
+    used = sorted(x.sessions_per_connector_day for x in scored
+                  if not x.has_station and x.sessions_per_connector_day is not None)
+    m = len(used)
+    used_median = None if not m else (used[m // 2] if m % 2
+                                      else (used[m // 2 - 1] + used[m // 2]) / 2)
+
     return PlannerPredictAreaResponse(
         distribution=PlannerAreaDistribution(
             cells_in_area=matched,
@@ -2948,9 +3042,14 @@ def planner_predict_area(
             max_probability=None if not n else round(empty[-1], 4),
             resemblance_ceiling=scale.ceiling if scale else None,
             resemblance_ceiling_cells=scale.cells_scored if scale else None,
+            mean_sessions_per_connector_day=None if not m else round(sum(used) / m, 3),
+            median_sessions_per_connector_day=(None if used_median is None
+                                               else round(used_median, 3)),
+            max_sessions_per_connector_day=None if not m else round(used[-1], 3),
         ),
         predictions=scored[:top],
         model=_model_info_or_503(),
+        utilisation_model=util_info,
         interpretation=_MODEL_MEANS,
     )
 

@@ -21,7 +21,7 @@ from fastapi.testclient import TestClient
 
 from api import planner_repo
 from api.main import app, require_planner
-from api.services import resemblance_scale, siting_model
+from api.services import resemblance_scale, siting_model, utilisation_model
 
 BBOX = "106.78,-6.22,106.87,-6.13"
 POINT = "lat=-6.175&lon=106.827&radius_km=3"
@@ -85,6 +85,13 @@ def client(monkeypatch, calls):
     resemblance_scale.reset_cache()
     monkeypatch.setattr(siting_model, "predict", _predict)
     monkeypatch.setattr(siting_model, "info", lambda path=None: _Info())
+    # Pinned absent, so what this file asserts stays about the DESCRIPTIVE model.
+    # Without it these tests read whatever utilisation artifact happens to sit in
+    # ev-planner-study/output, which changes the columns the repo is asked for
+    # and makes the suite pass or fail on the state of a file nobody edited.
+    # The prescriptive model has its own file: test_planner_utilisation_model.py.
+    monkeypatch.setattr(utilisation_model, "DEFAULT_MODEL_PATH", "/nonexistent/utilisation.joblib")
+    utilisation_model.reset_cache()
     app.dependency_overrides[require_planner] = lambda: {"id": "u", "account_type": "business_planner"}
     yield TestClient(app)
     app.dependency_overrides.pop(require_planner, None)

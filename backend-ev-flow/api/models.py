@@ -1278,6 +1278,58 @@ class PlannerModelInfo(BaseModel):
     n_features: int
 
 
+class PlannerUtilisationInfo(BaseModel):
+    """Provenance for the prescriptive model, which answers a different question.
+
+    PlannerModelInfo above describes the DESCRIPTIVE model: it scores how much a
+    cell resembles the ones that already hold a station, and its 500 highest
+    cells are 100% cells that already do. This one predicts how busy a connector
+    at a place would be, which is the only one of the two that can rank a cell
+    nobody has built on.
+
+    Every field here exists because the number it qualifies would be read as a
+    measurement otherwise. It is not one. The sessions it learned from are
+    simulation output, and that simulation distributes demand by a formula we
+    wrote: 0.53*rank(population) + 0.30*rank(poi_total) + 0.17*rank(road_nodes).
+    The model recovers that assumption rather than discovering demand.
+    """
+    trained_at: str
+    n_samples: int
+    loco_r2: float = Field(
+        ..., description="Leave-one-area-out R2 on the training target, hardware variation "
+                         "included. Do NOT read it as place-ranking skill: 57% of the "
+                         "model's importance is charger power, which is held constant when "
+                         "cells are compared. The spread across the grid is the figure that "
+                         "speaks to ranking, and it is 1.66x against the simulation's 1.64x.")
+    random_split_r2: float = Field(
+        ..., description="Inflated, and reported for the same reason as the siting model's: "
+                         "neighbouring cells land on both sides of a random split.")
+    label: str
+    target_units: str
+    sklearn_version: str
+    n_features: int
+    reference_spec: dict[str, float] = Field(
+        ..., description="The hardware every cell is scored at, so differences between cells "
+                         "are location and nothing else. Sessions per connector depend "
+                         "heavily on charger power; comparing cells at different specs "
+                         "compares the chargers, not the places.")
+    window_start: str
+    window_end: str
+    window_days: int = Field(
+        ..., description="Complete local days of demand-weighted simulation behind this fit. "
+                         "Short windows are noisy; the window grows nightly and the model "
+                         "should be retrained as it does.")
+    dose_response: float = Field(
+        ..., description="Measured ratio of sessions per connector between the top and bottom "
+                         "demand-factor quartile in that window. This is the evidence the "
+                         "weighting actually reached the sessions the model learned from; "
+                         "around 1.0 would mean it did not.")
+    counting_noise_pct: Optional[float] = Field(
+        None, description="Poisson noise on a typical cell's rate, 1/sqrt(sessions). It "
+                          "attenuates the score rather than inflating it, so it makes a "
+                          "positive result conservative, not suspect.")
+
+
 class PlannerPrediction(BaseModel):
     cell_id: str
     kota: Optional[str] = None
@@ -1288,6 +1340,14 @@ class PlannerPrediction(BaseModel):
                            "grid, the model's 500 highest-probability cells are 100% cells "
                            "that already have one, so a client that cannot tell the two apart "
                            "will present existing sites as candidates.")
+    sessions_per_connector_day: Optional[float] = Field(
+        None, description="Prescriptive model: simulated sessions a connector here would "
+                          "turn over per day, at the reference spec in "
+                          "PlannerUtilisationInfo. A SCENARIO recovered from the "
+                          "simulation's demand assumption, not a forecast. Null when no "
+                          "utilisation artifact is loaded, and a client that gets null must "
+                          "say so rather than fall back to the resemblance figure, which "
+                          "answers a different question.")
 
 
 class PlannerPredictResponse(BaseModel):
@@ -1301,6 +1361,10 @@ class PlannerPredictResponse(BaseModel):
     """
     predictions: list[PlannerPrediction]
     model: PlannerModelInfo
+    utilisation_model: Optional[PlannerUtilisationInfo] = Field(
+        None, description="Provenance for sessions_per_connector_day. Null when no "
+                          "utilisation artifact is loaded, in which case every prediction's "
+                          "utilisation field is null too.")
     interpretation: str = Field(
         ..., description="What a high probability does and does not mean.")
     provenance: PlannerProvenance = PlannerProvenance()
@@ -1358,6 +1422,20 @@ class PlannerAreaDistribution(BaseModel):
     resemblance_ceiling_cells: Optional[int] = Field(
         None, description="How many unbuilt cells the ceiling was taken over, so the figure "
                           "is auditable rather than asserted.")
+    mean_sessions_per_connector_day: Optional[float] = Field(
+        None, description="Mean predicted sessions per connector per day among cells WITHOUT "
+                          "a station, at the reference spec. Summarised over unbuilt cells "
+                          "only, for the same reason the resemblance figures are: mixing in "
+                          "cells that already hold a station describes the network that "
+                          "exists rather than the opportunity being assessed.")
+    median_sessions_per_connector_day: Optional[float] = Field(
+        None, description="Median of the same. Prefer it to the mean when the area is small.")
+    max_sessions_per_connector_day: Optional[float] = Field(
+        None, description="Highest predicted utilisation among unbuilt cells here. Read it "
+                          "against the grid-wide spread of about 1.66x between the 5th and "
+                          "95th percentile: this model separates places by well under an "
+                          "order of magnitude, and a client that renders it on a scale "
+                          "implying more will overstate the difference between two cells.")
 
 
 class PlannerPredictAreaResponse(BaseModel):
@@ -1372,8 +1450,14 @@ class PlannerPredictAreaResponse(BaseModel):
     """
     distribution: PlannerAreaDistribution
     predictions: list[PlannerPrediction] = Field(
-        ..., description="Per-cell probabilities, highest first.")
+        ..., description="Per-cell predictions. Ordered by predicted utilisation, highest "
+                         "first, because that is the question a planner asks and the only "
+                         "one of the two models that can answer it for an unbuilt cell. "
+                         "Falls back to resemblance order when no utilisation artifact is "
+                         "loaded; utilisation_model is null when it does.")
     model: PlannerModelInfo
+    utilisation_model: Optional[PlannerUtilisationInfo] = Field(
+        None, description="Provenance for sessions_per_connector_day and for the ordering.")
     interpretation: str = Field(
         ..., description="What a high probability does and does not mean.")
     provenance: PlannerProvenance = PlannerProvenance()
