@@ -261,6 +261,15 @@ export class PlannerApiError extends Error {
 export async function fetchPlannerCandidates(
   options: {
     clusters?: number; quantile?: number; weights?: PlannerWeights;
+    /**
+     * Which number ranks the suggestions. Omitted means the API's own default,
+     * which is the weighted score.
+     *
+     * Always read `basis` on the response rather than assuming this was
+     * honoured: a request for 'suitability' answers 'weighted' when no model is
+     * loaded, because suggestions from the weighted score beat a 503.
+     */
+    basis?: 'weighted' | 'suitability';
     centre?: { latitude: number; longitude: number; radiusKm: number };
     signal?: AbortSignal;
   } = {},
@@ -270,6 +279,7 @@ export async function fetchPlannerCandidates(
     clusters: String(options.clusters ?? (options.centre ? 8 : 15)),
     quantile: String(options.quantile ?? 0.9)
   });
+  if (options.basis) query.set('basis', options.basis);
   if (options.centre) {
     query.set('lat', String(options.centre.latitude));
     query.set('lon', String(options.centre.longitude));

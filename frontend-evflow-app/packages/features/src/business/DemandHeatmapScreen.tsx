@@ -283,6 +283,10 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
     const timer = setTimeout(() => {
       setAnalyzing(true);
       void fetchPlannerCandidates({
+        // The same number the heatmap paints, so a numbered pin and the colour
+        // under it are one claim. The API falls back to the weighted score when
+        // no model is loaded, and says so in `basis`.
+        basis: 'suitability',
         centre: {
           latitude: analysisCentre.latitude,
           longitude: analysisCentre.longitude,

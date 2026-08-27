@@ -251,6 +251,21 @@ describe('candidates within a radius', () => {
     expect(parsed.searchParams.get('clusters')).toBe('15');
   });
 
+  it('sends the basis only when one is asked for', async () => {
+    // Omitted means the API's default, which is the weighted score. Sending
+    // basis=weighted explicitly would look like a deliberate choice in the
+    // access log when it was just a client filling in a blank.
+    const fetcher = fetcherReturning(response(body));
+    await fetchPlannerCandidates({}, fetcher);
+    expect(new URL((fetcher as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0])
+      .searchParams.get('basis')).toBeNull();
+
+    const asked = fetcherReturning(response(body));
+    await fetchPlannerCandidates({ basis: 'suitability' }, asked);
+    expect(new URL((asked as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0])
+      .searchParams.get('basis')).toBe('suitability');
+  });
+
   it('sends the weights as the body either way', async () => {
     const fetcher = fetcherReturning(response(body));
     await fetchPlannerCandidates(
