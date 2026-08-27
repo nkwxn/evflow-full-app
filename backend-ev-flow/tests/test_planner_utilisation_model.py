@@ -128,9 +128,10 @@ class _SitingInfo:
     feature_names = ["population", "road_length_m"]
 
 
-def _cell(i, pop, stations=0):
+def _cell(i, pop, stations=0, stations_2km=0, nearest_m=9000.0):
     return {"cell_id": f"JBDTBK_{i:05d}", "kota": "Jakarta Pusat", "station_count": stations,
-            "population": pop, "road_length_m": 10.0}
+            "population": pop, "road_length_m": 10.0,
+            "stations_2km": stations_2km, "nearest_station_m": nearest_m}
 
 
 @pytest.fixture
@@ -155,6 +156,12 @@ def client(monkeypatch, artifact):
                         lambda names, **kw: [_cell(9, 5.0)])
     monkeypatch.setattr(planner_repo, "features_for_cells",
                         lambda ids, names: [c for c in cells if c["cell_id"] in ids])
+    # The suitability scale is regional, so it reads its own population rather
+    # than the viewport's. Stubbed to the same cells here: the point of these
+    # tests is the ordering and the fields, not the scale's own arithmetic,
+    # which test_suitability covers without a database.
+    monkeypatch.setattr(planner_repo, "features_for_scoring", lambda names, **kw: cells)
+    monkeypatch.setattr(planner_repo, "supply_fingerprint", lambda: "test/fixture")
     monkeypatch.setattr(siting_model, "info", lambda path=None: _SitingInfo())
     monkeypatch.setattr(
         siting_model, "predict",
@@ -223,3 +230,83 @@ def test_a_missing_artifact_leaves_the_descriptive_answer_standing(client, monke
     assert all(p["sessions_per_connector_day"] is None for p in body["predictions"])
     # Falls back to the old resemblance ordering rather than to an arbitrary one.
     assert [p["cell_id"] for p in body["predictions"]][0] == "JBDTBK_00001"
+
+
+# --- suitability, as the area endpoint serves it ------------------------------
+
+def test_every_prediction_carries_a_band_and_the_scale_that_made_it(client):
+    body = client.get("/api/v1/planner/predict.area?lat=-6.17&lon=106.82&radius_km=3").json()
+    for p in body["predictions"]:
+        assert p["suitability"] is not None and 0.0 <= p["suitability"] <= 1.0
+        assert p["suitability_band"] in ("red", "yellow", "green")
+        assert p["supply_discount"] is not None
+    scale = body["distribution"]["suitability_scale"]
+    # The legend prints these, so they travel with the shading rather than being
+    # remembered: a retrain moves the floors and a stale constant would quietly
+    # band cells against the wrong distribution.
+    assert scale["yellow_floor"] <= scale["red_floor"]
+    assert scale["cells_scored"] > 0
+    counted = sum(body["distribution"][k] for k in ("cells_red", "cells_yellow", "cells_green"))
+    assert counted == body["distribution"]["cells_without_station"]
+
+
+def test_a_crowded_cell_cannot_outrank_an_empty_one_with_the_same_demand(monkeypatch, artifact):
+    """AC (c), through the endpoint rather than the formula.
+
+    Same population, so the model predicts the same demand; the only difference
+    is four stations already inside 2 km. The supply half of the blend has to be
+    what separates them, or the shortlist will point at a place already served.
+    """
+    from api import planner_repo
+    from api.main import app, require_planner
+    from api.services import resemblance_scale, siting_model, utilisation_model
+    from fastapi.testclient import TestClient
+
+    cells = [_cell(1, 500.0, stations_2km=0, nearest_m=9000.0),
+             _cell(2, 500.0, stations_2km=4, nearest_m=200.0)]
+    monkeypatch.setattr(planner_repo, "features_in_radius",
+                        lambda *a, **k: (cells, len(cells)))
+    monkeypatch.setattr(planner_repo, "features_for_unbuilt_cells", lambda names, **kw: cells)
+    monkeypatch.setattr(planner_repo, "features_for_scoring", lambda names, **kw: cells)
+    monkeypatch.setattr(planner_repo, "supply_fingerprint", lambda: "test/fixture")
+    monkeypatch.setattr(siting_model, "info", lambda path=None: _SitingInfo())
+    monkeypatch.setattr(siting_model, "predict", lambda rows, path=None: [0.5] * len(rows))
+    monkeypatch.setattr(utilisation_model, "DEFAULT_MODEL_PATH", artifact)
+    resemblance_scale.reset_cache()
+    app.dependency_overrides[require_planner] = lambda: {"id": "u",
+                                                         "account_type": "business_planner"}
+    try:
+        body = TestClient(app).get(
+            "/api/v1/planner/predict.area?lat=-6.17&lon=106.82&radius_km=3").json()
+    finally:
+        app.dependency_overrides.pop(require_planner, None)
+        resemblance_scale.reset_cache()
+
+    by_id = {p["cell_id"]: p for p in body["predictions"]}
+    empty, crowded = by_id["JBDTBK_00001"], by_id["JBDTBK_00002"]
+    assert empty["sessions_per_connector_day"] == crowded["sessions_per_connector_day"]
+    assert empty["suitability"] > crowded["suitability"]
+    assert crowded["supply_discount"] < empty["supply_discount"]
+
+
+def test_a_database_failure_leaves_the_rest_of_the_answer_standing(client, monkeypatch):
+    """The scale needs the database; the answer around it does not.
+
+    A narrower catch let an OperationalError out of the scale build and 500'd the
+    whole endpoint over an enrichment, taking the resemblance figures, the cell
+    split and the geometry with it.
+    """
+    from api import planner_repo
+
+    def boom(*a, **k):
+        raise RuntimeError("database is down")
+
+    monkeypatch.setattr(planner_repo, "supply_fingerprint", boom)
+    r = client.get("/api/v1/planner/predict.area?lat=-6.17&lon=106.82&radius_km=3")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["distribution"]["suitability_scale"] is None
+    assert all(p["suitability_band"] is None for p in body["predictions"])
+    # The half that never needed the scale is untouched.
+    assert body["distribution"]["cells_predicted"] > 0
+    assert all(p["probability"] is not None for p in body["predictions"])

@@ -274,7 +274,8 @@ def features_in_area(viewport: Viewport, feature_names: list[str],
         # count(*) OVER () is evaluated before LIMIT, so it reports how many cells
         # the area really holds even when only some of them come back.
         rows = c.execute(text(f"""
-            SELECT cell_id, kota, station_count, {cols}, count(*) OVER () AS matched
+            SELECT cell_id, kota, station_count, stations_2km, nearest_station_m,
+                   {cols}, count(*) OVER () AS matched
               FROM planning_cells
              WHERE geom && ST_MakeEnvelope(:west, :south, :east, :north, 4326)
                AND ST_Intersects(geom, ST_MakeEnvelope(:west, :south, :east, :north, 4326))
@@ -337,7 +338,8 @@ def features_in_radius(lat: float, lon: float, radius_km: float,
         degrees = radius_m / 111_320.0
         rows = c.execute(text(f"""
             WITH centre AS (SELECT ST_SetSRID(ST_MakePoint(:lon, :lat), 4326) AS g)
-            SELECT cell_id, kota, station_count, {cols}, count(*) OVER () AS matched
+            SELECT cell_id, kota, station_count, stations_2km, nearest_station_m,
+                   {cols}, count(*) OVER () AS matched
               FROM planning_cells, centre
              WHERE geom && ST_Expand(centre.g, :degrees)
                AND ST_DWithin(geom::geography, centre.g::geography, :radius_m)
@@ -511,6 +513,56 @@ def pois_clustered(viewport: Viewport, categories: list[str], cell: float,
               "categories": categories, "cell": cell, "limit": limit}
     with engine.connect() as c:
         return [dict(r) for r in c.execute(text(sql), params).mappings().all()]
+
+
+def supply_fingerprint() -> str:
+    """Two counts that say whether the supply half of a suitability score is stale.
+
+    services/resemblance_scale documents why it could not do this: detecting a
+    feature reload there would have cost a whole-grid pass on every request. Here
+    the probe is two counts over ~1,200 rows, and supply is half the formula
+    rather than none of it, so the trade goes the other way.
+    """
+    with engine.connect() as c:
+        row = c.execute(text(
+            "SELECT (SELECT count(*) FROM stations) AS s, "
+            "       (SELECT count(*) FROM connectors) AS c")).mappings().one()
+    return f"{row['s']}/{row['c']}"
+
+
+def features_for_scoring(feature_names: list[str], min_overlap: float = 0.5,
+                         excluded_kota: Optional[list[str]] = None) -> list[dict]:
+    """Every cell the suitability scale is built over, with its supply columns.
+
+    The whole filtered region, never a viewport and never a circle. Ranking a
+    cell inside the circle it was found in makes the best cell of a quiet suburb
+    equal to the best cell of Sudirman -- the invariant candidate_sites_in_radius
+    spends thirty lines defending, and the reason this is a separate query rather
+    than a reuse of the viewport fetchers.
+
+    Built cells are included. They are part of the region a cell is compared
+    against even though nothing recommends them.
+    """
+    with engine.connect() as c:
+        known = {r[0] for r in c.execute(text("""
+            SELECT column_name FROM information_schema.columns
+             WHERE table_name = 'planning_cells'"""))}
+        unknown = [f for f in feature_names if f not in known]
+        if unknown:
+            raise ValueError(
+                f"the model expects {len(unknown)} column(s) planning_cells does not "
+                f"have: {', '.join(unknown)}. The model is stale relative to the schema.")
+
+        cols = ", ".join(f'"{f}"' for f in feature_names)
+        rows = c.execute(text(f"""
+            SELECT cell_id, station_count, stations_2km, nearest_station_m, {cols}
+              FROM planning_cells
+             WHERE overlap_frac >= :min_overlap
+               AND kota <> ALL(:excluded_kota)
+        """), {"min_overlap": min_overlap,
+               "excluded_kota": excluded_kota if excluded_kota is not None
+               else DEFAULT_EXCLUDED_KOTA}).mappings().all()
+    return [dict(r) for r in rows]
 
 
 def landuse_in_viewport(viewport: Viewport, classes: Optional[list[str]] = None,

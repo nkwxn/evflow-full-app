@@ -81,7 +81,9 @@ from .models import (
     SiteWeightsInput,
 )
 from .services import service_area
-from .services import resemblance_scale, site_economics, siting_model, utilisation_model
+from .services import (
+    resemblance_scale, site_economics, siting_model, suitability, utilisation_model
+)
 from .services.poi_clustering import cluster_cell_size, should_cluster
 from .services.planner_viewport import (
     METRIC_COLUMNS,
@@ -2882,6 +2884,48 @@ def _utilisation_info() -> Optional[PlannerUtilisationInfo]:
         counting_noise_pct=i.counting_noise_pct)
 
 
+def _suitability_for(rows: list[dict]) -> tuple[list[Optional[suitability.Suitability]],
+                                                Optional[suitability.RegionalScale]]:
+    """Score cells against the whole region, or return nothing and say so.
+
+    The scale is regional and cached per (model, supply state), so the first
+    request after a retrain or a station import pays for one whole-grid pass and
+    the rest read a quantile table. Measured: the pull is ~135 ms and inference
+    ~30 ms over 27,219 cells, which is why nothing is precomputed and stored.
+
+    Failure is quiet for the same reason _utilisation_for's is. A missing
+    artifact, a stale schema or an empty region leaves the resemblance answer
+    standing, and the client is told the scale is null rather than handed a band
+    it cannot trust.
+    """
+    if not rows:
+        return [], None
+    try:
+        info = utilisation_model.info()
+        scale = suitability.cached_scale(
+            info.trained_at,
+            planner_repo.supply_fingerprint(),
+            lambda: planner_repo.features_for_scoring(list(info.location_features)),
+            utilisation_model.predict,
+            info.location_features)
+    except Exception:  # noqa: BLE001 - see the docstring
+        # Deliberately broad. Building the scale touches the database, and an
+        # unreachable database here would take down an answer that is complete
+        # without it: the resemblance figures, the cell split and the geometry all
+        # survive. A narrower catch let an OperationalError through and 500'd the
+        # whole endpoint over an enrichment.
+        return [None] * len(rows), None
+
+    wanted = set(info.location_features)
+    try:
+        predicted = utilisation_model.predict(
+            [{k: v for k, v in r.items() if k in wanted} for r in rows])
+    except (ValueError, KeyError):
+        return [None] * len(rows), None
+    return ([suitability.score(u, r.get("stations_2km") or 0, r.get("nearest_station_m"), scale)
+             for u, r in zip(predicted, rows)], scale)
+
+
 def _utilisation_for(rows: list[dict]) -> list[Optional[float]]:
     """Predicted sessions per connector per day, aligned with `rows`.
 
@@ -3081,22 +3125,31 @@ def planner_predict_area(
     except ValueError as exc:
         raise HTTPException(503, str(exc)) from exc
 
-    util = _utilisation_for(rows)
+    # Named apart from `scale` below, which is the resemblance ceiling and is
+    # assigned later in this function -- one name for two scales silently
+    # handed the suitability block a ResemblanceScale.
+    suits, suit_scale = _suitability_for(rows)
 
-    # Ordered by predicted utilisation, not resemblance. Resemblance cannot rank
-    # an unbuilt cell -- its 500 highest are 100% cells that already hold a
-    # station -- so ordering by it hands the planner a shortlist of places
-    # already built on. When no utilisation artifact is loaded every value is
-    # None and the sort falls back to the old order rather than to an arbitrary
-    # one, so the endpoint degrades to what it was instead of breaking.
+    # Ordered by suitability, not resemblance. Resemblance cannot rank an unbuilt
+    # cell -- its 500 highest are 100% cells that already hold a station -- so
+    # ordering by it hands the planner a shortlist of places already built on.
+    # Suitability blends the model's demand prediction with a penalty for supply
+    # already nearby, which is the ordering a shortlist needs.
+    #
+    # When no scale could be built every value is None and the sort falls back to
+    # resemblance, so the endpoint degrades to what it was rather than breaking.
     scored = sorted(
-        (PlannerPrediction(cell_id=r["cell_id"], kota=r["kota"],
-                           probability=round(p, 4),
-                           has_station=bool(r.get("station_count") or 0),
-                           sessions_per_connector_day=(None if u is None else round(u, 3)))
-         for r, p, u in zip(rows, probs, util)),
-        key=lambda x: (x.sessions_per_connector_day is not None,
-                       x.sessions_per_connector_day or 0.0, x.probability),
+        (PlannerPrediction(
+            cell_id=r["cell_id"], kota=r["kota"],
+            probability=round(p, 4),
+            has_station=bool(r.get("station_count") or 0),
+            sessions_per_connector_day=(None if su is None else round(su.utilisation, 3)),
+            suitability=(None if su is None else round(su.suitability, 4)),
+            suitability_band=(None if su is None else su.band),
+            supply_discount=(None if su is None else round(su.supply.discount, 4)),
+            stations_2km=r.get("stations_2km"))
+         for r, p, su in zip(rows, probs, suits)),
+        key=lambda x: (x.suitability is not None, x.suitability or 0.0, x.probability),
         reverse=True)
 
     # Summarised over cells WITHOUT a station only. Mixing the two populations is
@@ -3122,6 +3175,9 @@ def planner_predict_area(
     # Unbuilt cells only, for the same reason the resemblance figures are: a
     # summary that mixes in cells which already hold a station describes the
     # network that exists rather than the opportunity being assessed.
+    # Unbuilt cells only, for the same reason the resemblance figures are.
+    bands = [x.suitability_band for x in scored
+             if not x.has_station and x.suitability_band is not None]
     used = sorted(x.sessions_per_connector_day for x in scored
                   if not x.has_station and x.sessions_per_connector_day is not None)
     m = len(used)
@@ -3140,6 +3196,15 @@ def planner_predict_area(
             max_probability=None if not n else round(empty[-1], 4),
             resemblance_ceiling=scale.ceiling if scale else None,
             resemblance_ceiling_cells=scale.cells_scored if scale else None,
+            suitability_scale=(None if suit_scale is None else {
+                "red_floor": round(suit_scale.red_floor, 4),
+                "yellow_floor": round(suit_scale.yellow_floor, 4),
+                "cells_scored": float(suit_scale.cells_scored),
+                "model_weight": suit_scale.model_weight,
+            }),
+            cells_red=bands.count("red") if bands else None,
+            cells_yellow=bands.count("yellow") if bands else None,
+            cells_green=bands.count("green") if bands else None,
             mean_sessions_per_connector_day=None if not m else round(sum(used) / m, 3),
             median_sessions_per_connector_day=(None if used_median is None
                                                else round(used_median, 3)),

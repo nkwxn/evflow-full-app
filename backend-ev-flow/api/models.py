@@ -1411,6 +1411,29 @@ class PlannerPrediction(BaseModel):
                            "grid, the model's 500 highest-probability cells are 100% cells "
                            "that already have one, so a client that cannot tell the two apart "
                            "will present existing sites as candidates.")
+    suitability: Optional[float] = Field(
+        None, ge=0, le=1,
+        description="How suitable this cell is, 0..1, as a percentile of the whole scored "
+                    "region. A blend of the model's demand prediction and a penalty for "
+                    "existing supply nearby, weighted 50/50 over their ranks. Multiplying "
+                    "the two was measured and rejected: demand and supply are negatively "
+                    "correlated here, so the product ranked at -0.036 against the model. "
+                    "Null when no utilisation artifact is loaded.")
+    suitability_band: Optional[str] = Field(
+        None, description="'red' (top decile of the region), 'yellow' (above the median) or "
+                          "'green'. Bands are quantiles of the live distribution, not fixed "
+                          "values, so a retrain moves them rather than leaving a stale "
+                          "threshold. Read red as 'top 10% of Jabodetabek', never as 'high "
+                          "demand' -- a quantile band cannot say a place is good in absolute "
+                          "terms, only that it is the best available here.")
+    supply_discount: Optional[float] = Field(
+        None, description="1/(1+competing stations within 2 km), counting a station in the "
+                          "same car park as more than one at the rim. Returned separately so "
+                          "the blend is auditable rather than a single opaque number.")
+    stations_2km: Optional[int] = Field(
+        None, description="Stations within 2 km. Counts STATIONS, not connectors: ten "
+                          "single-connector sites and one ten-connector site are the same "
+                          "number here, which is a known limit of the supply term.")
     sessions_per_connector_day: Optional[float] = Field(
         None, description="Prescriptive model: simulated sessions a connector here would "
                           "turn over per day, at the reference spec in "
@@ -1502,6 +1525,15 @@ class PlannerAreaDistribution(BaseModel):
                           "exists rather than the opportunity being assessed.")
     median_sessions_per_connector_day: Optional[float] = Field(
         None, description="Median of the same. Prefer it to the mean when the area is small.")
+    suitability_scale: Optional[dict[str, float]] = Field(
+        None, description="The regional distribution these cells were read against: "
+                          "red_floor, yellow_floor and cells_scored. Returned so a legend "
+                          "prints the same numbers the shading used and the two cannot "
+                          "drift. Null when no scale could be built, in which case a client "
+                          "must omit the band claim rather than assume green.")
+    cells_red: Optional[int] = Field(None, description="Unbuilt cells in the top decile here.")
+    cells_yellow: Optional[int] = None
+    cells_green: Optional[int] = None
     max_sessions_per_connector_day: Optional[float] = Field(
         None, description="Highest predicted utilisation among unbuilt cells here. Read it "
                           "against the grid-wide spread of about 1.66x between the 5th and "
