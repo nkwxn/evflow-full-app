@@ -39,7 +39,7 @@ export function ModelPredictionCard({ probability, model, interpretation, loadin
     return (
       <View style={styles.card}>
         <Text style={styles.label}>MODEL PREDICTION</Text>
-        <Text style={styles.muted}>{error ?? 'No trained model is available for this cell.'}</Text>
+        <Text style={styles.muted}>{error ?? 'No trained model is available for this place.'}</Text>
       </View>
     );
   }
@@ -51,28 +51,42 @@ export function ModelPredictionCard({ probability, model, interpretation, loadin
       <View style={styles.headerRow}>
         <Text style={styles.label}>MODEL PREDICTION</Text>
         {model ? (
-          // The leave-one-area-out figure, not the random-split one. The
-          // random split scores 0.927 and means far less: neighbouring cells
-          // land on both sides of it, so the model recalls nearby answers.
-          <Text style={styles.badge}>AUC {model.loco_auc.toFixed(3)}</Text>
+          // Was "AUC 0.807". It is the leave-one-area-out figure, not the
+          // random split, which scores 0.927 and means far less because
+          // neighbouring cells land on both sides of it. None of that is
+          // actionable for a planner, so the number is labelled in words and
+          // explained at the foot of the card.
+          <Text style={styles.badge}>Reliability {model.loco_auc.toFixed(2)}</Text>
         ) : null}
       </View>
 
       <View style={styles.valueRow}>
         <Text style={styles.value}>{pct}</Text>
-        <Text style={styles.unit}>% resemblance</Text>
+        <Text style={styles.unit}>% like an existing charger site</Text>
       </View>
 
       <Text style={styles.caption}>
-        Probability this cell resembles one that already has a station
+        How closely this place matches the ones that already have a charger
       </Text>
 
-      {interpretation ? <Text style={styles.caveat}>{interpretation}</Text> : null}
+      {/*
+        The API's `interpretation` names both models and the column behind the
+        number. It stays in the response, and this card says the one thing a
+        planner has to take from it instead.
+      */}
+      <Text style={styles.caveat}>
+        A high figure is not a recommendation. Most chargers in Jabodetabek today are
+        PLN&rsquo;s, so this mostly says how much the place looks like somewhere PLN has
+        already built — useful background when you are weighing a site, but not a reason
+        to pick it. The colour on the map is what ranks places against each other.
+      </Text>
 
       {model ? (
         <Text style={styles.provenance}>
-          {model.label} · trained on {model.n_samples.toLocaleString()} cells
-          ({model.n_positive.toLocaleString()} with a station) · {model.n_features} features
+          Compared against {model.n_samples.toLocaleString()} places across Jabodetabek,
+          {' '}{model.n_positive.toLocaleString()} of which have a charger today.
+          {' '}Reliability {model.loco_auc.toFixed(2)} out of 1.00, measured by holding back
+          whole districts the model had never seen — good, not perfect.
         </Text>
       ) : null}
     </View>
