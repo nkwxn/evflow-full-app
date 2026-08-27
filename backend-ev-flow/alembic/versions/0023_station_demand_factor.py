@@ -83,8 +83,11 @@ def upgrade() -> None:
     # than only its distribution. Rescaling keeps the total where it is, which is
     # the only way a before/after comparison means anything.
     #
-    # Rescaling preserves ratios, so the busiest location still draws about 3.2x
-    # the quietest.
+    # Rescaling preserves ratios between factors. What that turns into in
+    # sessions is smaller than it looks: measured 2026-08-24 on a fully weighted
+    # day, the top factor quartile drew 1.65x the bottom, against 2.63x implied
+    # by the quartile means. The availability gate absorbs the rest -- see the
+    # comment above req_threshold in scripts/sql/charging_simulation.sql.
     op.execute("""
         CREATE OR REPLACE FUNCTION refresh_station_demand_factor()
         RETURNS INTEGER LANGUAGE plpgsql AS $$

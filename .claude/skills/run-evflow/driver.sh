@@ -28,8 +28,18 @@ DB_PORT="${EVFLOW_DB_PORT:-5433}"
 API_PORT="${EVFLOW_API_PORT:-8000}"
 WEB_PORT="${EVFLOW_WEB_PORT:-5173}"
 DEMO_PASSWORD="${VITE_DEMO_PASSWORD:-evflow-demo-2026}"
-# Default matches the Containerfile ARG. Override for a local PostGIS.
-DEFAULT_DB="postgresql+psycopg://evflow:evflow@localhost:${DB_PORT}/evflow_staging"
+# The staging password is a dev-grade default, not a secret worth protecting: it
+# guards a database reachable only through an SSH tunnel that this script opens
+# with a key file. It is still read from the environment first, so the literal
+# stops being the only source and a real deployment can override it without
+# editing a tracked file.
+#
+# api/db.py deliberately has NO password default at all. That asymmetry is on
+# purpose: this is a local convenience script, that is the production path.
+EVFLOW_DB_USER="${EVFLOW_DB_USER:-evflow}"
+EVFLOW_DB_PASSWORD="${EVFLOW_DB_PASSWORD:-evflow}"
+EVFLOW_DB_NAME="${EVFLOW_DB_NAME:-evflow_staging}"
+DEFAULT_DB="postgresql+psycopg://${EVFLOW_DB_USER}:${EVFLOW_DB_PASSWORD}@localhost:${DB_PORT}/${EVFLOW_DB_NAME}"
 
 API_LOG="$RUN_DIR/api.log"
 WEB_LOG="$RUN_DIR/web.log"
@@ -300,5 +310,9 @@ case "${1:-up}" in
   smoke)  tunnel_up && api_up && { echo; smoke; } ;;
   status) status ;;
   down)   down ;;
-  *)      echo "usage: $0 {up|smoke|status|down}"; exit 2 ;;
+  # Print the resolved connection string, so nothing has to scrape this file
+  # with sed to find it. That scraping is what every ad-hoc command in this repo
+  # was doing, and it broke the moment the literal became a ${VAR}.
+  url)    echo "$DEFAULT_DB" ;;
+  *)      echo "usage: $0 {up|smoke|status|down|url}"; exit 2 ;;
 esac

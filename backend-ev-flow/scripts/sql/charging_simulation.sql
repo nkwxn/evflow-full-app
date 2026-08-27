@@ -120,8 +120,19 @@ BEGIN
         -- information about place.
         --
         -- The factor averages exactly 1.0 across stations, so the TOTAL number of
-        -- simulated sessions is unchanged and only its distribution moves. The
-        -- busiest location draws about 3.2x the quietest.
+        -- simulated sessions is unchanged and only its distribution moves.
+        --
+        -- MEASURED, because the figure this comment first carried was not. It
+        -- claimed the busiest location draws about 3.2x the quietest. Between
+        -- quartile means the factors alone imply 1.444 / 0.549 = 2.63x, and what
+        -- the sessions actually show on a fully weighted day is 1.65x
+        -- (2026-08-24: Q1 4.28, Q4 7.07 sessions per connector).
+        --
+        -- The gap is the availability gate two lines below. A connector that is
+        -- busy cannot start a session however attractive its location, so the
+        -- arrival rate saturates as r = p*f / (1 + p*f*D). Duty cycle is only
+        -- 0.12-0.15, so the gate is far from binding, and it still costs a third
+        -- of the spread.
         --
         -- What this produces is a SCENARIO, not a forecast. The weights inside
         -- refresh_station_demand_factor() are an assumption about demand, and a

@@ -13,13 +13,19 @@ from typing import Optional
 from sqlalchemy import text
 
 from .db import engine
-from .services.planner_viewport import Viewport, metric_column
+from .services.planner_viewport import POI_CATEGORIES, Viewport, metric_column
 from .services.site_scoring import SiteWeights, normalised_weights
 
 #: Percentile rank per feature, computed across every cell that survives the
 #: filter. `coverage` is capped at 10 km first: past that distance a cell is
 #: unserved in any practical sense, and without the cap the far edge of Kabupaten
 #: Bogor would stretch the scale and compress everywhere a driver actually is.
+#:
+#: NULL coalesces to the cap, not to zero. nearest_station_m is NULL only when no
+#: station exists to measure from, which means MAXIMALLY unserved; coalescing to
+#: 0 metres said "a station is exactly here" and inverted the coverage term for
+#: every cell. Never observed in production, where 1,237 stations make the column
+#: always populated -- and invisible there for exactly that reason.
 _RANKED = """
     WITH filtered AS (
         SELECT * FROM planning_cells
@@ -29,7 +35,8 @@ _RANKED = """
     ranked AS (
         SELECT cell_id, kota, centroid, population, poi_total, road_nodes,
                station_count, connector_count, nearest_station_m, stations_2km,
-               PERCENT_RANK() OVER (ORDER BY LEAST(COALESCE(nearest_station_m, 0), 10000)) AS r_coverage,
+               PERCENT_RANK() OVER (ORDER BY LEAST(COALESCE(nearest_station_m, 10000), 10000))
+                   AS r_coverage,
                PERCENT_RANK() OVER (ORDER BY population)  AS r_population,
                PERCENT_RANK() OVER (ORDER BY poi_total)   AS r_activity,
                PERCENT_RANK() OVER (ORDER BY road_nodes)  AS r_roads
@@ -620,7 +627,12 @@ def get_cell(cell_id: str, weights: Optional[SiteWeights] = None,
     params = _weight_params(weights or SiteWeights())
     params.update(cell_id=cell_id, min_overlap=min_overlap,
                   excluded_kota=excluded_kota if excluded_kota is not None else DEFAULT_EXCLUDED_KOTA)
-    sql = _RANKED + """,
+    # Built from POI_CATEGORIES rather than typed out. The hand-written list
+    # stopped at the original seventeen, so every dwell category migration 0022
+    # added -- hotel, cafe, supermarket, thirteen in all -- was missing from this
+    # response while sitting in the table and in every other endpoint.
+    poi_columns = ", ".join(f"p.poi_{c}" for c in POI_CATEGORIES)
+    sql = _RANKED + f""",
     with_rank AS (
         SELECT cell_id, score, rank() OVER (ORDER BY score DESC) AS rank_overall
           FROM scored
@@ -630,11 +642,7 @@ def get_cell(cell_id: str, weights: Optional[SiteWeights] = None,
                (w.cell_id IS NOT NULL) AS in_scored_set,
                ST_Y(p.centroid) AS latitude, ST_X(p.centroid) AS longitude,
                p.overlap_frac, p.population,
-               p.poi_parking, p.poi_parking_space, p.poi_restaurant, p.poi_park,
-               p.poi_school, p.poi_university, p.poi_cinema, p.poi_library,
-               p.poi_community_centre, p.poi_place_of_worship, p.poi_townhall,
-               p.poi_government, p.poi_civic, p.poi_fuel, p.poi_mall,
-               p.poi_hospital, p.poi_rest_area, p.poi_total,
+               {poi_columns}, p.poi_total,
                p.lu_commercial_share, p.lu_retail_share,
                p.lu_residential_share, p.lu_industrial_share,
                p.road_nodes, p.road_length_m,
