@@ -112,10 +112,13 @@ export function resemblanceColour(probability: number, ceiling: number | null): 
  * Traffic layer on the same screen, where red means congested and bad.
  */
 export const SUITABILITY_BANDS = [
-  { key: 'red', colour: '#DC2626', label: 'Top 10% of Jabodetabek' },
-  { key: 'yellow', colour: '#F59E0B', label: 'Top half' },
-  { key: 'green', colour: '#10B981', label: 'Lower half — or already well served' }
+  { key: 'red', colour: '#DC2626', label: 'Best 10% in Jabodetabek' },
+  { key: 'yellow', colour: '#F59E0B', label: 'Better than average' },
+  { key: 'green', colour: '#10B981', label: 'Below average, or already well covered' }
 ] as const;
+
+/** Grey is a colour on the map, so it belongs in the key beside the bands. */
+export const BUILT_LABEL = 'Already has a charger';
 
 /** The floors a band was cut at, as the API returns them. */
 export type SuitabilityScale = {
@@ -147,21 +150,53 @@ export function suitabilityOpacity(value: number | null | undefined): number {
 }
 
 /**
- * The legend's lines, printed from the same floors that chose the fills.
+ * The colour key, as rows a planner can read off the map.
  *
- * Returned rather than rendered so the numbers cannot be retyped into JSX and
- * drift from the shading they describe.
+ * WHY THE KEY IS BUILT HERE AND NOT WRITTEN INTO THE PANEL
+ *
+ * The counts and the colours have to be the ones actually on screen. Typed into
+ * JSX they drift the first time a band moves, and a key that disagrees with the
+ * map is worse than no key, because a key is believed. The map legend and the
+ * panel key both read SUITABILITY_BANDS for the same reason.
+ *
+ * Grey is included. It is a colour on the map and it was the only one the card
+ * described in a sentence and never showed, which is how a planner ends up
+ * asking what the grey squares mean.
+ *
+ * Wording is deliberately free of "cell", "station", "resemblance" and
+ * "percentile". A cell is a 500 m square we chose, a station is our column
+ * name, and neither is what a planner calls the thing they are looking at.
  */
-export function suitabilityLegend(scale: SuitabilityScale | null | undefined): string[] {
-  if (!scale) {
-    return ['The region-wide scale is unavailable, so no cell can be banded yet.'];
-  }
+export function suitabilityKeyRows(distribution: PlannerAreaDistributionApi):
+  Array<{ colour: string; label: string; count: number | null }> {
+  if (!distribution.suitability_scale) return [];
+  const counts = [distribution.cells_red, distribution.cells_yellow, distribution.cells_green];
   return [
-    `Ranked against all ${scale.cells_scored.toLocaleString()} scored cells in Jabodetabek.`,
-    `Red at ${scale.red_floor.toFixed(2)} and above, amber from ${scale.yellow_floor.toFixed(2)}.`,
-    `${Math.round(scale.model_weight * 100)}% predicted demand, `
-      + `${Math.round((1 - scale.model_weight) * 100)}% distance from existing stations.`
+    ...SUITABILITY_BANDS.map((band, i) => ({
+      colour: band.colour, label: band.label, count: counts[i] ?? null
+    })),
+    { colour: BUILT_COLOUR, label: BUILT_LABEL, count: distribution.cells_with_station }
   ];
+}
+
+/**
+ * One sentence under the key saying what the colours were decided on.
+ *
+ * Read off the scale rather than written down, for the same reason the floors
+ * are: the split between demand and competition is a decision that can change,
+ * and a sentence claiming 50/50 after it moved would be false.
+ *
+ * The raw floors are not printed. They are internal scores on a 0-1 range a
+ * planner has no way to calibrate, and the API still returns them for anyone
+ * who needs to audit the shading.
+ */
+export function suitabilityKeyNote(scale: SuitabilityScale | null | undefined): string {
+  if (!scale) return '';
+  const demand = Math.round(scale.model_weight * 100);
+  return `Every place is ranked against all ${scale.cells_scored.toLocaleString()} we score `
+    + `across Jabodetabek: ${demand}% on how busy we expect a charger there to be, `
+    + `${100 - demand}% on how far it is from chargers that already exist. `
+    + 'Green includes busy districts that are already well covered.';
 }
 
 /** Opacity that keeps a near-zero cell visible without implying a reading. */
@@ -181,10 +216,10 @@ export function resemblanceOpacity(probability: number, ceiling: number | null):
  */
 export function distributionSummary(distribution: PlannerAreaDistributionApi): string {
   const { cells_with_station: built, cells_without_station: open, cells_predicted: n } = distribution;
-  if (n === 0) return 'No cells here are scored by the planner.';
-  if (open === 0) return `All ${built.toLocaleString()} cells here already have a station.`;
-  if (built === 0) return `None of the ${open.toLocaleString()} cells here has a station yet.`;
-  return `${built.toLocaleString()} of ${n.toLocaleString()} cells here already have a station. `
+  if (n === 0) return 'Nothing here is scored by the planner.';
+  if (open === 0) return `All ${built.toLocaleString()} places here already have a charger.`;
+  if (built === 0) return `None of the ${open.toLocaleString()} places here has a charger yet.`;
+  return `${built.toLocaleString()} of ${n.toLocaleString()} places here already have a charger. `
     + `${open.toLocaleString()} do not.`;
 }
 
@@ -201,12 +236,16 @@ export function resemblanceCaption(max: number | null, ceiling: number | null): 
   // caption exists to prevent. Say the figure and stop, rather than reaching for
   // a remembered denominator that may no longer be the model's.
   if (ceiling === null || ceiling <= 0) {
-    return `Best unbuilt cell here scores ${max.toFixed(2)}. `
-      + 'The region-wide scale is unavailable, so there is nothing to compare it against yet.';
+    return `The strongest open place here scores ${max.toFixed(2)}. `
+      + 'The Jabodetabek-wide comparison is unavailable right now, so there is nothing to '
+      + 'read it against yet.';
   }
   const pctOfRange = Math.round((max / ceiling) * 100);
-  return `Best unbuilt cell here scores ${max.toFixed(2)}, which is ${pctOfRange}% of the `
-    + `highest any unbuilt cell in Jabodetabek reaches (${ceiling.toFixed(2)}).`;
+  // The ceiling stays in the sentence. 0.26 reads as "poor" to anyone who does
+  // not know that 0.31 is as high as any place without a charger gets, and that
+  // is the entire reason this caption exists.
+  return `At ${max.toFixed(2)}, the strongest open place here reaches ${pctOfRange}% of the `
+    + `best any place in Jabodetabek without a charger reaches (${ceiling.toFixed(2)}).`;
 }
 
 /**
@@ -217,7 +256,7 @@ export function resemblanceCaption(max: number | null, ceiling: number | null): 
 export function truncationWarning(distribution: PlannerAreaDistributionApi): string | null {
   if (!distribution.truncated) return null;
   const { cells_predicted: scored, cells_in_area: total } = distribution;
-  return `Showing the ${scored.toLocaleString()} busiest of ${total.toLocaleString()} cells here. `
+  return `Showing the ${scored.toLocaleString()} busiest of ${total.toLocaleString()} places here. `
     + 'Shrink the radius before reading this as full coverage.';
 }
 

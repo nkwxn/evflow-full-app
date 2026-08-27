@@ -7,6 +7,8 @@ import {
   distributionSummary,
   drawTruncationNote,
   resemblanceCaption,
+  suitabilityKeyNote,
+  suitabilityKeyRows,
   truncationWarning
 } from './areaPrediction';
 
@@ -73,31 +75,50 @@ export function AreaPredictionCard({
   const clipped = truncationWarning(distribution);
   const partiallyDrawn = drawTruncationNote(drawnCells, distribution.cells_predicted);
   const { max_probability: best, median_probability: mid } = distribution;
+  const keyRows = suitabilityKeyRows(distribution);
 
   return (
     <View style={styles.card}>
       <View style={styles.headerRow}>
         <Text style={styles.label}>MODEL CHECK · {radiusKm} KM</Text>
         {model ? (
-          // The leave-one-area-out figure. The random split scores higher and
-          // means less: neighbouring cells land on both sides of it.
-          <Text style={styles.badge}>AUC {model.loco_auc.toFixed(3)}</Text>
+          // Was "AUC 0.807". AUC is a modelling metric, and a planner cannot act
+          // on it or tell a good one from a bad one. The number is kept because
+          // hiding how well the model does would be worse, but it is labelled in
+          // words and explained at the bottom of the card.
+          <Text style={styles.badge}>Reliability {model.loco_auc.toFixed(2)}</Text>
         ) : null}
       </View>
 
       <View style={styles.valueRow}>
         <Text style={styles.value}>{distribution.cells_without_station.toLocaleString()}</Text>
-        <Text style={styles.unit}>cells with no station yet</Text>
+        <Text style={styles.unit}>places here with no charger yet</Text>
       </View>
       <Text style={styles.caption}>{distributionSummary(distribution)}</Text>
 
-      {distribution.cells_with_station > 0 ? (
-        <View style={styles.builtRow}>
-          <View style={styles.builtSwatch} />
-          <Text style={styles.builtText}>
-            {distribution.cells_with_station.toLocaleString()} already built, shown in slate.
-            These are the cells the model scores highest, which is why they are not on the
-            resemblance scale.
+      {keyRows.length > 0 ? (
+        <View style={styles.keyBlock}>
+          <Text style={styles.label}>WHAT THE COLOURS MEAN</Text>
+          {keyRows.map((row) => (
+            <View key={row.colour} style={styles.keyRow}>
+              <View style={[styles.keySwatch, { backgroundColor: row.colour }]} />
+              <Text style={styles.keyLabel}>{row.label}</Text>
+              <Text style={styles.keyCount}>
+                {row.count === null ? '—' : row.count.toLocaleString()}
+              </Text>
+            </View>
+          ))}
+          <Text style={styles.scaleNote}>{suitabilityKeyNote(distribution.suitability_scale)}</Text>
+        </View>
+      ) : distribution.cells_with_station > 0 ? (
+        // No scale, so no bands to key. Grey still needs explaining, because it
+        // is on the map either way.
+        <View style={styles.keyRow}>
+          <View style={[styles.keySwatch, { backgroundColor: BUILT_COLOUR }]} />
+          <Text style={styles.keyLabel}>
+            {distribution.cells_with_station.toLocaleString()} places here already have a
+            charger. They are greyed out rather than ranked — somewhere already built is not
+            an opportunity.
           </Text>
         </View>
       ) : null}
@@ -106,22 +127,23 @@ export function AreaPredictionCard({
         <>
           <View style={styles.statRow}>
             <Stat
-              label="BUSIEST UNBUILT"
+              label="BUSIEST OPEN PLACE"
               value={distribution.max_sessions_per_connector_day}
               digits={1}
             />
             <Stat
-              label="TYPICAL UNBUILT"
+              label="TYPICAL OPEN PLACE"
               value={distribution.median_sessions_per_connector_day}
               digits={1}
             />
           </View>
           <Text style={styles.scaleNote}>
-            Simulated sessions per connector per day, every cell scored at the same{' '}
-            {formatSpec(utilisationModel.reference_spec)} site so what differs is the place
-            and not the hardware. A SCENARIO recovered from the simulation&rsquo;s own demand
-            assumption, not a forecast. Across the whole grid this model separates cells by
-            about 1.7x, so read two cells as close unless they are far apart.
+            Charging sessions per connector per day. Every place is compared as if you built
+            the same {formatSpec(utilisationModel.reference_spec)} site there, so what differs
+            is the location and not the equipment. These come from a simulation, not from real
+            charging records — treat them as a planning scenario rather than a forecast. Busiest
+            and quietest across Jabodetabek differ by only about 1.7x, so two places within a
+            few tenths of each other are effectively tied.
           </Text>
         </>
       ) : null}
@@ -129,8 +151,8 @@ export function AreaPredictionCard({
       {best !== null ? (
         <>
           <View style={styles.statRow}>
-            <Stat label="BEST UNBUILT" value={best} />
-            <Stat label="MEDIAN UNBUILT" value={mid} />
+            <Stat label="MOST LIKE AN EXISTING SITE" value={best} />
+            <Stat label="TYPICAL HERE" value={mid} />
           </View>
           <Text style={styles.scaleNote}>
             {resemblanceCaption(best, distribution.resemblance_ceiling)}
@@ -140,31 +162,36 @@ export function AreaPredictionCard({
 
       {clipped ? <Text style={styles.warning}>{clipped}</Text> : null}
       {partiallyDrawn ? <Text style={styles.warning}>{partiallyDrawn}</Text> : null}
-      {interpretation ? <Text style={styles.caveat}>{interpretation}</Text> : null}
-
-      {model ? (
-        <Text style={styles.provenance}>
-          Resemblance: {model.label} · trained on {model.n_samples.toLocaleString()} cells
-          ({model.n_positive.toLocaleString()} with a station) · {model.n_features} features
-          · scored on request, not precomputed
-        </Text>
-      ) : null}
 
       {/*
-        The prescriptive model gets its own line rather than sharing the one
-        above. They were trained on different targets over different windows, and
-        a single provenance line describing one of them read as if it described
-        the whole card — which is exactly how the screen came to say "station
-        presence (descriptive)" underneath a utilisation number.
+        The API's `interpretation` string is written for whoever maintains the
+        models — it names the two models, the migrations behind the simulation
+        and the column `sessions_per_connector_day`. It stays in the response,
+        because that is the right place for it, and is replaced here by the two
+        things a planner has to know: the numbers are simulated, and looking like
+        an existing site is not a recommendation.
       */}
-      {utilisationModel ? (
+      <Text style={styles.caveat}>
+        Two things to keep in mind. The session figures come from a simulation of
+        charging behaviour, not from real charging records, so they show how places
+        compare rather than what any of them will actually earn. And most chargers in
+        Jabodetabek today are PLN&rsquo;s, so &ldquo;looks like an existing site&rdquo;
+        largely means &ldquo;looks like somewhere PLN has built&rdquo; — useful context,
+        but not a reason to build.
+      </Text>
+
+      {model || utilisationModel ? (
         <Text style={styles.provenance}>
-          Utilisation: {utilisationModel.label} · {utilisationModel.n_samples.toLocaleString()}{' '}
-          cells over {utilisationModel.window_days}{' '}
-          {utilisationModel.window_days === 1 ? 'day' : 'days'} of demand-weighted simulation
-          · dose-response {utilisationModel.dose_response.toFixed(2)}x
-          {utilisationModel.counting_noise_pct !== null
-            ? ` · ±${Math.round(utilisationModel.counting_noise_pct)}% counting noise`
+          {model
+            ? `Scored against ${model.n_samples.toLocaleString()} places across Jabodetabek, `
+              + `${model.n_positive.toLocaleString()} of which have a charger today. `
+              + `Reliability ${model.loco_auc.toFixed(2)} out of 1.00, measured by holding back `
+              + 'whole districts the model had never seen — good, not perfect. '
+            : ''}
+          {utilisationModel
+            ? `Demand figures come from ${utilisationModel.window_days} `
+              + `${utilisationModel.window_days === 1 ? 'day' : 'days'} of simulated charging. `
+              + 'Nothing here is precomputed; every number is worked out when you ask for it.'
             : ''}
         </Text>
       ) : null}
@@ -207,11 +234,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#EDE9FE', borderRadius: 4, color: '#5B21B6', fontSize: 11,
     fontWeight: '700', overflow: 'hidden', paddingHorizontal: 6, paddingVertical: 2
   },
-  builtRow: { flexDirection: 'row', gap: 8, marginTop: 10 },
-  builtSwatch: {
-    backgroundColor: BUILT_COLOUR, borderRadius: 3, height: 12, marginTop: 2, width: 12
+  keyBlock: {
+    borderTopColor: '#E4EAEC', borderTopWidth: 1, marginTop: 12, paddingTop: 10
   },
-  builtText: { color: '#55656A', flex: 1, fontSize: 11, lineHeight: 16 },
+  keyCount: { color: '#26383D', fontSize: 11, fontWeight: '700' },
+  keyLabel: { color: '#55656A', flex: 1, fontSize: 11, lineHeight: 16 },
+  keyRow: { alignItems: 'center', flexDirection: 'row', gap: 8, marginTop: 6 },
+  keySwatch: { borderRadius: 3, height: 12, width: 12 },
   caption: { color: '#55656A', fontSize: 12, marginTop: 2 },
   card: {
     backgroundColor: '#F7F9FA', borderColor: '#DDE5E7', borderRadius: 10, borderWidth: 1,

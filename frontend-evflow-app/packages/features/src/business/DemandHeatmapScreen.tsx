@@ -30,7 +30,7 @@ import { PLANNER_LANDUSE_CLASSES } from '@evflow/shared';
 import type { PlannerLandUseResponse } from '@evflow/shared';
 import { AreaPredictionCard } from './site-prediction/AreaPredictionCard';
 import {
-  BUILT_COLOUR, RESEMBLANCE_BANDS, SUITABILITY_BANDS, suitabilityLegend
+  BUILT_COLOUR, RESEMBLANCE_BANDS, SUITABILITY_BANDS, suitabilityKeyNote
 } from './site-prediction/areaPrediction';
 import type { SuitabilityScale } from './site-prediction/areaPrediction';
 import { useAreaPrediction } from './site-prediction/useAreaPrediction';
@@ -738,7 +738,13 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
           {layers.landUse && landUseCoverage ? (
             <LandUseLegend coverage={landUseCoverage} />
           ) : null}
-          {layers.demandHeatmap && !expanded && demandScale ? (
+          {/* `!expanded` alone hid this on desktop, where opening Map Layers sets
+              expanded and the docked panel leaves the map fully visible beside
+              it — so the one layer whose colours cannot be guessed lost its key
+              exactly when someone opened the panel to find out what they meant.
+              On a phone the expanded sheet really does cover the map, so the
+              legend still stands down there. */}
+          {layers.demandHeatmap && (dockedPanel || !expanded) && demandScale ? (
             <ModelPredictionLegend
               suitability={demandScale.suitability}
               ceiling={demandScale.ceiling}
@@ -1034,8 +1040,8 @@ function ModelPredictionLegend({ suitability, ceiling, builtCells, title = 'MODE
           // drift. Never "high demand": these are quantile bands, and red on this
           // layer sits on the same screen as red on Live Traffic, where it means
           // congested and bad.
-          ? suitabilityLegend(suitability).join(' ')
-            + ' Green includes districts already well served. Numbered circles are the same score.'
+          ? suitabilityKeyNote(suitability)
+            + ' The numbered pins are ranked on this same score.'
           : ceiling === null
             // No ceiling means no denominator, and a share of an unknown best is
             // not a number to print. Say the scale is unanchored instead.

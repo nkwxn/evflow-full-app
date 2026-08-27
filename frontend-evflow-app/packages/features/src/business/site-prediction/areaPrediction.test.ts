@@ -13,7 +13,8 @@ import {
   resemblanceColour,
   resemblanceOpacity,
   suitabilityColour,
-  suitabilityLegend,
+  suitabilityKeyNote,
+  suitabilityKeyRows,
   truncationWarning
 } from './areaPrediction';
 
@@ -54,7 +55,7 @@ describe('the summary leads with what is already built', () => {
 
   it('says so plainly when the whole circle is already built', () => {
     const text = distributionSummary(distribution({ cells_with_station: 12, cells_without_station: 0, cells_predicted: 12 }));
-    expect(text).toMatch(/all 12 cells here already have a station/i);
+    expect(text).toMatch(/all 12 places here already have a charger/i);
   });
 
   it('says so plainly when nothing in the circle is built', () => {
@@ -64,7 +65,7 @@ describe('the summary leads with what is already built', () => {
 
   it('does not divide by zero on an unscored circle', () => {
     const text = distributionSummary(distribution({ cells_predicted: 0, cells_with_station: 0, cells_without_station: 0 }));
-    expect(text).toMatch(/no cells/i);
+    expect(text).toMatch(/nothing here is scored/i);
     expect(text).not.toContain('NaN');
   });
 });
@@ -261,6 +262,53 @@ describe('suitability bands', () => {
       expect(band.label.toLowerCase()).not.toContain('high demand');
       expect(band.label).toMatch(/\S/);
     }
-    expect(suitabilityLegend(scale)[0]).toContain('27,219');
   });
+});
+
+describe('the colour key a planner reads', () => {
+  const scale = { red_floor: 0.83, yellow_floor: 0.64, cells_scored: 27219, model_weight: 0.5 };
+
+  it('lists every colour on the map, with how many of each are here', () => {
+    const rows = suitabilityKeyRows(distribution({
+      suitability_scale: scale, cells_red: 4, cells_yellow: 12, cells_green: 45,
+      cells_with_station: 55
+    }));
+    expect(rows.map((r) => r.count)).toEqual([4, 12, 45, 55]);
+    // Grey is on the map, so it is in the key. It was the one colour the card
+    // described in prose and never showed.
+    expect(rows[3]?.colour).toBe(BUILT_COLOUR);
+    expect(rows.every((r) => r.label.length > 0)).toBe(true);
+  });
+
+  it('says nothing rather than guessing when there is no scale', () => {
+    expect(suitabilityKeyRows(distribution({ suitability_scale: null }))).toEqual([]);
+  });
+
+  it('speaks about places and chargers, not cells and stations', () => {
+    // The planner is not a developer. "Cell" is a 500 m grid square we chose;
+    // "station" is our column name.
+    const rows = suitabilityKeyRows(distribution({ suitability_scale: scale }));
+    const text = rows.map((r) => r.label).join(' ').toLowerCase();
+    for (const jargon of ['cell', 'station', 'resemblance', 'quantile', 'percentile']) {
+      expect(text).not.toContain(jargon);
+    }
+  });
+
+  it('explains the blend in the planner\'s terms, from the scale it was given', () => {
+    const lines = suitabilityKeyNote(scale);
+    expect(lines).toContain('27,219');
+    expect(lines).toContain('50%');
+    expect(lines.toLowerCase()).not.toContain('model_weight');
+    expect(suitabilityKeyNote(null)).toBe('');
+  });
+});
+
+
+it('keeps the map legend and the panel key on one set of words', () => {
+  // They were written twice, in two files, and would have disagreed the first
+  // time either was reworded — which is the same class of bug as the map and the
+  // card describing different quantities.
+  const scale = { red_floor: 0.83, yellow_floor: 0.64, cells_scored: 27219, model_weight: 0.5 };
+  const rows = suitabilityKeyRows(distribution({ suitability_scale: scale }));
+  expect(rows.slice(0, 3).map((r) => r.label)).toEqual(SUITABILITY_BANDS.map((b) => b.label));
 });
