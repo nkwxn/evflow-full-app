@@ -15,15 +15,11 @@ export const defaultPlannerLayers: PlannerLayerState = {
 
 export const jakartaViewport: MapViewport = { north: -6.06, south: -6.38, east: 106.98, west: 106.62, zoom: 11 };
 
-const demandZones: Array<{ id: string; priority: DemandPriority; coordinates: Array<[number, number]> }> = [
-  { id: 'central-gap', priority: 'high', coordinates: [[-6.12, 106.79], [-6.12, 106.87], [-6.19, 106.87], [-6.19, 106.79]] },
-  { id: 'south-growth', priority: 'high', coordinates: [[-6.21, 106.78], [-6.21, 106.86], [-6.29, 106.86], [-6.29, 106.78]] },
-  { id: 'west-corridor', priority: 'moderate', coordinates: [[-6.14, 106.67], [-6.14, 106.76], [-6.25, 106.76], [-6.25, 106.67]] },
-  { id: 'east-network', priority: 'moderate', coordinates: [[-6.17, 106.88], [-6.17, 106.96], [-6.28, 106.96], [-6.28, 106.88]] },
-  { id: 'north-covered', priority: 'low', coordinates: [[-6.06, 106.76], [-6.06, 106.86], [-6.12, 106.86], [-6.12, 106.76]] }
-];
-
-const priorityColors: Record<DemandPriority, string> = { high: '#ef4444', moderate: '#f59e0b', low: '#10b981' };
+// The five hardcoded red/amber/green rectangles over Jakarta that used to live
+// here are gone. They were the demand heatmap's initial state AND its fallback
+// when a fetch failed, so a planner could be looking at invented zones with no
+// indication that anything had gone wrong. The layer is now empty until the API
+// answers, and says so when it cannot.
 export function prioritySemanticCategory(priority: DemandPriority) { return priority === 'high' ? 'High Priority' : priority === 'moderate' ? 'Moderate Priority' : 'Low Priority'; }
 export function viabilityTier(score: number) { return score >= 85 && score <= 100 ? 1 : score >= 70 && score <= 84 ? 2 : null; }
 
@@ -34,10 +30,6 @@ export function generateMockOptimalSites(viewport: MapViewport): OptimalSite[] {
     latitude: viewport.south + (viewport.north - viewport.south) * y,
     longitude: viewport.west + (viewport.east - viewport.west) * x
   }));
-}
-
-export function demandHeatmapPolygons(): LeafletPolygonLayer[] {
-  return demandZones.map((zone) => ({ id: zone.id, coordinates: zone.coordinates, fillColor: priorityColors[zone.priority], fillOpacity: 0.28, color: priorityColors[zone.priority], weight: 1 }));
 }
 
 export function plannerPolygons(
@@ -52,7 +44,9 @@ export function plannerPolygons(
   return [
     ...(layers.landUse ? overlays.landUse ?? [] : []),
     ...(layers.populationDensity ? overlays.populationDensity ?? [] : []),
-    ...(layers.demandHeatmap ? overlays.demandHeatmap ?? demandHeatmapPolygons() : []),
+    // No fallback. An empty heatmap is a heatmap with nothing to show; the same
+    // shape filled with invented zones is indistinguishable from a real result.
+    ...(layers.demandHeatmap ? overlays.demandHeatmap ?? [] : []),
     ...(layers.commercialPois ? overlays.commercialPois ?? [] : [])
   ];
 }

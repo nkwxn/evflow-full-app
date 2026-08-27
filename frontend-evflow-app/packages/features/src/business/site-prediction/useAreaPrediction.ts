@@ -92,8 +92,10 @@ export function useAreaPrediction(
         .then(([prediction, cells]) => {
           if (controller.signal.aborted) return;
           setState({
-            polygons: plannerPredictionsToPolygons(
-              prediction.predictions, cells, prediction.distribution.resemblance_ceiling),
+            polygons: plannerPredictionsToPolygons(prediction.predictions, cells, {
+              suitability: prediction.distribution.suitability_scale,
+              resemblanceCeiling: prediction.distribution.resemblance_ceiling
+            }),
             drawnCells: prediction.predictions.length,
             distribution: prediction.distribution,
             model: prediction.model,

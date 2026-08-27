@@ -7,15 +7,13 @@ import type {
   StationApiItem
 } from '@evflow/shared';
 import type { LeafletMapMarker, LeafletPolygonLayer } from '@evflow/ui';
-import type { DemandPriority, OptimalSite } from './demandHeatmap';
-import { BUILT_COLOUR, resemblanceColour, resemblanceOpacity } from './site-prediction/areaPrediction';
+import type { OptimalSite } from './demandHeatmap';
+import {
+  BUILT_COLOUR, resemblanceColour, resemblanceOpacity, suitabilityColour, suitabilityOpacity
+} from './site-prediction/areaPrediction';
+import type { SuitabilityScale } from './site-prediction/areaPrediction';
 import { classOpacity, classify, type DensityScale } from './density/densityScale';
 
-const priorityColors: Record<DemandPriority, string> = {
-  high: '#ef4444',
-  moderate: '#f59e0b',
-  low: '#10b981'
-};
 
 export type PlannerLandUseMetric = 'commercial' | 'industrial' | 'residential' | 'retail';
 
@@ -81,19 +79,16 @@ export function plannerCandidateToOptimalSite(candidate: PlannerCandidateApi): O
   };
 }
 
-export function plannerCellsToPolygons(response: PlannerCellsGeoJsonResponse): LeafletPolygonLayer[] {
-  return response.features.flatMap((feature) => {
-    const priority = scoreToDemandPriority(feature.properties.score ?? feature.properties.value ?? 0);
-    return geometryOuterRings(feature.geometry).map((ring, index) => ({
-      id: `${feature.properties.cell_id}-${index}`,
-      coordinates: ring.map(([longitude, latitude]) => [latitude, longitude] as [number, number]),
-      fillColor: priorityColors[priority],
-      fillOpacity: 0.28,
-      color: priorityColors[priority],
-      weight: 0.6
-    }));
-  });
-}
+// plannerCellsToPolygons and scoreToDemandPriority used to live here: a second
+// red/amber/green painter, cutting its bands at a hardcoded 0.75 and 0.5 on the
+// weighted SQL score. Nothing called it after f72afdd.
+//
+// It was the obvious thing to repurpose for the suitability layer, and that is
+// exactly why it is gone. Its thresholds were constants, and the whole point of
+// the band floors travelling with the response is that a retrain or a station
+// import moves them. Keeping a hardcoded-threshold painter beside an
+// API-floor-driven one would rebuild the divergence this layer was rewritten to
+// close -- two functions producing the same palette from different rules.
 
 /**
  * A metric column drawn as a density surface.
@@ -156,34 +151,49 @@ export function plannerCellsToMetricPolygons(
  * never asked for.
  *
  * Cells that already have a station are drawn in slate with a heavier border,
- * deliberately outside the resemblance scale. They are the cells the model
- * ranks highest, so on the shared scale they would read as the strongest
- * candidates in the circle, which is the opposite of what they are.
+ * deliberately outside either scale. A slate cell says "a station stands here",
+ * which is more specific than the green beside it saying "stations are near",
+ * and both mean do not build.
+ *
+ * TWO PALETTES, AND WHY BOTH ARE STILL HERE
+ *
+ * Red/amber/green is suitability: the model's demand ranking blended with a
+ * discount for what is already built nearby. That is what this layer is for.
+ *
+ * Purple is resemblance, and it is the fallback when no suitability scale could
+ * be built — which is the live state anywhere the utilisation artifact is not
+ * mounted. Blanking the layer there would remove a working map over a missing
+ * file. The palettes are deliberately nothing alike, so a reader can always tell
+ * which question is on screen; a shared palette is how these two came to be
+ * confused for each other in the first place.
  */
 export function plannerPredictionsToPolygons(
   predictions: PlannerPredictionApi[],
   cells: PlannerCellsGeoJsonResponse,
   /**
-   * The region-wide ceiling the shading is scaled against, from the response.
-   * Passed in rather than remembered so the colours and the caption below the
-   * map cannot disagree after a retrain moves the ceiling.
+   * Both scales, from the response rather than remembered, so the colours and
+   * the legend beneath the map cannot disagree after a retrain moves either.
    */
-  ceiling: number | null
+  scale: { suitability: SuitabilityScale | null; resemblanceCeiling: number | null }
 ): LeafletPolygonLayer[] {
-  const byCell = new Map(predictions.map(
-    (p) => [p.cell_id, { probability: p.probability, built: p.has_station }]));
+  const byCell = new Map(predictions.map((p) => [p.cell_id, p]));
 
   return cells.features.flatMap((feature) => {
     const hit = byCell.get(feature.properties.cell_id);
     if (hit === undefined) return [];
-    const { probability, built } = hit;
+    const banded = hit.has_station ? null : suitabilityColour(hit.suitability, scale.suitability);
+    const fill = hit.has_station ? BUILT_COLOUR
+      : banded ?? resemblanceColour(hit.probability, scale.resemblanceCeiling);
+    const opacity = hit.has_station ? 0.22
+      : banded ? suitabilityOpacity(hit.suitability)
+      : resemblanceOpacity(hit.probability, scale.resemblanceCeiling);
     return geometryOuterRings(feature.geometry).map((ring, index) => ({
       id: `prediction-${feature.properties.cell_id}-${index}`,
       coordinates: toLeafletCoordinates(ring),
-      fillColor: built ? BUILT_COLOUR : resemblanceColour(probability, ceiling),
-      fillOpacity: built ? 0.22 : resemblanceOpacity(probability, ceiling),
-      color: built ? BUILT_COLOUR : resemblanceColour(probability, ceiling),
-      weight: built ? 0.9 : 0.4
+      fillColor: fill,
+      fillOpacity: opacity,
+      color: fill,
+      weight: hit.has_station ? 0.9 : 0.4
     }));
   });
 }
@@ -196,12 +206,6 @@ export function plannerStationsToMarkers(stations: StationApiItem[]): LeafletMap
     longitude: station.longitude,
     type: 'station'
   }));
-}
-
-export function scoreToDemandPriority(score: number): DemandPriority {
-  if (score >= 0.75) return 'high';
-  if (score >= 0.5) return 'moderate';
-  return 'low';
 }
 
 export function plannerViewportBbox(viewport: { west: number; south: number; east: number; north: number }) {

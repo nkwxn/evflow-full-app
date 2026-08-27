@@ -1,15 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import type { PlannerAreaDistributionApi } from '@evflow/shared';
 import {
+  BUILT_COLOUR,
   DRAW_LIMIT,
   RADIUS_CHOICES,
   SCORE_LIMIT,
+  SUITABILITY_BANDS,
   distributionSummary,
   drawTruncationNote,
   resemblanceCaption,
   RESEMBLANCE_BANDS,
   resemblanceColour,
   resemblanceOpacity,
+  suitabilityColour,
+  suitabilityLegend,
   truncationWarning
 } from './areaPrediction';
 
@@ -24,6 +28,10 @@ function distribution(over: Partial<PlannerAreaDistributionApi> = {}): PlannerAr
     mean_probability: 0.08, median_probability: 0.05, max_probability: 0.26,
     // Supplied by the API now, measured at 0.305 across all 26,334 unbuilt cells.
     resemblance_ceiling: 0.31, resemblance_ceiling_cells: 26_334,
+    // The band floors, measured over all 27,219 scored cells.
+    suitability_scale: { red_floor: 0.8342, yellow_floor: 0.6404,
+                         cells_scored: 27_219, model_weight: 0.5 },
+    cells_red: 4, cells_yellow: 12, cells_green: 45,
     // The prescriptive figures. About 5 sessions per connector per day is what
     // the model returns for central Jakarta at the 2-connector, 22 kW spec.
     mean_sessions_per_connector_day: 5.49,
@@ -207,5 +215,52 @@ describe('the legend renders from the same bands the fill is chosen from', () =>
   it('paints a near-zero cell in the band the legend calls the bottom one', () => {
     expect(resemblanceColour(0.001, CEILING))
       .toBe(RESEMBLANCE_BANDS[RESEMBLANCE_BANDS.length - 1].colour);
+  });
+});
+
+describe('suitability bands', () => {
+  const scale = { red_floor: 0.83, yellow_floor: 0.64, cells_scored: 27219, model_weight: 0.5 };
+
+  it('cuts at the floors the API supplied, not at remembered constants', () => {
+    expect(suitabilityColour(0.90, scale)).toBe(SUITABILITY_BANDS[0].colour);
+    expect(suitabilityColour(0.83, scale)).toBe(SUITABILITY_BANDS[0].colour);
+    expect(suitabilityColour(0.8299, scale)).toBe(SUITABILITY_BANDS[1].colour);
+    expect(suitabilityColour(0.64, scale)).toBe(SUITABILITY_BANDS[1].colour);
+    expect(suitabilityColour(0.6399, scale)).toBe(SUITABILITY_BANDS[2].colour);
+    expect(suitabilityColour(0.0, scale)).toBe(SUITABILITY_BANDS[2].colour);
+  });
+
+  it('follows the floors when a retrain moves them', () => {
+    // The whole reason the scale travels with the cells. Under a scale whose
+    // floors have moved up, a value that was red must stop being red.
+    const moved = { ...scale, red_floor: 0.95, yellow_floor: 0.80 };
+    expect(suitabilityColour(0.90, scale)).toBe(SUITABILITY_BANDS[0].colour);
+    expect(suitabilityColour(0.90, moved)).toBe(SUITABILITY_BANDS[1].colour);
+  });
+
+  it('paints nothing at all when there is no scale', () => {
+    // Not green. Green means "already well served", which is a claim; no scale
+    // means no claim can be made, and the two must not look the same.
+    expect(suitabilityColour(0.9, null)).toBeNull();
+    expect(suitabilityColour(null, scale)).toBeNull();
+  });
+
+  it('keeps the purple resemblance palette out of the red-green one', () => {
+    // Two layers, two questions, two scales. They were merged once by accident
+    // and the map said "high demand" where the model meant "looks like a place
+    // someone already built".
+    const suit = SUITABILITY_BANDS.map((b) => b.colour);
+    for (const band of RESEMBLANCE_BANDS) expect(suit).not.toContain(band.colour);
+    expect(suit).not.toContain(BUILT_COLOUR);
+  });
+
+  it('labels the bands by what they are, not by "high demand"', () => {
+    // A quantile band cannot support "high demand": it says where a cell sits
+    // among the others, not how much charging happens there.
+    for (const band of SUITABILITY_BANDS) {
+      expect(band.label.toLowerCase()).not.toContain('high demand');
+      expect(band.label).toMatch(/\S/);
+    }
+    expect(suitabilityLegend(scale)[0]).toContain('27,219');
   });
 });

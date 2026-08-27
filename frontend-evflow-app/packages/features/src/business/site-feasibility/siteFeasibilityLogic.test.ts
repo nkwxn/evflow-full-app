@@ -8,6 +8,7 @@ import {
   calculateOverlapScore,
   calculatePoiScore,
   getHeatmapDescription,
+  getHeatmapSummary,
   getNearbyStationsWithinRadius,
   getOverlapDescription,
   getPaybackStatus,
@@ -16,7 +17,8 @@ import {
   resolveOptimalSite,
   sortStationsByDistance
 } from './siteFeasibilityLogic';
-import { getSiteFeasibility } from './siteFeasibilityData';
+import { getSiteFeasibility, plannerCellToSiteFeasibility } from './siteFeasibilityData';
+import type { PlannerCellDetailApi } from '@evflow/shared';
 
 describe('Epic 5 feasibility calculations', () => {
   it('calculates and caps the POI density score', () => {
@@ -103,5 +105,55 @@ describe('Epic 5 nearby station and marker selection logic', () => {
     const records = await Promise.all(sites.map((site) => getSiteFeasibility(site.id)));
     expect(records.map((record) => record.optimalSiteId)).toEqual(sites.map((site) => site.id));
     expect(records.every((record) => record.locationCode.startsWith('LOC-JKT-'))).toBe(true);
+  });
+});
+
+describe('the card reads the map, not its own thresholds', () => {
+  const detail = (over: Partial<PlannerCellDetailApi> = {}): PlannerCellDetailApi => ({
+    cell_id: 'JBDTBK_12253', kota: 'Kota Depok', latitude: -6.4, longitude: 106.8,
+    score: 0.42, rank_overall: 12, cells_total: 27219, in_scored_set: true,
+    overlap_frac: 1, population: 900, poi: { total: 30 }, land_use: { residential: 0.5 },
+    road_nodes: 22, road_length_m: 1200, station_count: 0, connector_count: 0,
+    nearest_station_m: 2532, stations_2km: 0,
+    provenance: {} as PlannerCellDetailApi['provenance'], ...over
+  });
+
+  it('takes the zone from the API band, not from a threshold on a number', () => {
+    // The card printed "Red Demand Zone" from score >= 80 while the map banded
+    // the same cell from region-wide floors. Two rules, one label, and they
+    // disagreed on any cell between them.
+    const red = plannerCellToSiteFeasibility(
+      detail({ suitability: 0.9975, suitability_band: 'red' }), null);
+    expect(red.heatmapBand).toBe('red');
+    expect(getHeatmapSummary(red.heatmapScore, red.heatmapBand)).toContain('Red');
+    expect(getHeatmapDescription(red.heatmapScore, red.heatmapBand)).toContain('Red Zone');
+  });
+
+  it('calls a well-served cell green however high its raw score', () => {
+    // AC (c) at the card. Sudirman cells predict among the highest utilisation
+    // in Jabodetabek and carry 38-104 stations within 2 km; the band is green
+    // and the card must not talk itself back into red.
+    const saturated = plannerCellToSiteFeasibility(
+      detail({ score: 0.95, suitability: 0.502, suitability_band: 'green',
+               stations_2km: 38, nearest_station_m: 120 }), null);
+    expect(getHeatmapSummary(saturated.heatmapScore, saturated.heatmapBand)).toContain('Green');
+  });
+
+  it('scores the cell on suitability when the API supplies it', () => {
+    const cell = plannerCellToSiteFeasibility(
+      detail({ score: 0.42, suitability: 0.9975, suitability_band: 'red' }), null);
+    expect(cell.heatmapScore).toBe(100);
+    // locationScore stays the four-criteria number: two questions, two answers,
+    // and collapsing them would remove the planner's only cross-check.
+    expect(cell.locationScore).toBe(42);
+  });
+
+  it('falls back to the weighted score when no band was supplied', () => {
+    const cell = plannerCellToSiteFeasibility(detail(), null);
+    expect(cell.heatmapScore).toBe(42);
+    expect(cell.heatmapBand).toBeNull();
+    // Still a sentence, still honest: a threshold on the weighted score is what
+    // this always was, and it is only wrong when a real band exists to contradict.
+    expect(getHeatmapSummary(cell.heatmapScore, cell.heatmapBand)).toContain('Zone');
   });
 });

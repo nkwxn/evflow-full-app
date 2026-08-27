@@ -35,11 +35,24 @@ export type PlannerCandidateApi = {
   nearest_station_m: number | null;
   stations_2km: number;
   cluster_size: number;
+  /** Present only under basis 'suitability'. `score` is then the suitability. */
+  suitability_band?: string | null;
+  sessions_per_connector_day?: number | null;
+  supply_discount?: number | null;
 };
 
 export type PlannerCandidatesResponse = {
   weights_applied: Record<string, number>;
   candidates: PlannerCandidateApi[];
+  /**
+   * Which number ranked these.
+   *
+   * Read it rather than assuming what was asked for: a request for
+   * 'suitability' answers 'weighted' when the model is unavailable, because a
+   * planner asking for suggestions is better served by the weighted score than
+   * by a 503.
+   */
+  basis: 'weighted' | 'suitability';
   excluded_areas: string[];
   provenance: PlannerProvenance;
 };
@@ -110,6 +123,18 @@ export type PlannerCellDetailApi = {
   connector_count: number;
   nearest_station_m: number | null;
   stations_2km: number;
+  /**
+   * The same number the heatmap paints this cell with.
+   *
+   * This is what lets the feasibility card say "Located in a Red Demand Zone"
+   * and have it be the colour under the cursor, rather than a second expression
+   * that agrees by inspection. Absent when no scale could be built.
+   */
+  suitability?: number | null;
+  suitability_band?: string | null;
+  sessions_per_connector_day?: number | null;
+  supply_discount?: number | null;
+  suitability_scale?: PlannerSuitabilityScaleApi | null;
   provenance: PlannerProvenance;
 };
 
@@ -395,6 +420,38 @@ export type PlannerPredictionApi = {
    * question.
    */
   sessions_per_connector_day: number | null;
+  /**
+   * The number the heatmap paints: the model's demand ranking blended with a
+   * discount for what is already built nearby, both ranked over the whole
+   * region. 0..1.
+   *
+   * Null when no scale could be built. A client that gets null must OMIT the
+   * band rather than assume green — green means "already well served", which is
+   * the opposite of "we do not know".
+   */
+  suitability: number | null;
+  /** 'red' | 'yellow' | 'green', against the floors in suitability_scale. */
+  suitability_band: string | null;
+  /** 1/(1 + effective stations within 2 km). 1.0 means nothing nearby. */
+  supply_discount: number | null;
+  /** Stations within 2 km. Stations, not connectors — see the API docstring. */
+  stations_2km: number | null;
+};
+
+/**
+ * The regional distribution a band was decided against.
+ *
+ * Returned with the cells rather than hardcoded so the legend prints the same
+ * numbers the shading used. A retrain or a station import moves these floors,
+ * and a client holding constants would band cells against a distribution that
+ * no longer exists.
+ */
+export type PlannerSuitabilityScaleApi = {
+  red_floor: number;
+  yellow_floor: number;
+  cells_scored: number;
+  /** How much of the blend is the model. 0.5 today; read it, do not assume it. */
+  model_weight: number;
 };
 
 export type PlannerPredictResponse = {
@@ -471,6 +528,17 @@ export type PlannerAreaDistributionApi = {
    * and a scale implying more overstates the difference between two cells.
    */
   max_sessions_per_connector_day: number | null;
+  /**
+   * The floors the bands were cut at, over the whole region.
+   *
+   * Null when no scale could be built, in which case every prediction's
+   * suitability_band is null too and a client must show no band at all.
+   */
+  suitability_scale: PlannerSuitabilityScaleApi | null;
+  /** Band counts among cells WITHOUT a station, here. Null with no scale. */
+  cells_red: number | null;
+  cells_yellow: number | null;
+  cells_green: number | null;
 };
 
 export type PlannerPredictAreaResponse = {

@@ -4,13 +4,13 @@ import {
   plannerCandidateToOptimalSite,
   plannerCellsToMetricPolygons,
   landUseColors,
-  plannerCellsToPolygons,
   plannerLandUsePolygons,
   plannerPredictionsToPolygons,
   plannerStationsToMarkers,
-  scoreToDemandPriority
 } from './plannerApiAdapters';
-import { BUILT_COLOUR } from './site-prediction/areaPrediction';
+import {
+  BUILT_COLOUR, RESEMBLANCE_BANDS, SUITABILITY_BANDS
+} from './site-prediction/areaPrediction';
 
 describe('planner API adapters', () => {
   it('converts normalized candidate scores and real cell IDs without inventing coordinates', () => {
@@ -23,25 +23,6 @@ describe('planner API adapters', () => {
       id: 'JBDTBK_13989', district: 'Jakarta Selatan', score: 86,
       latitude: -6.22, longitude: 106.81
     });
-  });
-
-  it('swaps GeoJSON longitude/latitude into Leaflet latitude/longitude', () => {
-    const response = {
-      features: [{
-        type: 'Feature',
-        geometry: { type: 'Polygon', coordinates: [[[106.8, -6.2], [106.81, -6.2], [106.8, -6.21], [106.8, -6.2]]] },
-        properties: { cell_id: 'cell-1', kota: null, value: 0.8, score: 0.8, population: 1, poi_total: 1, station_count: 0, nearest_station_m: null }
-      }]
-    } as PlannerCellsGeoJsonResponse;
-    const [polygon] = plannerCellsToPolygons(response);
-    expect(polygon?.coordinates[0]).toEqual([-6.2, 106.8]);
-    expect(polygon?.fillColor).toBe('#ef4444');
-  });
-
-  it('maps the documented frontend semantic bands at their boundaries', () => {
-    expect(scoreToDemandPriority(0.75)).toBe('high');
-    expect(scoreToDemandPriority(0.5)).toBe('moderate');
-    expect(scoreToDemandPriority(0.49)).toBe('low');
   });
 
   it('turns positive planner metrics into geographically anchored density polygons', () => {
@@ -150,14 +131,21 @@ describe('on-demand prediction polygons', () => {
       }))
     } as PlannerCellsGeoJsonResponse;
   }
-  // sessions_per_connector_day is null here on purpose: this file is about
-  // joining RESEMBLANCE onto cells, and the prescriptive number rides along
-  // without taking part in that join.
-  const pred = (cell_id: string, probability: number, has_station = false) =>
-    ({ cell_id, kota: null, probability, has_station, sessions_per_connector_day: null });
+  // The suitability scale the API supplies with every response. Real floors,
+  // from the 27,219-cell grid.
+  const SUIT = { red_floor: 0.83, yellow_floor: 0.64, cells_scored: 27219, model_weight: 0.5 };
+  // Both scales, as the layer receives them. `banded` is the normal state;
+  // `unbanded` is what any deployment without the utilisation artifact gets.
+  const banded = { suitability: SUIT, resemblanceCeiling: CEILING };
+  const unbanded = { suitability: null, resemblanceCeiling: CEILING };
+
+  const pred = (cell_id: string, probability: number, has_station = false,
+                suitability: number | null = null) =>
+    ({ cell_id, kota: null, probability, has_station, sessions_per_connector_day: null,
+       suitability, suitability_band: null, supply_discount: null, stations_2km: 0 });
 
   it('joins probabilities onto the cells they belong to', () => {
-    const out = plannerPredictionsToPolygons([pred('b', 0.25)], cells('a', 'b'), CEILING);
+    const out = plannerPredictionsToPolygons([pred('b', 0.25)], cells('a', 'b'), unbanded);
     expect(out).toHaveLength(1);
     expect(out[0]?.id).toContain('b');
   });
@@ -167,25 +155,58 @@ describe('on-demand prediction polygons', () => {
     // N". Painting it would state a result the request never asked for. It is
     // also what keeps the drawn shape a circle: the geometry request covers the
     // circle's bounding box, and its corners get no prediction.
-    expect(plannerPredictionsToPolygons([], cells('a', 'b'), CEILING)).toHaveLength(0);
+    expect(plannerPredictionsToPolygons([], cells('a', 'b'), unbanded)).toHaveLength(0);
   });
 
   it('ignores a prediction whose cell is outside the loaded geometry', () => {
-    expect(plannerPredictionsToPolygons([pred('elsewhere', 0.2)], cells('a'), CEILING)).toHaveLength(0);
+    expect(plannerPredictionsToPolygons([pred('elsewhere', 0.2)], cells('a'), unbanded)).toHaveLength(0);
   });
 
   it('swaps GeoJSON longitude/latitude into Leaflet order', () => {
     // Getting this backwards puts every cell in the Indian Ocean: obvious on a
     // map, invisible to a test that only counts polygons.
-    const [polygon] = plannerPredictionsToPolygons([pred('a', 0.2)], cells('a'), CEILING);
+    const [polygon] = plannerPredictionsToPolygons([pred('a', 0.2)], cells('a'), unbanded);
     expect(polygon?.coordinates[0]).toEqual([-6.2, 106.8]);
   });
 
   it('grades unbuilt cells by resemblance', () => {
-    const [low] = plannerPredictionsToPolygons([pred('a', 0.02)], cells('a'), CEILING);
-    const [high] = plannerPredictionsToPolygons([pred('a', 0.30)], cells('a'), CEILING);
+    const [low] = plannerPredictionsToPolygons([pred('a', 0.02)], cells('a'), unbanded);
+    const [high] = plannerPredictionsToPolygons([pred('a', 0.30)], cells('a'), unbanded);
     expect(low?.fillColor).not.toBe(high?.fillColor);
     expect(high?.fillOpacity ?? 0).toBeGreaterThan(low?.fillOpacity ?? 0);
+  });
+
+  it('paints unbuilt cells in the suitability bands when a scale is supplied', () => {
+    const [top] = plannerPredictionsToPolygons([pred('a', 0.02, false, 0.95)], cells('a'), banded);
+    const [mid] = plannerPredictionsToPolygons([pred('a', 0.02, false, 0.70)], cells('a'), banded);
+    const [low] = plannerPredictionsToPolygons([pred('a', 0.02, false, 0.10)], cells('a'), banded);
+    expect([top?.fillColor, mid?.fillColor, low?.fillColor])
+      .toEqual(SUITABILITY_BANDS.map((b) => b.colour));
+    // Resemblance is 0.02 in all three: the band came from suitability, not
+    // from the number the old layer painted.
+    expect(top?.fillColor).not.toBe(low?.fillColor);
+  });
+
+  it('falls back to the purple resemblance scale when no suitability scale exists', () => {
+    // The live state anywhere the utilisation artifact is not mounted. Blanking
+    // the layer over a missing file would remove a working map.
+    const [cell] = plannerPredictionsToPolygons([pred('a', 0.30, false, null)], cells('a'), unbanded);
+    expect(SUITABILITY_BANDS.map((b) => b.colour)).not.toContain(cell?.fillColor);
+    expect(cell?.fillColor).toBe(RESEMBLANCE_BANDS[0].colour);
+  });
+
+  it('never bands a cell whose own suitability is missing, even with a scale', () => {
+    // A scale says how to band; it cannot supply the value being banded.
+    const [cell] = plannerPredictionsToPolygons([pred('a', 0.30, false, null)], cells('a'), banded);
+    expect(SUITABILITY_BANDS.map((b) => b.colour)).not.toContain(cell?.fillColor);
+  });
+
+  it('keeps a built cell slate whichever palette is in play', () => {
+    for (const scale of [banded, unbanded]) {
+      const [built] = plannerPredictionsToPolygons(
+        [pred('a', 0.95, true, 0.99)], cells('a'), scale);
+      expect(built?.fillColor).toBe(BUILT_COLOUR);
+    }
   });
 
   it('draws an already-built cell off the resemblance scale entirely', () => {
@@ -193,8 +214,8 @@ describe('on-demand prediction polygons', () => {
     // around Sudirman, Cibubur and Serpong, the three top-scoring cells all had
     // a station. On the shared scale they would read as the best candidates in
     // the circle, which is the opposite of what they are.
-    const [built] = plannerPredictionsToPolygons([pred('a', 0.95, true)], cells('a'), CEILING);
-    const [best] = plannerPredictionsToPolygons([pred('a', 0.30)], cells('a'), CEILING);
+    const [built] = plannerPredictionsToPolygons([pred('a', 0.95, true)], cells('a'), unbanded);
+    const [best] = plannerPredictionsToPolygons([pred('a', 0.30)], cells('a'), unbanded);
     expect(built?.fillColor).toBe(BUILT_COLOUR);
     expect(built?.fillColor).not.toBe(best?.fillColor);
     expect(built?.weight ?? 0).toBeGreaterThan(best?.weight ?? 0);

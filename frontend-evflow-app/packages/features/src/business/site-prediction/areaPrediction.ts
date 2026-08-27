@@ -87,6 +87,83 @@ export function resemblanceColour(probability: number, ceiling: number | null): 
     RESEMBLANCE_BANDS.length - 1]).colour;
 }
 
+/**
+ * The suitability bands, red to green.
+ *
+ * SEPARATE FROM RESEMBLANCE ON PURPOSE
+ *
+ * RESEMBLANCE_BANDS above is purple and answers "does this look like a place
+ * someone already built a station". These answer "should someone build here",
+ * which is a different question with a different scale, and the two were merged
+ * once by accident: the map said "high demand" where the model meant
+ * "resembles an existing site". Keeping two palettes is what makes the mistake
+ * visible if it happens again.
+ *
+ * NO FLOORS ARE WRITTEN DOWN HERE
+ *
+ * The floors arrive per response, computed from the loaded model over the whole
+ * region. Hardcoding 0.9 and 0.5 would band cells against a distribution that
+ * stops existing the moment the model is retrained or stations are imported.
+ *
+ * LABELS SAY WHERE, NOT HOW MUCH
+ *
+ * These are quantile bands. "Top 10% of Jabodetabek" is what a quantile
+ * supports; "high demand" is not, and would also collide head-on with the Live
+ * Traffic layer on the same screen, where red means congested and bad.
+ */
+export const SUITABILITY_BANDS = [
+  { key: 'red', colour: '#DC2626', label: 'Top 10% of Jabodetabek' },
+  { key: 'yellow', colour: '#F59E0B', label: 'Top half' },
+  { key: 'green', colour: '#10B981', label: 'Lower half — or already well served' }
+] as const;
+
+/** The floors a band was cut at, as the API returns them. */
+export type SuitabilityScale = {
+  red_floor: number;
+  yellow_floor: number;
+  cells_scored: number;
+  model_weight: number;
+};
+
+/**
+ * The fill for one cell, or null when no claim can be made.
+ *
+ * Null rather than green. Green means "already well served", which is a finding;
+ * a missing scale is the absence of one, and painting the two the same colour
+ * would turn "we could not score this" into "do not build here".
+ */
+export function suitabilityColour(value: number | null | undefined,
+                                  scale: SuitabilityScale | null | undefined): string | null {
+  if (value === null || value === undefined || !scale) return null;
+  if (value >= scale.red_floor) return SUITABILITY_BANDS[0].colour;
+  if (value >= scale.yellow_floor) return SUITABILITY_BANDS[1].colour;
+  return SUITABILITY_BANDS[2].colour;
+}
+
+/** Denser where a cell scores higher, without implying a reading of its own. */
+export function suitabilityOpacity(value: number | null | undefined): number {
+  const t = Math.min(Math.max(value ?? 0, 0), 1);
+  return 0.18 + t * 0.42;
+}
+
+/**
+ * The legend's lines, printed from the same floors that chose the fills.
+ *
+ * Returned rather than rendered so the numbers cannot be retyped into JSX and
+ * drift from the shading they describe.
+ */
+export function suitabilityLegend(scale: SuitabilityScale | null | undefined): string[] {
+  if (!scale) {
+    return ['The region-wide scale is unavailable, so no cell can be banded yet.'];
+  }
+  return [
+    `Ranked against all ${scale.cells_scored.toLocaleString()} scored cells in Jabodetabek.`,
+    `Red at ${scale.red_floor.toFixed(2)} and above, amber from ${scale.yellow_floor.toFixed(2)}.`,
+    `${Math.round(scale.model_weight * 100)}% predicted demand, `
+      + `${Math.round((1 - scale.model_weight) * 100)}% distance from existing stations.`
+  ];
+}
+
 /** Opacity that keeps a near-zero cell visible without implying a reading. */
 export function resemblanceOpacity(probability: number, ceiling: number | null): number {
   const top = Math.max(ceiling ?? 0, MIN_SCALE_DIVISOR);

@@ -41,16 +41,36 @@ export function getLocationPriority(score: number) {
   return score >= 85 ? 'High Priority' : score >= 70 ? 'Moderate Priority' : 'Low Priority';
 }
 
-export function getHeatmapSummary(score: number) {
-  return score >= 80 ? 'Located in Red Demand Zone' : score >= 40 ? 'Located in Yellow Demand Zone' : 'Located in Green Demand Zone';
+/**
+ * The zone, from the map's own band where there is one.
+ *
+ * `band` wins over `score` whenever it is present. The two rules disagreed on
+ * every cell between their thresholds, and the card is the place a planner reads
+ * the claim as a sentence rather than a colour, so it is the place the
+ * disagreement did the most damage.
+ */
+export function getHeatmapSummary(score: number, band?: string | null) {
+  const zone = band ?? zoneFromScore(score);
+  return `Located in ${zone === 'red' ? 'Red' : zone === 'yellow' ? 'Yellow' : 'Green'} Demand Zone`;
 }
 
-export function getHeatmapDescription(score: number) {
-  return score >= 80
-    ? 'Red Zone • High priority for unmet demand'
-    : score >= 40
-      ? 'Yellow Zone • Moderate demand; monitor for future growth'
-      : 'Green Zone • Low priority due to limited commercial activity';
+export function getHeatmapDescription(score: number, band?: string | null) {
+  switch (band ?? zoneFromScore(score)) {
+    case 'red':
+      return 'Red Zone • Top 10% of Jabodetabek, with no station within 2 km';
+    case 'yellow':
+      return 'Yellow Zone • Above the regional median; worth watching';
+    default:
+      // Never "low demand": a green cell in Sudirman predicts among the highest
+      // utilisation in the region and is green because 38 stations already sit
+      // within 2 km of it. Saying "low demand" there would be false.
+      return 'Green Zone • Lower half of the region, or already well served';
+  }
+}
+
+/** The pre-band rule, kept for responses that carry no band. */
+function zoneFromScore(score: number) {
+  return score >= 80 ? 'red' : score >= 40 ? 'yellow' : 'green';
 }
 
 export function getPoiSummary(score: number) {

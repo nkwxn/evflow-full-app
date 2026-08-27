@@ -29,7 +29,10 @@ import {
 import { PLANNER_LANDUSE_CLASSES } from '@evflow/shared';
 import type { PlannerLandUseResponse } from '@evflow/shared';
 import { AreaPredictionCard } from './site-prediction/AreaPredictionCard';
-import { BUILT_COLOUR, RESEMBLANCE_BANDS } from './site-prediction/areaPrediction';
+import {
+  BUILT_COLOUR, RESEMBLANCE_BANDS, SUITABILITY_BANDS, suitabilityLegend
+} from './site-prediction/areaPrediction';
+import type { SuitabilityScale } from './site-prediction/areaPrediction';
 import { useAreaPrediction } from './site-prediction/useAreaPrediction';
 import { RADIUS_CHOICES } from './site-prediction/areaPrediction';
 import { plannerConnectionLines } from './site-connection/connectionLines';
@@ -69,7 +72,6 @@ import {
 } from './demandHeatmapIcons';
 import {
   defaultPlannerLayers,
-  demandHeatmapPolygons,
   jakartaViewport,
   plannerMarkers,
   poiPoints,
@@ -81,7 +83,6 @@ import {
 import {
   plannerCandidateToOptimalSite,
   plannerCellsToMetricPolygons,
-  plannerCellsToPolygons,
   plannerPredictionsToPolygons,
   landUseColors,
   plannerLandUsePolygons,
@@ -160,11 +161,16 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
   // said which place they mean, and a fabricated pin left on screen after a
   // failed request reads exactly like a real recommendation.
   const [sites, setSites] = useState<OptimalSite[]>([]);
-  const [demandPolygons, setDemandPolygons] = useState(demandHeatmapPolygons);
+  // Empty, for the same reason `sites` is. This used to seed five hardcoded
+  // red/amber/green rectangles over Jakarta, which rendered on every toggle of
+  // the layer and stayed on screen indefinitely when the first fetch failed --
+  // fabricated zones that look exactly like a model result.
+  const [demandPolygons, setDemandPolygons] = useState<LeafletPolygonLayer[]>([]);
   // Carried out of the fetch so the legend is drawn from the same numbers the
   // cells were painted with. Read from a constant, the two would drift apart the
-  // first time the model was retrained and the ceiling moved.
-  const [demandScale, setDemandScale] = useState<{ ceiling: number | null; built: number } | null>(null);
+  // first time the model was retrained and the floors moved.
+  const [demandScale, setDemandScale] = useState<
+    { suitability: SuitabilityScale | null; ceiling: number | null; built: number } | null>(null);
   const [existingSpkluMarkers, setExistingSpkluMarkers] = useState<LeafletMapMarker[]>([]);
   const [commercialPoiPoints, setCommercialPoiPoints] = useState<LeafletPointLayer[]>([]);
   const [populationPolygons, setPopulationPolygons] = useState<LeafletPolygonLayer[]>([]);
@@ -331,10 +337,12 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
         fetchPlannerCells({ ...layerBounds, limit: 10_000, metric: 'score', signal: controller.signal })
       ])
         .then(([prediction, response]) => {
+          const scale = { suitability: prediction.distribution.suitability_scale,
+                          resemblanceCeiling: prediction.distribution.resemblance_ceiling };
           setDemandPolygons(plannerPredictionsToPolygons(
-            prediction.predictions, clipCells(response),
-            prediction.distribution.resemblance_ceiling));
-          setDemandScale({ ceiling: prediction.distribution.resemblance_ceiling,
+            prediction.predictions, clipCells(response), scale));
+          setDemandScale({ suitability: scale.suitability,
+                           ceiling: prediction.distribution.resemblance_ceiling,
                            built: prediction.distribution.cells_with_station });
           setStatus(response.truncated
             ? `Planning API: Showing ${response.cells_returned.toLocaleString()} highest-scoring of ${response.cells_in_viewport.toLocaleString()} cells. Zoom in for full coverage.`
@@ -725,6 +733,7 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
           ) : null}
           {layers.demandHeatmap && !expanded && demandScale ? (
             <ModelPredictionLegend
+              suitability={demandScale.suitability}
               ceiling={demandScale.ceiling}
               builtCells={demandScale.built}
               title="DEMAND HEATMAP"
@@ -953,7 +962,7 @@ function TrafficLegend() {
 }
 
 /**
- * What the purple squares mean, which nothing on screen said before.
+ * What the squares mean, which nothing on screen said before.
  *
  * Population Density and Live Traffic both carried legends; the model's shading
  * did not, and it is the layer whose colours are least guessable. Until commit
@@ -961,29 +970,46 @@ function TrafficLegend() {
  * on there was no way to tell which shading was which -- a planner asked exactly
  * that, and was right to.
  *
- * THE TWO THINGS THIS HAS TO SEPARATE
+ * IT DESCRIBES WHICHEVER SCALE IS ACTUALLY PAINTING
  *
- * The shading is RESEMBLANCE: how much a cell looks like the ones that already
- * hold a station. The numbered circles are OPTIMAL SITES, the weighted criteria
- * score, which is a different quantity and partly an opposing one -- coverage is
- * 35% of it and rewards being FAR from existing stations, while resemblance
- * rewards looking like where they already are. A high-scoring site on a pale
- * cell is the normal case, not a contradiction, and without this note it reads
- * as the map disagreeing with itself.
+ * With a suitability scale the map is red/amber/green and the pins are ranked on
+ * the same number, so the note says so. Without one it falls back to purple
+ * resemblance, which answers a different question, and the note changes with it.
+ * A legend naming bands the map is not painting is worse than no legend at all,
+ * because a legend is believed.
  *
- * Built cells are named rather than left as an unexplained fourth colour: they
- * are the cells the model scores highest, so a reader who assumes slate is "very
- * good" has inverted the one thing this layer must not be read as.
+ * RED HERE IS NOT RED ON LIVE TRAFFIC
+ *
+ * Both layers can be on at once, and on Live Traffic red means congested and
+ * bad. The wording never says "high demand" for that reason, and because these
+ * are quantile bands: "top 10% of Jabodetabek" is what a quantile supports.
+ *
+ * Green is the one band that has to be read carefully, so the note spells it
+ * out: it includes districts that are already well served. That is the
+ * acceptance criterion, and a reader who takes green as "nothing here" has
+ * inverted it.
+ *
+ * Built cells are named rather than left as an unexplained fourth colour: on the
+ * resemblance fallback they are the cells the model scores HIGHEST, so a reader
+ * who assumes slate means "very good" has inverted that layer too.
  */
-function ModelPredictionLegend({ ceiling, builtCells, title = 'MODEL PREDICTION' }: {
+function ModelPredictionLegend({ suitability, ceiling, builtCells, title = 'MODEL PREDICTION' }: {
+  suitability: SuitabilityScale | null;
   ceiling: number | null;
   builtCells: number;
   title?: string;
 }) {
+  // The legend follows the shading rather than describing one fixed palette.
+  // With a suitability scale the map is red/amber/green; without one it falls
+  // back to purple resemblance, and a legend still naming bands the map is not
+  // painting is worse than none, because it is believed.
+  const bands = suitability
+    ? SUITABILITY_BANDS.map((b) => ({ colour: b.colour, label: b.label }))
+    : RESEMBLANCE_BANDS.map((b) => ({ colour: b.colour, label: b.label }));
   return (
     <View style={plannerStyles.legend}>
       <Text style={plannerStyles.legendTitle}>{title}</Text>
-      {RESEMBLANCE_BANDS.map((band) => (
+      {bands.map((band) => (
         <View key={band.colour} style={plannerStyles.legendRow}>
           <View style={[plannerStyles.legendSwatch, { backgroundColor: band.colour }]} />
           <Text style={plannerStyles.legendText}>{band.label}</Text>
@@ -996,13 +1022,21 @@ function ModelPredictionLegend({ ceiling, builtCells, title = 'MODEL PREDICTION'
         </Text>
       </View>
       <Text style={plannerStyles.legendNote}>
-        {ceiling === null
-          // No ceiling means no denominator, and a share of an unknown best is
-          // not a number to print. Say the scale is unanchored instead.
-          ? 'Resembles cells that already have a station. Scale unanchored this time.'
-          : `Resembles cells that already have a station — not a recommendation. `
-            + `"Regional best" is ${ceiling.toFixed(2)}, the highest any unbuilt cell in `
-            + `Jabodetabek reaches. Numbered circles are Optimal Sites, a different score.`}
+        {suitability
+          // Printed from the same floors that chose the fills, so the two cannot
+          // drift. Never "high demand": these are quantile bands, and red on this
+          // layer sits on the same screen as red on Live Traffic, where it means
+          // congested and bad.
+          ? suitabilityLegend(suitability).join(' ')
+            + ' Green includes districts already well served. Numbered circles are the same score.'
+          : ceiling === null
+            // No ceiling means no denominator, and a share of an unknown best is
+            // not a number to print. Say the scale is unanchored instead.
+            ? 'Resembles cells that already have a station. Scale unanchored this time.'
+            : `Suitability is unavailable, so this shows RESEMBLANCE — how much a cell looks `
+              + `like one that already has a station, which is not a recommendation. `
+              + `"Regional best" is ${ceiling.toFixed(2)}, the highest any unbuilt cell in `
+              + `Jabodetabek reaches. Numbered circles are Optimal Sites, a different score.`}
       </Text>
     </View>
   );

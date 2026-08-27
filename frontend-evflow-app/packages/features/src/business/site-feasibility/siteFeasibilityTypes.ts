@@ -43,6 +43,16 @@ export type SiteFeasibilityData = {
   locationName: string;
   locationScore?: number;
   heatmapScore: number;
+  /**
+   * The band the MAP painted this cell, straight from the API.
+   *
+   * Carried rather than re-derived because the card used to decide the zone
+   * itself, from a threshold on a different number, so "Located in a Red Demand
+   * Zone" could sit over a cell the map had painted green. Null when the API
+   * supplied no band, in which case the old threshold still applies -- it is
+   * only wrong when a real band exists to contradict it.
+   */
+  heatmapBand: string | null;
   commercialPoiCount: number;
   nearestSpkluDistanceKm: number;
   roadType: RoadType;

@@ -23,12 +23,20 @@ export function plannerCellToSiteFeasibility(
   benchmark: PlannerBenchmarkResponse | null
 ): SiteFeasibilityData {
   const score = Math.round(Math.min(Math.max(detail.score ?? 0, 0), 1) * 100);
+  // The heatmap figure is the MAP's number, and the location figure stays the
+  // four-criteria one. Two questions, two answers, kept apart on purpose: the
+  // weighted score has adjustable weights a planner controls, and collapsing
+  // both onto suitability would remove the only cross-check on this screen.
+  const suitability = detail.suitability ?? null;
   return {
     optimalSiteId: detail.cell_id,
     locationCode: detail.cell_id,
     locationName: cleanAreaName(detail.kota),
     locationScore: score,
-    heatmapScore: score,
+    heatmapScore: suitability === null
+      ? score
+      : Math.round(Math.min(Math.max(suitability, 0), 1) * 100),
+    heatmapBand: detail.suitability_band ?? null,
     commercialPoiCount: Math.max(0, detail.poi.total ?? sumPoi(detail.poi)),
     nearestSpkluDistanceKm: detail.nearest_station_m === null ? 5 : detail.nearest_station_m / 1000,
     roadType: roadTypeFromNodes(detail.road_nodes),
