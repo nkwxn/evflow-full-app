@@ -122,7 +122,10 @@ const collapsedSiteSheetHeight = 258;
 const siteDetailZoom = 15;
 const sheetAnimation = LayoutAnimation.Presets.easeInEaseOut;
 
-const mockLocations: Record<string, Coordinates> = {
+// Four real district centroids, used as search shortcuts and as the opening
+// view. Named `mockLocations` until now, which put a gazetteer on every
+// mock-data audit's list and hid the entries that were actually invented.
+const searchShortcuts: Record<string, Coordinates> = {
   jakarta: { latitude: -6.1754, longitude: 106.8272 },
   'south jakarta': { latitude: -6.2615, longitude: 106.8106 },
   'central jakarta': { latitude: -6.1865, longitude: 106.8341 },
@@ -130,7 +133,7 @@ const mockLocations: Record<string, Coordinates> = {
 };
 
 const layerRows: LayerRow[] = [
-  { key: 'optimalSites', icon: optimalSiteIcon, title: 'Optimal Sites', subtitle: 'Tap a place · weighted criteria' },
+  { key: 'optimalSites', icon: optimalSiteIcon, title: 'Optimal Sites', subtitle: 'Tap a place · same score as the heatmap' },
   { key: 'demandHeatmap', icon: heatmapLayerIcon, title: 'Demand Heatmap', subtitle: 'Trained model' },
   { key: 'existingSpklus', icon: spkluLayerIcon, title: 'Existing SPKLUs', subtitle: 'Active Network' },
   { key: 'commercialPois', icon: commercialPoiIcon, title: 'Commercial POIs', subtitle: 'Activity Density' },
@@ -151,7 +154,7 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
   const [expanded, setExpanded] = useState(false);
   const [query, setQuery] = useState('');
   const [viewport, setViewport] = useState<MapViewport>(jakartaViewport);
-  const [center, setCenter] = useState<Coordinates>(mockLocations.jakarta);
+  const [center, setCenter] = useState<Coordinates>(searchShortcuts.jakarta);
   const [mapZoom, setMapZoom] = useState(jakartaViewport.zoom);
   const [currentLocation, setCurrentLocation] = useState<Coordinates | null>(null);
   const [status, setStatus] = useState<string | null>(null);
@@ -246,7 +249,7 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
   const sheetModeRef = useRef(sheetMode);
   const sheetScrollAtTopRef = useRef(true);
   const lastMapViewRef = useRef({
-    center: mockLocations.jakarta,
+    center: searchShortcuts.jakarta,
     viewport: jakartaViewport,
     zoom: jakartaViewport.zoom
   });
@@ -575,7 +578,7 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
   }, [animateNext, sites]);
 
   const submitSearch = () => {
-    const match = mockLocations[query.trim().toLowerCase()];
+    const match = searchShortcuts[query.trim().toLowerCase()];
 
     if (match) {
       setCenter(match);
