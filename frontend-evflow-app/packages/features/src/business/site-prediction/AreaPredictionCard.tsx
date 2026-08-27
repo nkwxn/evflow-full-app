@@ -9,7 +9,8 @@ import {
   resemblanceCaption,
   suitabilityKeyNote,
   suitabilityKeyRows,
-  truncationWarning
+  truncationWarning,
+  uniformBandNote
 } from './areaPrediction';
 
 type Props = {
@@ -76,6 +77,7 @@ export function AreaPredictionCard({
   const partiallyDrawn = drawTruncationNote(drawnCells, distribution.cells_predicted);
   const { max_probability: best, median_probability: mid } = distribution;
   const keyRows = suitabilityKeyRows(distribution);
+  const uniform = uniformBandNote(distribution);
 
   return (
     <View style={styles.card}>
@@ -109,6 +111,7 @@ export function AreaPredictionCard({
             </View>
           ))}
           <Text style={styles.scaleNote}>{suitabilityKeyNote(distribution.suitability_scale)}</Text>
+          {uniform ? <Text style={styles.uniform}>{uniform}</Text> : null}
         </View>
       ) : distribution.cells_with_station > 0 ? (
         // No scale, so no bands to key. Grey still needs explaining, because it
@@ -261,6 +264,10 @@ const styles = StyleSheet.create({
   statRow: { flexDirection: 'row', gap: 8, marginTop: 12 },
   statValue: { color: '#26383D', fontSize: 18, fontWeight: '700', marginTop: 2 },
   unit: { color: '#55656A', fontSize: 13, marginBottom: 4, marginLeft: 6 },
+  uniform: {
+    backgroundColor: '#EFF6F7', borderRadius: 6, color: '#26383D', fontSize: 11,
+    lineHeight: 16, marginTop: 8, padding: 8
+  },
   value: { color: '#5B21B6', fontSize: 30, fontWeight: '800' },
   valueRow: { alignItems: 'flex-end', flexDirection: 'row', marginTop: 8 },
   // This one IS a warning: a clipped area looks exactly like a complete one.

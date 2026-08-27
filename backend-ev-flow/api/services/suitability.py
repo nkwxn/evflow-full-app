@@ -41,6 +41,33 @@ of unbuilt cells have stations_2km = 0, so the discount's rank is one large bloc
 of ties, and a tied variable adds less variance to a sum. Stated here because the
 asymmetry looks like a bug otherwise.
 
+WHY THE DISCOUNT IS NOT RANKED, AND THE PREDICTION IS
+
+Both terms were percentile-ranked at first, for symmetry. Measured on the grid
+2026-08-27, that was wrong, and badly:
+
+    a place with 2 competitors, at a PERFECT demand rank   ->  0.624
+    the median floor it has to clear                       ->  0.640
+
+So no place with two or more competitors within 2 km could reach even the middle
+band, however much demand it had. 9,581 of the 9,625 places that have any
+competitor at all were pinned to the bottom band by arithmetic rather than by
+anything about them, and moderately served districts came out as one flat colour
+with nothing to tell them apart.
+
+The cause is the shape of the discount. 65% of the grid has nothing inside 2 km
+and is therefore tied at exactly 1.0, so the discount's quantile table reads
+p50 = p90 = p99 = 1.000. Ranking a distribution like that is not a rank, it is a
+step: 1.0 for the tie mass and at most 0.354 for everything else. Half the blend
+became a coin flip on "is there anything nearby at all".
+
+The prediction still needs its rank, because 6.8 sessions per connector per day
+says nothing about where that sits until the region is consulted. The discount
+never needed one: 1/(1+n) is already on a 0-1 axis and already means something,
+the share of demand a new site keeps against n incumbents. One competitor leaves
+half, four leave a fifth, and those differ by a factor of 2.5 -- which is exactly
+the information the ranking threw away.
+
 WHAT THE WHOLE GRID DOES, MEASURED 2026-08-27
 
     region bands                          red 2,725  yellow 7,923  green 16,571
@@ -211,7 +238,7 @@ def build_scale(trained_at: str, supply_fingerprint: str, rows: Sequence[Dict[st
     d = [supply_discount(r.get("stations_2km") or 0, r.get("nearest_station_m")).discount
          for r in rows]
     uq, dq = _quantiles(u), _quantiles(d)
-    suit = [model_weight * _pct_rank(a, uq) + (1 - model_weight) * _pct_rank(b, dq)
+    suit = [model_weight * _pct_rank(a, uq) + (1 - model_weight) * b
             for a, b in zip(u, d)]
     return RegionalScale(trained_at=trained_at, supply_fingerprint=supply_fingerprint,
                          cells_scored=len(rows), model_weight=model_weight,
@@ -253,8 +280,14 @@ def score(utilisation: float, stations_2km: int, nearest_station_m: Optional[flo
           scale: RegionalScale) -> Suitability:
     """One cell, read against the region."""
     s = supply_discount(stations_2km, nearest_station_m)
+    # The prediction is RANKED and the discount is NOT, which looks inconsistent
+    # and is the point. A predicted 6.8 sessions/connector/day has no meaning on
+    # a 0-1 axis, so it needs the region to say where it sits. The discount is
+    # already on that axis with a meaning of its own -- the share of demand a new
+    # site keeps against n incumbents -- and ranking it destroyed that meaning.
+    # See WHY THE DISCOUNT IS NOT RANKED in the module docstring.
     value = (scale.model_weight * _pct_rank(utilisation, scale.utilisation_q)
-             + (1 - scale.model_weight) * _pct_rank(s.discount, scale.discount_q))
+             + (1 - scale.model_weight) * s.discount)
     return Suitability(utilisation=utilisation, supply=s, suitability=value,
                        band=band(value, scale))
 

@@ -549,6 +549,15 @@ export type PlannerAreaDistributionApi = {
   cells_red: number | null;
   cells_yellow: number | null;
   cells_green: number | null;
+  /**
+   * Chargers within 2 km at the typical place here, built places included.
+   *
+   * This is what makes a one-colour map readable. An area whose typical place
+   * already has 25 chargers within 2 km is uniformly green because it IS
+   * uniformly covered, and without this figure that is indistinguishable from
+   * a scale that has stopped working.
+   */
+  median_stations_2km: number | null;
 };
 
 export type PlannerPredictAreaResponse = {

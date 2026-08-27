@@ -2593,6 +2593,17 @@ def planner_unsave_site(cell_id: str, user: dict = Depends(require_planner)) -> 
     return PlannerSavedSiteStatus(cell_id=cell_id, saved=False)
 
 
+def _median_supply(rows: list[dict]) -> Optional[int]:
+    """Competitors within 2 km at the typical place in this area.
+
+    Over EVERY cell, built ones included: a planner asking why nothing here
+    scores well is asking about the neighbourhood, and leaving the built cells
+    out would understate exactly the crowding that answers them.
+    """
+    counts = sorted(r.get("stations_2km") or 0 for r in rows)
+    return counts[len(counts) // 2] if counts else None
+
+
 def _scale_dict(scale: Optional[suitability.RegionalScale]) -> Optional[dict]:
     """The legend's numbers, in one shape.
 
@@ -3329,6 +3340,11 @@ def planner_predict_area(
             cells_red=bands.count("red") if bands else None,
             cells_yellow=bands.count("yellow") if bands else None,
             cells_green=bands.count("green") if bands else None,
+            # The number that explains a one-colour map. Without it an all-green
+            # view is indistinguishable from a broken one, and the honest answer
+            # -- "the typical place here already has 25 chargers within 2 km" --
+            # is not derivable from anything else in this response.
+            median_stations_2km=_median_supply(rows),
             mean_sessions_per_connector_day=None if not m else round(sum(used) / m, 3),
             median_sessions_per_connector_day=(None if used_median is None
                                                else round(used_median, 3)),

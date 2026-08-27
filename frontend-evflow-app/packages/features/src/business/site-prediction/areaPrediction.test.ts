@@ -15,6 +15,7 @@ import {
   suitabilityColour,
   suitabilityKeyNote,
   suitabilityKeyRows,
+  uniformBandNote,
   truncationWarning
 } from './areaPrediction';
 
@@ -32,7 +33,7 @@ function distribution(over: Partial<PlannerAreaDistributionApi> = {}): PlannerAr
     // The band floors, measured over all 27,219 scored cells.
     suitability_scale: { red_floor: 0.8342, yellow_floor: 0.6404,
                          cells_scored: 27_219, model_weight: 0.5 },
-    cells_red: 4, cells_yellow: 12, cells_green: 45,
+    cells_red: 4, cells_yellow: 12, cells_green: 45, median_stations_2km: 3,
     // The prescriptive figures. About 5 sessions per connector per day is what
     // the model returns for central Jakarta at the 2-connector, 22 kW spec.
     mean_sessions_per_connector_day: 5.49,
@@ -311,4 +312,44 @@ it('keeps the map legend and the panel key on one set of words', () => {
   const scale = { red_floor: 0.83, yellow_floor: 0.64, cells_scored: 27219, model_weight: 0.5 };
   const rows = suitabilityKeyRows(distribution({ suitability_scale: scale }));
   expect(rows.slice(0, 3).map((r) => r.label)).toEqual(SUITABILITY_BANDS.map((b) => b.label));
+});
+
+describe('a one-colour view explains itself', () => {
+  const scale = { red_floor: 0.83, yellow_floor: 0.64, cells_scored: 27219, model_weight: 0.5 };
+
+  it('says why a saturated area is uniformly green', () => {
+    // The real case: 313 places around central Jakarta, every one green, and no
+    // way for a planner to tell that from a broken scale. The median already
+    // holds 25 chargers within 2 km — that is the answer, not a bug.
+    const note = uniformBandNote(distribution({
+      suitability_scale: scale, cells_red: 0, cells_yellow: 0, cells_green: 313,
+      cells_without_station: 313, median_stations_2km: 25
+    }));
+    expect(note).toContain('25');
+    expect(note?.toLowerCase()).toContain('already');
+  });
+
+  it('stays quiet when the view actually has a mix', () => {
+    expect(uniformBandNote(distribution({
+      suitability_scale: scale, cells_red: 4, cells_yellow: 12, cells_green: 45,
+      cells_without_station: 61, median_stations_2km: 3
+    }))).toBeNull();
+  });
+
+  it('stays quiet when there is no scale, and when there is nothing to describe', () => {
+    expect(uniformBandNote(distribution({ suitability_scale: null }))).toBeNull();
+    expect(uniformBandNote(distribution({
+      suitability_scale: scale, cells_red: 0, cells_yellow: 0, cells_green: 0,
+      cells_without_station: 0
+    }))).toBeNull();
+  });
+
+  it('handles a uniformly strong area too, not just a saturated one', () => {
+    const note = uniformBandNote(distribution({
+      suitability_scale: scale, cells_red: 40, cells_yellow: 0, cells_green: 0,
+      cells_without_station: 40, median_stations_2km: 0
+    }));
+    expect(note).toContain('40');
+    expect(note?.toLowerCase()).toContain('best 10%');
+  });
 });

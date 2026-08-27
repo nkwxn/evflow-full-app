@@ -199,6 +199,44 @@ export function suitabilityKeyNote(scale: SuitabilityScale | null | undefined): 
     + 'Green includes busy districts that are already well covered.';
 }
 
+/**
+ * Why every place in view is the same colour, when it is.
+ *
+ * A uniform map is the one case where a correct answer and a broken scale look
+ * identical. Around central Jakarta all 313 places come out green — and they
+ * should, because the typical one already has 25 chargers within 2 km. Nothing
+ * on screen said so, so it read as the heatmap not working.
+ *
+ * Returns null whenever there is a mix, which is most of the time. A note that
+ * appears on every view is a note nobody reads.
+ */
+export function uniformBandNote(distribution: PlannerAreaDistributionApi): string | null {
+  const { cells_red: red, cells_yellow: yellow, cells_green: green } = distribution;
+  if (!distribution.suitability_scale || red === null || yellow === null || green === null) {
+    return null;
+  }
+  const total = red + yellow + green;
+  if (total === 0) return null;
+  const band = red === total ? SUITABILITY_BANDS[0]
+    : yellow === total ? SUITABILITY_BANDS[1]
+    : green === total ? SUITABILITY_BANDS[2]
+    : null;
+  if (!band) return null;
+
+  const lead = `All ${total.toLocaleString()} places here fall in the same band: `
+    + `${band.label.toLowerCase()}.`;
+  const near = distribution.median_stations_2km;
+  if (band.key === 'green' && near !== null && near !== undefined && near > 0) {
+    // The number that turns "the map is broken" into "the map is telling you
+    // something". Nothing else in the response carries it.
+    return `${lead} The typical place here already has ${near.toLocaleString()} `
+      + `${near === 1 ? 'charger' : 'chargers'} within 2 km, so this area is well covered `
+      + 'rather than unranked. Look further out for openings.';
+  }
+  return `${lead} There is nothing to separate them at this zoom — widen the area to `
+    + 'compare it against somewhere different.';
+}
+
 /** Opacity that keeps a near-zero cell visible without implying a reading. */
 export function resemblanceOpacity(probability: number, ceiling: number | null): number {
   const top = Math.max(ceiling ?? 0, MIN_SCALE_DIVISOR);

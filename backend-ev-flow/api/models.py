@@ -1565,6 +1565,12 @@ class PlannerAreaDistribution(BaseModel):
                           "prints the same numbers the shading used and the two cannot "
                           "drift. Null when no scale could be built, in which case a client "
                           "must omit the band claim rather than assume green.")
+    median_stations_2km: Optional[int] = Field(
+        None, description="Stations within 2 km at the typical cell here, built cells "
+                          "included. This is what explains a one-colour map: an area whose "
+                          "typical cell already has 25 stations within 2 km is uniformly "
+                          "green because it IS uniformly saturated, and without this figure "
+                          "that is indistinguishable from a broken scale.")
     cells_red: Optional[int] = Field(None, description="Unbuilt cells in the top decile here.")
     cells_yellow: Optional[int] = None
     cells_green: Optional[int] = None

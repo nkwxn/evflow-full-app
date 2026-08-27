@@ -139,3 +139,74 @@ def test_a_shortlist_cutoff_and_a_band_edge_come_from_the_same_table():
     for bad in (-0.1, 1.1):
         with pytest.raises(ValueError, match="quantile"):
             scale.quantile_at(bad)
+
+
+# --- the shape of the real grid ----------------------------------------------
+
+def _realistic_scale(model_weight=0.5, n=2000):
+    """A region shaped like Jabodetabek, which _scale deliberately is not.
+
+    _scale cycles supply 0..9 evenly, so every discount value is about as common
+    as every other. The real grid is nothing like that: 65% of places have
+    NOTHING within 2 km and sit at discount exactly 1.0, and central Jakarta
+    carries a median of 25.
+
+    That difference is not cosmetic. It is the entire mechanism behind the bug
+    these tests cover, and the even fixture hides it completely -- both of the
+    first two tests written here passed against _scale before the fix.
+    """
+    rows = []
+    for i in range(1, n + 1):
+        # 65% unserved, then a tail running out to the saturated core.
+        supply = 0 if i % 100 < 65 else (i % 100) - 64
+        rows.append({"u": float(i), "stations_2km": supply,
+                     "nearest_station_m": 9000.0 if supply == 0 else 800.0})
+    return s.build_scale(
+        trained_at="2026-08-27T00:00:00Z", supply_fingerprint="1197/3362", rows=rows,
+        predict=lambda rs: [r["u"] for r in rs], location_features=["u"],
+        model_weight=model_weight)
+
+
+def test_the_unserved_majority_really_does_tie_at_the_top():
+    """The precondition for everything below. If this stops holding, the tests
+    underneath stop testing what they claim to."""
+    scale = _realistic_scale()
+    assert scale.discount_q[500] == 1.0 and scale.discount_q[900] == 1.0
+
+
+def test_a_place_with_two_competitors_can_still_beat_the_median():
+    """The defect this guards against, measured on the real grid 2026-08-27.
+
+    The discount used to be percentile-ranked before blending. With 65% of the
+    grid tied at discount 1.0, that rank was a step function: 1.0 for the tie
+    mass and at most 0.35 for everything else. Half the blend became a coin
+    flip, and a place with two competitors could not exceed 0.624 even at a
+    perfect demand rank -- below the 0.640 median floor. Moderately served
+    districts flattened to one colour with no way to tell them apart.
+    """
+    scale = _realistic_scale()
+    perfect = max(scale.utilisation_q)
+    assert s.score(perfect, 2, 1500.0, scale).band in ("yellow", "red")
+
+
+def test_the_discount_keeps_its_meaning_rather_than_its_rank():
+    """1/(1+n) is a share of demand, not an ordering.
+
+    One competitor leaves you half, four leave you a fifth: different by a
+    factor of 2.5. A rank cannot express that when most of the grid is tied at
+    the top, and squashing them into adjacent ranks is what threw the gradation
+    away.
+    """
+    scale = _realistic_scale()
+    mid = scale.utilisation_q[500]
+    assert s.score(mid, 1, 9000.0, scale).suitability \
+        - s.score(mid, 4, 9000.0, scale).suitability > 0.1
+
+
+def test_a_saturated_place_stays_green_at_any_demand():
+    """AC (c), which the fix must not cost. Measured on the grid: no place with
+    four or more competitors reaches yellow, and central Jakarta runs to 58."""
+    scale = _realistic_scale()
+    perfect = max(scale.utilisation_q)
+    for n in (4, 8, 25, 58):
+        assert s.score(perfect, n, 200.0, scale).band == "green", f"{n} competitors"
