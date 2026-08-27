@@ -179,9 +179,19 @@ export function LeafletMap({
             center: [${center.latitude}, ${center.longitude}],
             zoom: ${zoom}
           });
-          L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+          // CARTO began requiring an API key for basemaps and now stamps
+          // "API KEY REQUIRED" across every tile it serves without one — baked into
+          // the image, so a planner sees it written over Jakarta. Esri's Light Gray
+          // Canvas is the same light-neutral style, needs no key, and keeps labels in
+          // a second transparent layer above the base.
+          L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+            maxNativeZoom: 16,
             maxZoom: 19,
-            attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+            attribution: '&copy; Esri, HERE, Garmin, &copy; OpenStreetMap contributors'
+          }).addTo(map);
+          L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+            maxNativeZoom: 16,
+            maxZoom: 19
           }).addTo(map);
 
           map.on('click', function(event) {

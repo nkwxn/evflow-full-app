@@ -401,10 +401,26 @@ export function LeafletMap({
           zoomControl: false
         });
 
+        // CARTO began requiring an API key for basemaps and now stamps
+        // "API KEY REQUIRED" across every tile it serves without one — baked into
+        // the image, so a planner sees it written over Jakarta. Esri's Light Gray
+        // Canvas is the same light-neutral style, needs no key, and keeps labels in
+        // a second transparent layer above the base.
         leaflet
-          .tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+          .tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
             attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+              '&copy; <a href="https://www.esri.com/">Esri</a>, HERE, Garmin, &copy; ' +
+              '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxNativeZoom: 16,
+            maxZoom: 19
+          })
+          .addTo(map);
+        // Street and place names, transparent, over the base. Added before any
+        // overlay so the coloured cells still sit on top of it — the same
+        // stacking CARTO gave us, where labels read through the shading.
+        leaflet
+          .tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+            maxNativeZoom: 16,
             maxZoom: 19
           })
           .addTo(map);
