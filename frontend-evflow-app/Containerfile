@@ -28,6 +28,23 @@ ENV VITE_EVFLOW_API_BASE_URL=$VITE_EVFLOW_API_BASE_URL
 # hard-coded in source. Override with --build-arg VITE_DEMO_PASSWORD=... if needed.
 ARG VITE_DEMO_PASSWORD=evflow-demo-2026
 ENV VITE_DEMO_PASSWORD=$VITE_DEMO_PASSWORD
+# TomTom traffic tiles. Empty by default, and an empty value is a supported
+# state: tomtomKey() returns null, trafficOverlay() returns null, and the Live
+# Traffic row is filtered out of the layer list rather than offering a toggle
+# that turns on nothing.
+#
+# It has to be declared here to reach the build at all. .containerignore excludes
+# .env and .env.* on purpose, so a value that only lives in .env works on a
+# developer's machine — where Vite reads that file directly — and silently
+# vanishes from every built image. That is why Live Traffic had never appeared on
+# a deployed build.
+#
+# Like VITE_DEMO_PASSWORD this is not a secret in the usual sense: a frontend key
+# is inlined into the bundle and readable by anyone who opens it. It is billable
+# though, so restrict it by domain in the TomTom console rather than relying on
+# it being hard to find.
+ARG VITE_TOMTOM_API_KEY=
+ENV VITE_TOMTOM_API_KEY=$VITE_TOMTOM_API_KEY
 RUN npm run build:web
 
 FROM docker.io/library/nginx:1.27-alpine AS runtime
