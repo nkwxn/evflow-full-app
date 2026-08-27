@@ -168,6 +168,18 @@ class RegionalScale:
     def yellow_floor(self) -> float:
         return self.suitability_q[int(YELLOW_QUANTILE * (QUANTILE_POINTS - 1))]
 
+    def quantile_at(self, q: float) -> float:
+        """The regional suitability at quantile `q`, 0..1.
+
+        The same lookup red_floor and yellow_floor do, exposed because the
+        shortlist gates on a caller-supplied quantile. Read from the stored
+        table rather than recomputed, so a shortlist cutoff and a band edge can
+        never come from two different passes over the region.
+        """
+        if not 0.0 <= q <= 1.0:
+            raise ValueError(f"quantile must be within 0..1, got {q}")
+        return self.suitability_q[int(q * (QUANTILE_POINTS - 1))]
+
 
 def _quantiles(values: Sequence[float]) -> Tuple[float, ...]:
     ordered = sorted(values)

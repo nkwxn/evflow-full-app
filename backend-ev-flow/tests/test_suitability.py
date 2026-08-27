@@ -129,3 +129,13 @@ def test_a_retrain_and_a_supply_refresh_each_get_their_own_scale():
     s.cached_scale("model-A", "1240/3500", *args)      # stations imported
     assert len(calls) == 3
     s.reset_cache()
+
+
+def test_a_shortlist_cutoff_and_a_band_edge_come_from_the_same_table():
+    scale = _scale()
+    assert scale.quantile_at(0.90) == scale.red_floor
+    assert scale.quantile_at(0.50) == scale.yellow_floor
+    assert scale.quantile_at(0.0) <= scale.quantile_at(0.5) <= scale.quantile_at(1.0)
+    for bad in (-0.1, 1.1):
+        with pytest.raises(ValueError, match="quantile"):
+            scale.quantile_at(bad)

@@ -82,7 +82,8 @@ from .models import (
 )
 from .services import service_area
 from .services import (
-    resemblance_scale, site_economics, siting_model, suitability, utilisation_model
+    resemblance_scale, site_clustering, site_economics, siting_model, suitability,
+    utilisation_model
 )
 from .services.poi_clustering import cluster_cell_size, should_cluster
 from .services.planner_viewport import (
@@ -2422,9 +2423,81 @@ def planner_score(body: SiteWeightsInput,
     )
 
 
+def _suitability_candidates(clusters: int, quantile: Optional[float],
+                            lat: Optional[float], lon: Optional[float],
+                            radius_km: float) -> Optional[list[dict]]:
+    """Suggestions ranked by the number the heatmap paints, or None.
+
+    None rather than an exception, because the caller can still answer with the
+    weighted score. Everything that can fail here -- a missing artifact, a stale
+    schema, an unreachable database -- makes the suitability basis unavailable,
+    not the endpoint.
+
+    The scale is regional and the circle is applied to the CANDIDATES only, so a
+    suggestion in Serpong and one in Sudirman carry the same comparable number.
+    That is the invariant candidate_sites_in_radius exists to protect, kept here
+    by construction rather than by a second implementation of it.
+    """
+    try:
+        info = utilisation_model.info()
+        scale = suitability.cached_scale(
+            info.trained_at,
+            planner_repo.supply_fingerprint(),
+            lambda: planner_repo.features_for_scoring(list(info.location_features)),
+            utilisation_model.predict,
+            info.location_features)
+        rows = planner_repo.candidate_cells(
+            list(info.location_features),
+            lat=lat, lon=lon, radius_km=radius_km if lat is not None else None)
+    except Exception:  # noqa: BLE001 - see the docstring
+        return None
+    if not rows:
+        return []
+
+    wanted = set(info.location_features)
+    try:
+        predicted = utilisation_model.predict(
+            [{k: v for k, v in r.items() if k in wanted} for r in rows])
+    except (ValueError, KeyError):
+        return None
+
+    scored = []
+    for row, u in zip(rows, predicted):
+        s = suitability.score(u, row.get("stations_2km") or 0,
+                              row.get("nearest_station_m"), scale)
+        scored.append({"cell_id": row["cell_id"], "kota": row["kota"],
+                       "score": round(s.suitability, 4),
+                       "latitude": row["latitude"], "longitude": row["longitude"],
+                       "population": row["population"], "poi_total": row["poi_total"],
+                       "station_count": row["station_count"],
+                       "nearest_station_m": (None if row["nearest_station_m"] is None
+                                             else round(float(row["nearest_station_m"]))),
+                       "stations_2km": row["stations_2km"],
+                       "suitability_band": s.band,
+                       "sessions_per_connector_day": round(s.utilisation, 3),
+                       "supply_discount": round(s.supply.discount, 4)})
+
+    if quantile is not None:
+        # The regional cutoff, read from the same quantile table the bands come
+        # from. Computing it over `scored` instead would gate the region-wide
+        # search on its own top decile, which is the whole region's top decile
+        # only by coincidence.
+        floor = scale.quantile_at(quantile)
+        above = [r for r in scored if r["score"] >= floor]
+        # A gate that empties the list is worse than no gate: "no candidates" and
+        # "none cleared a bar you were never shown" read identically.
+        scored = above or scored
+    return site_clustering.spread(scored, clusters)
+
+
 @app.post("/api/v1/planner/candidates", response_model=PlannerCandidatesResponse, tags=["planner"],
           summary="Suggested coordinates, clustered from the strongest cells (AC Epic 4)")
 def planner_candidates(body: SiteWeightsInput,
+                       basis: str = Query("weighted", pattern="^(weighted|suitability)$",
+                                          description="Which number ranks the suggestions: the "
+                                                      "adjustable four-criteria score, or the "
+                                                      "model-and-supply suitability the heatmap "
+                                                      "paints."),
                        clusters: int = Query(15, ge=1, le=50),
                        quantile: float = Query(0.90, ge=0.5, lt=1.0,
                                                description="Region-wide search only: keep cells at "
@@ -2462,6 +2535,23 @@ def planner_candidates(body: SiteWeightsInput,
     if (lat is None) != (lon is None):
         raise HTTPException(422, "lat and lon must be given together")
     weights, applied = _planner_weights_or_422(body)
+
+    if basis == "suitability":
+        rows = _suitability_candidates(clusters if lat is None else min(clusters, 8),
+                                       quantile if lat is None else None,
+                                       lat, lon, radius_km)
+        if rows is not None:
+            return PlannerCandidatesResponse(
+                weights_applied={k: round(v, 4) for k, v in applied.items()},
+                candidates=[PlannerCandidate(**r) for r in rows],
+                basis="suitability",
+                excluded_areas=list(planner_repo.DEFAULT_EXCLUDED_KOTA),
+            )
+        # The model is unavailable. Answering with the weighted score and saying
+        # so beats a 503: the caller asked for suggestions, and the weighted
+        # score is a real answer to that question rather than a substitute
+        # pretending to be the one requested.
+
     if lat is not None and lon is not None:
         rows = planner_repo.candidate_sites_in_radius(
             weights, lat, lon, radius_km, clusters=min(clusters, 8))
@@ -2470,6 +2560,7 @@ def planner_candidates(body: SiteWeightsInput,
     return PlannerCandidatesResponse(
         weights_applied={k: round(v, 4) for k, v in applied.items()},
         candidates=[PlannerCandidate(**r) for r in rows],
+        basis="weighted",
         excluded_areas=list(planner_repo.DEFAULT_EXCLUDED_KOTA),
     )
 
@@ -2502,6 +2593,43 @@ def planner_unsave_site(cell_id: str, user: dict = Depends(require_planner)) -> 
     return PlannerSavedSiteStatus(cell_id=cell_id, saved=False)
 
 
+def _scale_dict(scale: Optional[suitability.RegionalScale]) -> Optional[dict]:
+    """The legend's numbers, in one shape.
+
+    Both the area response and the cell card return this. Built here rather than
+    inline at each call site because two hand-written copies of the same dict are
+    how the map and the panel came to describe different quantities in the first
+    place.
+    """
+    if scale is None:
+        return None
+    return {"red_floor": round(scale.red_floor, 4),
+            "yellow_floor": round(scale.yellow_floor, 4),
+            "cells_scored": float(scale.cells_scored),
+            "model_weight": scale.model_weight}
+
+
+def _cell_suitability(row: dict) -> dict:
+    """The map's number for one cell, so the card and the shading agree.
+
+    This is the endpoint that made the disagreement visible: the card printed
+    "Located in a Red Demand Zone" from its own expression while the map painted
+    the cell from another. Sharing _suitability_for is what makes those the same
+    sentence about the same quantity.
+
+    Empty on failure, never a substitute number. A card with no band shows no
+    band; a card with a plausible wrong band is what this replaces.
+    """
+    suits, scale = _suitability_for([row])
+    s = suits[0] if suits else None
+    if s is None or scale is None:
+        return {}
+    return {"suitability": round(s.suitability, 4), "suitability_band": s.band,
+            "sessions_per_connector_day": round(s.utilisation, 3),
+            "supply_discount": round(s.supply.discount, 4),
+            "suitability_scale": _scale_dict(scale)}
+
+
 @app.get("/api/v1/planner/cells/{cell_id}", response_model=PlannerCellDetail, tags=["planner"],
          summary="Every feature behind one cell's score",
          responses={404: {"description": "No such cell"}})
@@ -2528,6 +2656,7 @@ def planner_cell(cell_id: str, user: dict = Depends(require_planner)) -> Planner
         road_nodes=row["road_nodes"], road_length_m=row["road_length_m"],
         station_count=row["station_count"], connector_count=row["connector_count"],
         nearest_station_m=row["nearest_station_m"], stations_2km=row["stations_2km"],
+        **_cell_suitability(row),
     )
 
 
@@ -3196,12 +3325,7 @@ def planner_predict_area(
             max_probability=None if not n else round(empty[-1], 4),
             resemblance_ceiling=scale.ceiling if scale else None,
             resemblance_ceiling_cells=scale.cells_scored if scale else None,
-            suitability_scale=(None if suit_scale is None else {
-                "red_floor": round(suit_scale.red_floor, 4),
-                "yellow_floor": round(suit_scale.yellow_floor, 4),
-                "cells_scored": float(suit_scale.cells_scored),
-                "model_weight": suit_scale.model_weight,
-            }),
+            suitability_scale=_scale_dict(suit_scale),
             cells_red=bands.count("red") if bands else None,
             cells_yellow=bands.count("yellow") if bands else None,
             cells_green=bands.count("green") if bands else None,

@@ -1164,6 +1164,15 @@ class PlannerCandidate(BaseModel):
     stations_2km: int
     cluster_size: int = Field(..., description="How many qualifying cells this suggestion stands for.")
 
+    #: Present only under basis="suitability". The three fields are kept apart on
+    #: purpose: `score` is what ranked the pin, and these say what it was made of,
+    #: so "the model chose this" can be checked rather than taken on trust.
+    suitability_band: Optional[str] = None
+    sessions_per_connector_day: Optional[float] = Field(
+        None, description="SCENARIO, not a forecast: predicted from simulated sessions.")
+    supply_discount: Optional[float] = Field(
+        None, description="1/(1+effective stations within 2 km). 1.0 means nothing nearby.")
+
 
 class PlannerProvenance(BaseModel):
     """What the numbers rest on. Carried in every response, not only in the UI.
@@ -1174,7 +1183,15 @@ class PlannerProvenance(BaseModel):
     """
     population_source: str = "WorldPop 2026 constrained, release R2025A (projection, not a census count)"
     features_source: str = "OpenStreetMap via Geofabrik Java extract, snapshot 2026-08-14 (ODbL)"
-    demand_basis: str = "Coverage and surroundings only. No charging-session data is used in this score."
+    #: This said "no charging-session data is used" until suitability shipped, at
+    #: which point it became false for every response carrying a band. Both halves
+    #: are stated because both are served: a consumer that reads only the first
+    #: sentence would present a simulation as observed demand.
+    demand_basis: str = (
+        "The four-criteria score uses coverage and surroundings only, with no "
+        "charging-session data. Any suitability, band or sessions-per-connector "
+        "figure is predicted from SIMULATED sessions: a scenario that recovers an "
+        "assumption about demand, not a forecast and not observed usage.")
     cell_size_m: int = 500
 
 
@@ -1188,6 +1205,12 @@ class PlannerScoreResponse(BaseModel):
 class PlannerCandidatesResponse(BaseModel):
     weights_applied: dict[str, float]
     candidates: list[PlannerCandidate]
+    basis: str = Field(
+        "weighted",
+        description="Which number ranked these. 'weighted' is the adjustable four-criteria "
+                    "score; 'suitability' is the model-and-supply number the heatmap paints. "
+                    "A request for 'suitability' answers 'weighted' when the model is "
+                    "unavailable, so read this rather than assuming what was asked for.")
     excluded_areas: list[str] = Field(
         ..., description="Areas held out of the candidate pool, e.g. sea-separated cells unreachable by road.")
     provenance: PlannerProvenance = PlannerProvenance()
@@ -1246,6 +1269,17 @@ class PlannerCellDetail(BaseModel):
     stations_2km: int
     provenance: PlannerProvenance = PlannerProvenance()
 
+    #: The same number the heatmap paints, so "Located in a Red Demand Zone" on
+    #: the card and the colour under the cursor are one claim rather than two
+    #: expressions that happened to agree. Absent when no scale could be built --
+    #: a card with no band is correct, a card with a plausible wrong band is not.
+    suitability: Optional[float] = None
+    suitability_band: Optional[str] = None
+    sessions_per_connector_day: Optional[float] = Field(
+        None, description="SCENARIO, not a forecast: predicted from simulated sessions.")
+    supply_discount: Optional[float] = None
+    suitability_scale: Optional[dict[str, float]] = Field(
+        None, description="The regional distribution this cell was read against.")
 
 class PlannerPoisGeoJSON(BaseModel):
     """RFC 7946 FeatureCollection of POI points, for the map's marker layer.

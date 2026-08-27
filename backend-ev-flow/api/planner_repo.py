@@ -565,6 +565,59 @@ def features_for_scoring(feature_names: list[str], min_overlap: float = 0.5,
     return [dict(r) for r in rows]
 
 
+def candidate_cells(feature_names: list[str], min_overlap: float = 0.5,
+                    excluded_kota: Optional[list[str]] = None,
+                    lat: Optional[float] = None, lon: Optional[float] = None,
+                    radius_km: Optional[float] = None) -> list[dict]:
+    """Cells a suggestion may be placed on, with everything needed to score one.
+
+    Only cells with no station on them. Unlike features_for_scoring, which pulls
+    the whole region because the SCALE has to be built over the whole region,
+    this pulls the population a pin may actually land on -- so it carries the
+    display columns a candidate is reported with, and it accepts a circle.
+
+    The circle filters the CANDIDATES, never the scale. The regional scale is
+    built once and cached; scoring a circle against it is what keeps a cell in
+    Serpong and a cell in Sudirman on one comparable number.
+    """
+    with engine.connect() as c:
+        known = {r[0] for r in c.execute(text("""
+            SELECT column_name FROM information_schema.columns
+             WHERE table_name = 'planning_cells'"""))}
+        unknown = [f for f in feature_names if f not in known]
+        if unknown:
+            raise ValueError(
+                f"the model expects {len(unknown)} column(s) planning_cells does not "
+                f"have: {', '.join(unknown)}. The model is stale relative to the schema.")
+
+        params: dict = {"min_overlap": min_overlap,
+                        "excluded_kota": excluded_kota if excluded_kota is not None
+                        else DEFAULT_EXCLUDED_KOTA}
+        circle = ""
+        if lat is not None and lon is not None and radius_km is not None:
+            params.update(lat=lat, lon=lon, radius_m=radius_km * 1000.0,
+                          degrees=(radius_km * 1000.0) / 111_320.0)
+            # The bounding box first so the GIST index is used, then the exact
+            # geography test -- the same two-step every other radius query here
+            # does, for the same reason.
+            circle = """
+               AND centroid && ST_Expand(ST_SetSRID(ST_MakePoint(:lon, :lat), 4326), :degrees)
+               AND ST_DWithin(centroid::geography,
+                              ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography, :radius_m)"""
+
+        cols = ", ".join(f'"{f}"' for f in feature_names)
+        rows = c.execute(text(f"""
+            SELECT cell_id, kota, station_count, stations_2km, nearest_station_m,
+                   ST_Y(centroid) AS latitude, ST_X(centroid) AS longitude,
+                   population, poi_total, {cols}
+              FROM planning_cells
+             WHERE overlap_frac >= :min_overlap
+               AND kota <> ALL(:excluded_kota)
+               AND station_count = 0{circle}
+        """), params).mappings().all()
+    return [dict(r) for r in rows]
+
+
 def landuse_in_viewport(viewport: Viewport, classes: Optional[list[str]] = None,
                         limit: int = 4000, simplify_m: float = 0.0) -> tuple[list[dict], int]:
     """Land-use polygons inside the viewport, and the true total before the limit.
