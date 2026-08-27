@@ -15,9 +15,9 @@ every call is built in that order, from a dict, by name.
 WHAT THE MODEL ACTUALLY PREDICTS
 
 P(a cell contains a station), learned from the existing network. That network is
-1,080 PLN placements out of 1,236, following PLN offices and policy targets, so
-this is descriptive of where stations ARE rather than prescriptive about where
-they SHOULD be. The API surfaces it alongside the weighted score rather than in
+87% PLN: 1,038 of the 1,192 stations inside the scored grid, measured 2026-08-26
+with a join from stations to planning_cells. So this is descriptive of where
+stations ARE rather than prescriptive about where they SHOULD be. The API surfaces it alongside the weighted score rather than in
 place of it, and labels it, because a planner reading a single number has no way
 to know which of the two questions it answered.
 

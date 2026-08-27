@@ -411,7 +411,7 @@ export type PlannerPredictResponse = {
  * How the model's probabilities are spread across the cells in a chosen area.
  *
  * There is deliberately no single area-wide probability. The model was fitted on
- * 400 m cells; summing an area into one feature vector pushes most of its inputs
+ * 500 m cells; summing an area into one feature vector pushes most of its inputs
  * past anything in the training set (18 of 33 features for a 10 x 10 km
  * selection) and a random forest cannot extrapolate there. Measured, that shape
  * answered 0.605 where the true per-cell mean was 0.040. Read the distribution,
@@ -641,7 +641,7 @@ export function fetchPlannerPredictions(cellIds: string[], fetcher: typeof fetch
  * so two locations can be compared.
  *
  * WHAT THIS ANSWERS. The model is descriptive. It learned which cells CONTAIN a
- * station, from a network that is 1,080 PLN placements out of 1,236, so it
+ * station, from a network 87% operated by PLN (1,038 of 1,192), so it
  * answers "how much does this resemble the places that get built on" and NOT
  * "where should a station go". Read `cells_with_station` beside every other
  * figure: measured on real areas, the three highest-scoring cells around

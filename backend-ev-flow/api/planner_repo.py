@@ -232,7 +232,7 @@ def features_in_area(viewport: Viewport, feature_names: list[str],
 
     This is what makes prediction on demand rather than precomputed. The caller
     hands over whatever rectangle was drawn on the map and gets back the cells to
-    run the model over, at the 400 m resolution the model was trained at.
+    run the model over, at the 500 m resolution the model was trained at.
 
     WHY THE AREA IS NOT COLLAPSED INTO A SINGLE ROW
 

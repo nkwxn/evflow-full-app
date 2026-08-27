@@ -1424,11 +1424,11 @@ class PlannerPrediction(BaseModel):
 class PlannerPredictResponse(BaseModel):
     """Model predictions, with the caveat that has to travel with them.
 
-    The model learns where stations ARE. 1,080 of the 1,236 stations it learned
-    from are PLN placements that follow PLN offices and policy targets, so a high
-    probability means "this looks like somewhere PLN builds", which is not the
-    same claim as "this is a good site". Read it next to the weighted score
-    rather than instead of it.
+    The model learns where stations ARE. Measured 2026-08-26, 1,038 of the 1,192
+    stations inside the scored grid are operated by PLN, 87%, so a high
+    probability means "this looks like somewhere the dominant operator builds",
+    which is not the same claim as "this is a good site". Read it next to the
+    weighted score rather than instead of it.
     """
     predictions: list[PlannerPrediction]
     model: PlannerModelInfo
@@ -1448,9 +1448,10 @@ class PlannerAreaDistribution(BaseModel):
 
     Both were in an earlier version of this response and both were wrong.
 
-    A single area score is wrong because the model was fitted on 400 m cells:
-    summing a 10 x 10 km selection into one feature vector puts 18 of its 33
-    additive features past anything in the training set, where a random forest
+    A single area score is wrong because the model was fitted on 500 m cells:
+    summing a 10 x 10 km selection into one feature vector puts 17 of its 33
+    additive features past anything in the training set -- road_length_m by 48x --
+    where a random forest
     can only repeat its most extreme leaves. It answered 0.605 where the true
     per-cell mean was 0.040.
 
@@ -1516,7 +1517,7 @@ class PlannerPredictAreaResponse(BaseModel):
     whole grid takes about 110 ms to score, so there is nothing to gain by
     freezing it in advance and a stale layer to lose.
 
-    Predictions stay at the 400 m resolution the model was trained at. See
+    Predictions stay at the 500 m resolution the model was trained at. See
     PlannerAreaDistribution for why the area is not scored as a single unit.
     """
     distribution: PlannerAreaDistribution

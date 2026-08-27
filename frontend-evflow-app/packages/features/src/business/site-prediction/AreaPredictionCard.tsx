@@ -30,7 +30,7 @@ type Props = {
  * READ AS ONE.
  *
  * The model is descriptive: it learned which cells CONTAIN a station, from a
- * network that is 1,080 PLN placements out of 1,236. Measured across the whole
+ * network 87% operated by PLN, 1,038 of 1,192. Measured across the whole
  * grid, its 500 highest-probability cells are 100% cells that already have one,
  * and of the 26,334 cells with none, the highest probability is 0.305 with not
  * one above 0.5.

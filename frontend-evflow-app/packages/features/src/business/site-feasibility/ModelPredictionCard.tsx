@@ -14,8 +14,8 @@ type Props = {
  * with it.
  *
  * The model predicts P(this cell contains a station), learned from the existing
- * network. 1,080 of the 1,236 stations it learned from are PLN placements that
- * follow PLN offices and policy targets. Measured on the grid, its 500
+ * network, 87% of which is PLN: 1,038 of the 1,192 stations inside the scored
+ * grid, measured 2026-08-26. Measured on the grid, its 500
  * highest-probability cells ALL already have a station, against a base rate of
  * 3.3%. So a high number means "resembles somewhere PLN builds", which is not
  * the same claim as "good site".

@@ -2848,10 +2848,11 @@ def planner_pois_geojson(
 
 _MODEL_MEANS = (
     "A high probability means this cell resembles the ones that already have a station. "
-    "It does NOT mean the cell is a good site. 1,080 of the 1,236 stations the model "
-    "learned from are PLN placements that follow PLN offices and policy targets, so the "
-    "model has partly learned PLN's siting logic rather than demand. Read it beside the "
-    "weighted score, not instead of it. Beside it, sessions_per_connector_day comes from the "
+    "It does NOT mean the cell is a good site. Measured 2026-08-26, 1,038 of the 1,192 "
+    "stations inside the scored grid are operated by PLN, 87%, so the model has largely "
+    "learned where the dominant operator builds rather than where demand is. Read it "
+    "beside the weighted score, not instead of it. Beside it, "
+    "sessions_per_connector_day comes from the "
     "prescriptive model, which predicts how busy a connector at a place would be and is the "
     "one of the two that can rank a cell nobody has built on -- but it is a SCENARIO recovered "
     "from the simulation's own demand assumption, not a forecast, and every session behind it "
@@ -3012,7 +3013,8 @@ def planner_predict_area(
     TWO MODELS ANSWER TWO QUESTIONS, AND THE ORDER COMES FROM THE SECOND
 
     `probability` is descriptive. It learned which cells CONTAIN a station, from
-    a network that is 1,080 PLN placements out of 1,236. Measured across the
+    a network 87% operated by PLN: 1,038 of the 1,192 stations inside the
+    scored grid, measured 2026-08-26. Measured across the
     whole grid, its 500 highest-probability cells are 100% cells that already
     have one, and among the 26,334 cells with none the highest probability is
     0.305. It answers "how much does this place resemble the ones that get built
@@ -3039,7 +3041,7 @@ def planner_predict_area(
 
     WHY THE AREA IS SCORED CELL BY CELL
 
-    The model was fitted on 400 m cells. Summing an area into one feature vector
+    The model was fitted on 500 m cells. Summing an area into one feature vector
     puts most of its inputs past anything in the training set: 18 of 33 features
     for a 10 x 10 km selection. It reported 0.605 where the true per-cell mean
     was 0.040.

@@ -10,7 +10,7 @@ import type { PlannerAreaDistributionApi } from '@evflow/shared';
  * TWO THINGS THIS MODULE EXISTS TO ENFORCE
  *
  * 1. An area is described by the DISTRIBUTION of its cells, never one number.
- *    The model was fitted on 400 m cells; summing a 10 x 10 km selection into
+ *    The model was fitted on 500 m cells; summing a 10 x 10 km selection into
  *    one feature vector puts 18 of its 33 additive features past anything in
  *    the training set, where a random forest can only repeat its most extreme
  *    leaves. It answered 0.605 where the true per-cell mean was 0.040.
