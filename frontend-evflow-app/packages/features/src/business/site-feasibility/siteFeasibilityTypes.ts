@@ -41,6 +41,8 @@ export type SiteFeasibilityData = {
   optimalSiteId: string;
   locationCode: string;
   locationName: string;
+  latitude: number;
+  longitude: number;
   /**
    * The number the MAP paints, and therefore the headline on this card.
    *
@@ -48,7 +50,7 @@ export type SiteFeasibilityData = {
    * showed suitability, so the card could read "Low Priority" above "Red Zone"
    * with nothing saying the two were different quantities.
    */
-  locationScore: number;
+  locationScore?: number;
   /**
    * The weighted four-criteria score, kept but not displayed.
    *

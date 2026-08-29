@@ -19,6 +19,8 @@ const primarySite: SiteFeasibilityData = {
   optimalSiteId: 'mock-optimal-94',
   locationCode: 'LOC-JKT-8821',
   locationName: 'Senayan Corridor',
+  latitude: -6.2297,
+  longitude: 106.7997,
   locationScore: 88,
   criteriaScore: 88,
   heatmapScore: 88,
@@ -48,6 +50,8 @@ function createFallbackSite(siteId: string): SiteFeasibilityData {
   return {
     optimalSiteId: siteId,
     ...metadata,
+    latitude: -6.2,
+    longitude: 106.82,
     locationScore: Math.min(95, markerScore),
     criteriaScore: Math.min(95, markerScore),
     heatmapScore: Math.min(95, markerScore),

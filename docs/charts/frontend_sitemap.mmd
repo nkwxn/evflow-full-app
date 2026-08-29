@@ -1,0 +1,40 @@
+---
+config:
+  layout: dagre
+---
+flowchart TB
+ subgraph BusinessPlanner["Iteration 3 Scope"]
+    direction TB
+        OperatorRoot["/business-dashboard"]
+        DemandHeatmap["/business-dashboard/demand-heatmap"]
+        SavedSites["/business-dashboard/saved-sites"]
+        PlannerProfile["/business-dashboard/profile"]
+  end
+    Entry["/<br>EV Driver Quick Login"] -- Select EV Driver --> Vehicle["/onboarding/vehicle"]
+    Entry -- Standard login --> Login["/login"]
+    Entry -- Select Fleet Operator --> OperatorRoot
+    Login -- Register Now --> Register["/register"]
+    Login -- Log in as EV Driver --> DriverRoot["/ev-driver"]
+    Login -- Forgot password --> ResetPassword["/reset-password"]
+    Login -- Log in as Business Planner --> OperatorRoot
+    Register -- Registration success --> DriverRoot
+    ResetPassword -- Back to login --> Login
+    Vehicle -- Continue --> Connector["/onboarding/connector"]
+    Connector -- Continue --> DriverRoot
+    DriverRoot -- Default route --> Map["/ev-driver/map"]
+    DriverRoot --> Wallet["/ev-driver/wallet"] & PlanRoute["/ev-driver/plan_route"] & DriverProfile["/ev-driver/profile"] & Scan["/charging-flow/scan"]
+    Map -- Charge Here --> Scan
+    Wallet -- Top Up --> TopUp["/ev-driver/wallet/topup"]
+    TopUp -- Payment created --> TopUpSuccess["/ev-driver/wallet/topup/success"]
+    TopUpSuccess -- Done --> Wallet
+    Scan -- QR scanned or manual entry --> Initialize["/charging-flow/initialize"]
+    Initialize -- Confirm and Pay --> PaymentSuccess["/charging-flow/success"]
+    PaymentSuccess -- Start Charging --> ChargingStatus["/charging-flow/status"]
+    ChargingStatus -- Complete or Stop --> ChargingSuccessful["/charging-flow/successful"]
+    ChargingSuccessful -- Back to Map --> Map
+    DriverProfile -- Log Out --> Entry
+    OperatorRoot -- Default route --> DemandHeatmap
+    OperatorRoot --> SavedSites & PlannerProfile
+    PlannerProfile -- Log Out --> Entry
+
+    style BusinessPlanner fill:#FFF7C2,stroke:#C9A227,stroke-width:2px,color:#333

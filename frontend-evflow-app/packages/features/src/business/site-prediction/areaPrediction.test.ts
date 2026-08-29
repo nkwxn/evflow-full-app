@@ -10,6 +10,7 @@ import {
   drawTruncationNote,
   resemblanceCaption,
   RESEMBLANCE_BANDS,
+  resemblanceBand,
   resemblanceColour,
   resemblanceOpacity,
   suitabilityColour,
@@ -72,6 +73,13 @@ describe('the summary leads with what is already built', () => {
 });
 
 describe('the resemblance figure carries its own scale', () => {
+  it('returns the exact legend tier used by site details at both boundaries', () => {
+    expect(resemblanceBand(CEILING * 0.66, CEILING)).toBe(RESEMBLANCE_BANDS[0]);
+    expect(resemblanceBand(CEILING * 0.33, CEILING)).toBe(RESEMBLANCE_BANDS[1]);
+    expect(resemblanceBand(CEILING * 0.329, CEILING)).toBe(RESEMBLANCE_BANDS[2]);
+    expect(resemblanceBand(0.2, null)).toBeNull();
+    expect(resemblanceBand(0.2, 0)).toBeNull();
+  });
   it('says what the number is a fraction of', () => {
     // 0.26 reads as "poor" to anyone who does not know that 0.31 is the highest
     // any unbuilt cell in Jabodetabek reaches.

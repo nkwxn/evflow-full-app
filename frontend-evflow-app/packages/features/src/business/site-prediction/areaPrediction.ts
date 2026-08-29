@@ -79,12 +79,19 @@ export const RESEMBLANCE_BANDS = [
   { colour: '#DDD6FE', floor: 0, label: 'under 33%' }
 ] as const;
 
+export function resemblanceBand(probability: number, ceiling: number | null) {
+  if (ceiling === null || !Number.isFinite(probability) || !Number.isFinite(ceiling) || ceiling <= 0) {
+    return null;
+  }
+  const share = Math.min(Math.max(probability, 0), ceiling) / ceiling;
+  return RESEMBLANCE_BANDS.find((band) => share >= band.floor)
+    ?? RESEMBLANCE_BANDS[RESEMBLANCE_BANDS.length - 1];
+}
+
 export function resemblanceColour(probability: number, ceiling: number | null): string {
   const top = Math.max(ceiling ?? 0, MIN_SCALE_DIVISOR);
-  const t = Math.min(Math.max(probability, 0), top) / top;
-  // Ordered high to low, so the first floor cleared is the right band.
-  return (RESEMBLANCE_BANDS.find((band) => t >= band.floor) ?? RESEMBLANCE_BANDS[
-    RESEMBLANCE_BANDS.length - 1]).colour;
+  return resemblanceBand(probability, top)?.colour
+    ?? RESEMBLANCE_BANDS[RESEMBLANCE_BANDS.length - 1].colour;
 }
 
 /**

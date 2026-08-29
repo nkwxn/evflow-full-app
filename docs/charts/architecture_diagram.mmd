@@ -1,0 +1,127 @@
+flowchart TB
+    %% EV-FLOW application architecture — current implementation
+
+    subgraph USERS[Users]
+        Driver[EV Driver]
+        Planner[Business Planner]
+    end
+
+    subgraph CLIENTS[Client applications]
+        Web[Web SPA<br/>Vite + React Native Web]
+        Mobile[Mobile app<br/>Expo + React Native]
+        Features[Feature screens and routes<br/>Driver, charging, wallet, planner]
+        Shared[Shared API clients, types<br/>and authentication session]
+        UI[Shared UI package<br/>Leaflet map adapter]
+        Device[Device capabilities<br/>Location, camera/QR, clipboard, downloads]
+        Session[Browser/device session storage<br/>Bearer JWT and temporary route state]
+    end
+
+    subgraph EDGE[Web delivery]
+        Nginx[nginx<br/>Static SPA delivery + /api reverse proxy]
+    end
+
+    subgraph BACKEND[EV-FLOW backend]
+        API[FastAPI REST API<br/>/api/v1 + OpenAPI]
+        Auth[Identity and security<br/>bcrypt, JWT, role checks,<br/>password reset, Google OAuth]
+        DriverDomain[Driver services<br/>stations, connector availability,<br/>wallet, charging and routes]
+        PlannerAPI[Planner API<br/>scores, candidates, cells, POIs,<br/>land use, ROI, predictions, saved sites]
+        GeoRouting[Geocoding and routing<br/>Nominatim proxy, OSRM client,<br/>local Dijkstra fallback]
+        Repos[Repository and domain layer<br/>SQLAlchemy + psycopg]
+        ML[Planner inference services<br/>scikit-learn + joblib]
+    end
+
+    subgraph DATA[Authoritative data and local artifacts]
+        Postgres[(PostgreSQL + PostGIS)]
+        CoreTables[Accounts, wallets, top-ups,<br/>charging sessions, stations/connectors,<br/>occupancy and reset tokens]
+        PlannerTables[planning_cells, planning_pois,<br/>planning_landuse, planner_saved_sites]
+        RoadGraph[Cached Jakarta road graph<br/>GraphML + NetworkX]
+        ModelArtifacts[Offline-trained model artifacts<br/>siting_model.joblib + utilisation_model.joblib]
+        Catalogue[EV catalogue and station data files]
+    end
+
+    subgraph EXTERNAL[External APIs and SDKs]
+        Leaflet[Leaflet JavaScript SDK<br/>loaded in the web map]
+        BaseTiles[Esri light basemap tiles<br/>with OpenStreetMap attribution]
+        TomTom[TomTom Traffic Tiles API<br/>optional VITE_TOMTOM_API_KEY]
+        OSRM[OSRM routing API]
+        Nominatim[OpenStreetMap Nominatim]
+        Xendit[Xendit Invoice API + webhook]
+        Google[Google OAuth 2.0]
+        SMTP[SMTP provider]
+    end
+
+    subgraph OFFLINE[Offline data and model pipeline]
+        Sources[PLN, Open Charge Map,<br/>OpenStreetMap and BPS snapshots]
+        ETL[Import, normalise, infer connectors,<br/>75 m deduplicate, build planning layers]
+        Training[Planner model training<br/>siting + utilisation]
+    end
+
+    Driver --> Web
+    Driver --> Mobile
+    Planner --> Web
+    Planner --> Mobile
+
+    Web --> Features
+    Mobile --> Features
+    Features --> Shared
+    Features --> UI
+    Features <--> Device
+    Shared <--> Session
+
+    %% Deployed web requests stay same-origin through nginx; native/dev clients call API directly.
+    Web -->|HTTPS /api/v1| Nginx
+    Nginx -->|Reverse proxy| API
+    Mobile -->|HTTPS JSON API| API
+    Shared -->|Bearer JWT + JSON| API
+
+    API --> Auth
+    API --> DriverDomain
+    API --> PlannerAPI
+    API --> GeoRouting
+    Auth --> Repos
+    DriverDomain --> Repos
+    PlannerAPI --> Repos
+    PlannerAPI --> ML
+    Repos <--> Postgres
+    Postgres --- CoreTables
+    Postgres --- PlannerTables
+
+    DriverDomain --> RoadGraph
+    DriverDomain --> Catalogue
+    GeoRouting -->|Primary road route| OSRM
+    GeoRouting -->|Fallback route| RoadGraph
+    GeoRouting --> Nominatim
+    ML --> ModelArtifacts
+
+    DriverDomain --> Xendit
+    Xendit -->|Verified payment webhook| API
+    Auth --> Google
+    Auth --> SMTP
+
+    %% Map and traffic assets are requested by the browser, not proxied through FastAPI.
+    UI --> Leaflet
+    Leaflet --> BaseTiles
+    UI -->|Optional live-traffic overlay| TomTom
+
+    Sources --> ETL
+    ETL --> Postgres
+    ETL --> Catalogue
+    ETL --> RoadGraph
+    Postgres --> Training
+    Training --> ModelArtifacts
+
+    classDef user fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#000;
+    classDef client fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#000;
+    classDef edge fill:#E0F2F1,stroke:#00796B,stroke-width:2px,color:#000;
+    classDef service fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px,color:#000;
+    classDef data fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px,color:#000;
+    classDef external fill:#FCE4EC,stroke:#C2185B,stroke-width:2px,color:#000;
+    classDef offline fill:#FFFDE7,stroke:#F9A825,stroke-width:2px,color:#000;
+
+    class Driver,Planner user;
+    class Web,Mobile,Features,Shared,UI,Device,Session client;
+    class Nginx edge;
+    class API,Auth,DriverDomain,PlannerAPI,GeoRouting,Repos,ML service;
+    class Postgres,CoreTables,PlannerTables,RoadGraph,ModelArtifacts,Catalogue data;
+    class Leaflet,BaseTiles,TomTom,OSRM,Nominatim,Xendit,Google,SMTP external;
+    class Sources,ETL,Training offline;

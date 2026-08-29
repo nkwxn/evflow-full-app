@@ -32,6 +32,8 @@ export function plannerCellToSiteFeasibility(
     optimalSiteId: detail.cell_id,
     locationCode: detail.cell_id,
     locationName: cleanAreaName(detail.kota),
+    latitude: detail.latitude,
+    longitude: detail.longitude,
     // The headline is the number the map paints. The weighted score travels
     // alongside it rather than being discarded: the backend still sends it and
     // its adjustable weights are a real feature, it is simply not the number a

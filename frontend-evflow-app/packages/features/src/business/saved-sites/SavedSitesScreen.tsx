@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type GestureResponderHandlers } from 'react-native';
-import { deletePlannerSavedSite, fetchPlannerSavedSites, type PlannerSavedSiteApi } from '@evflow/shared';
+import { deletePlannerSavedSite, fetchPlannerAreaPrediction, fetchPlannerPredictions, fetchPlannerSavedSites, type PlannerSavedSiteApi } from '@evflow/shared';
 import { driverMapStyles as mapStyles, LeafletMap } from '@evflow/ui';
 import { useNavigate } from 'react-router';
 import { SvgAssetIcon } from '../../shared/SvgAssetIcon';
@@ -25,6 +25,9 @@ export function SavedSitesScreen({ bottomOffset = 0, topInset = 0 }: { bottomOff
   const [expanded, setExpanded] = useState(true);
   const [center, setCenter] = useState(jakartaCenter);
   const [mapZoom, setMapZoom] = useState(jakartaViewport.zoom);
+  const [savedPredictions, setSavedPredictions] = useState<Record<string, number>>({});
+  const [savedRegionalCeiling, setSavedRegionalCeiling] = useState<number | null>(null);
+  const [savedComparisonsLoading, setSavedComparisonsLoading] = useState(false);
   const syncSelectedSaved = useCallback((saved: boolean) => {
     if (!selectedSite) return;
     setItems((current) => {
@@ -50,6 +53,49 @@ export function SavedSitesScreen({ bottomOffset = 0, topInset = 0 }: { bottomOff
     }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [retry]);
+
+  useEffect(() => {
+    if (items.length === 0) {
+      setSavedPredictions({});
+      setSavedRegionalCeiling(null);
+      setSavedComparisonsLoading(false);
+      return;
+    }
+
+    let active = true;
+    const anchor = items[0];
+    const predictionRequests = [];
+    for (let start = 0; start < items.length; start += 500) {
+      predictionRequests.push(fetchPlannerPredictions(
+        items.slice(start, start + 500).map((item) => item.cell_id)
+      ));
+    }
+    setSavedComparisonsLoading(true);
+    void Promise.all([
+      Promise.all(predictionRequests),
+      fetchPlannerAreaPrediction({
+        latitude: anchor.latitude,
+        longitude: anchor.longitude,
+        radiusKm: 0.5,
+        limit: 100,
+        top: 1
+      })
+    ]).then(([predictionResponses, area]) => {
+      if (!active) return;
+      setSavedPredictions(Object.fromEntries(
+        predictionResponses.flatMap((response) => response.predictions)
+          .map((prediction) => [prediction.cell_id, prediction.probability])
+      ));
+      setSavedRegionalCeiling(area.distribution.resemblance_ceiling);
+    }).catch(() => {
+      if (!active) return;
+      setSavedPredictions({});
+      setSavedRegionalCeiling(null);
+    }).finally(() => {
+      if (active) setSavedComparisonsLoading(false);
+    });
+    return () => { active = false; };
+  }, [items]);
 
   const remove = useCallback((site: PlannerSavedSiteApi) => {
     let removedIndex = -1;
@@ -146,6 +192,10 @@ export function SavedSitesScreen({ bottomOffset = 0, topInset = 0 }: { bottomOff
           onToggleExpanded={() => setExpanded((value) => !value)}
           onToggleSaved={detail.toggleSaved}
           panHandlers={noPanHandlers}
+          prediction={detail.prediction}
+          predictionError={detail.predictionError}
+          predictionLoading={detail.predictionLoading}
+          regionalCeiling={detail.regionalCeiling}
         />
       ) : <View style={[mapStyles.sheet, styles.sheet, { bottom: bottomOffset, height: sheetHeight }]}>
         <Pressable
@@ -165,7 +215,17 @@ export function SavedSitesScreen({ bottomOffset = 0, topInset = 0 }: { bottomOff
         ) : (
           <ScrollView accessibilityLabel="Saved sites" contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
             {error ? <Text accessibilityLiveRegion="polite" style={styles.error}>{error}</Text> : null}
-            {items.map((site) => <SavedSiteCard key={site.cell_id} onOpen={() => openSite(site)} onRemove={() => remove(site)} site={site} />)}
+            {items.map((site) => (
+              <SavedSiteCard
+                key={site.cell_id}
+                onOpen={() => openSite(site)}
+                onRemove={() => remove(site)}
+                regionalCeiling={savedRegionalCeiling}
+                resemblance={savedPredictions[site.cell_id] ?? null}
+                resemblanceLoading={savedComparisonsLoading}
+                site={site}
+              />
+            ))}
           </ScrollView>
         )}
       </View>}
@@ -173,13 +233,26 @@ export function SavedSitesScreen({ bottomOffset = 0, topInset = 0 }: { bottomOff
   );
 }
 
-function SavedSiteCard({ onOpen, onRemove, site }: { onOpen: () => void; onRemove: () => void; site: PlannerSavedSiteApi }) {
+function SavedSiteCard({ onOpen, onRemove, regionalCeiling, resemblance, resemblanceLoading, site }: {
+  onOpen: () => void;
+  onRemove: () => void;
+  regionalCeiling: number | null;
+  resemblance: number | null;
+  resemblanceLoading: boolean;
+  site: PlannerSavedSiteApi;
+}) {
   const data = savedSiteData(site);
   return (
     <View style={styles.card}>
       <Pressable accessibilityLabel={`Open details for ${site.cell_id}`} accessibilityRole="button" onPress={onOpen} style={styles.cardOpen}>
         <Text style={styles.siteTitle}>{site.cell_id} ({cleanArea(site.kota)})</Text>
-        <LocationScoreSummary embedded scores={calculateSiteScores(data)} />
+        <LocationScoreSummary
+          embedded
+          regionalCeiling={regionalCeiling}
+          resemblance={resemblance}
+          resemblanceLoading={resemblanceLoading}
+          scores={calculateSiteScores(data)}
+        />
       </Pressable>
       <View style={styles.cardBookmark}><BookmarkButton isSaved onPress={onRemove} /></View>
     </View>
@@ -190,6 +263,7 @@ function savedSiteData(site: PlannerSavedSiteApi): SiteFeasibilityData {
   const score = Math.round(Math.min(Math.max(site.score ?? 0, 0), 1) * 100);
   return {
     optimalSiteId: site.cell_id, locationCode: site.cell_id, locationName: cleanArea(site.kota),
+    latitude: site.latitude, longitude: site.longitude,
     // No band: a saved site stores the weighted score it was saved under, not a
     // suitability, so the card falls back to the pre-band rule rather than
     // claiming a zone the map never painted for it.

@@ -9,8 +9,8 @@ import {
   calculateOverlapScore,
   calculatePoiScore,
   getHeatmapDescription,
-  getHeatmapSummary,
   getLocationPriority,
+  getRegionalResemblanceSummary,
   getNearbyStationsWithinRadius,
   getOverlapDescription,
   getPaybackStatus,
@@ -48,10 +48,13 @@ describe('Epic 5 feasibility calculations', () => {
 });
 
 describe('Epic 5 dynamic classifications', () => {
-  it('uses the heatmap description thresholds', () => {
-    expect(getHeatmapDescription(80)).toContain('Red Zone');
-    expect(getHeatmapDescription(40)).toContain('Yellow Zone');
-    expect(getHeatmapDescription(39)).toContain('Green Zone');
+  it('uses the same regional resemblance tiers and colours as the heatmap legend', () => {
+    expect(getRegionalResemblanceSummary(0.21, 0.30)).toEqual({
+      colour: '#7C3AED', floor: 0.66, label: '66-100% of the regional best'
+    });
+    expect(getRegionalResemblanceSummary(0.15, 0.30)?.label).toBe('33-66%');
+    expect(getRegionalResemblanceSummary(0.05, 0.30)?.label).toBe('under 33%');
+    expect(getRegionalResemblanceSummary(0.21, null)).toBeNull();
   });
 
   it('uses the POI density thresholds', () => {
@@ -110,7 +113,7 @@ describe('Epic 5 nearby station and marker selection logic', () => {
   });
 });
 
-describe('the card reads the map, not its own thresholds', () => {
+describe('the site detail preserves backend scoring inputs', () => {
   const detail = (over: Partial<PlannerCellDetailApi> = {}): PlannerCellDetailApi => ({
     cell_id: 'JBDTBK_12253', kota: 'Kota Depok', latitude: -6.4, longitude: 106.8,
     score: 0.42, rank_overall: 12, cells_total: 27219, in_scored_set: true,
@@ -120,25 +123,10 @@ describe('the card reads the map, not its own thresholds', () => {
     provenance: {} as PlannerCellDetailApi['provenance'], ...over
   });
 
-  it('takes the zone from the API band, not from a threshold on a number', () => {
-    // The card printed "Red Demand Zone" from score >= 80 while the map banded
-    // the same cell from region-wide floors. Two rules, one label, and they
-    // disagreed on any cell between them.
+  it('keeps the API suitability band without presenting it as a legacy traffic-light zone', () => {
     const red = plannerCellToSiteFeasibility(
       detail({ suitability: 0.9975, suitability_band: 'red' }), null);
     expect(red.heatmapBand).toBe('red');
-    expect(getHeatmapSummary(red.heatmapScore, red.heatmapBand)).toContain('Red');
-    expect(getHeatmapDescription(red.heatmapScore, red.heatmapBand)).toContain('Red Zone');
-  });
-
-  it('calls a well-served cell green however high its raw score', () => {
-    // AC (c) at the card. Sudirman cells predict among the highest utilisation
-    // in Jabodetabek and carry 38-104 stations within 2 km; the band is green
-    // and the card must not talk itself back into red.
-    const saturated = plannerCellToSiteFeasibility(
-      detail({ score: 0.95, suitability: 0.502, suitability_band: 'green',
-               stations_2km: 38, nearest_station_m: 120 }), null);
-    expect(getHeatmapSummary(saturated.heatmapScore, saturated.heatmapBand)).toContain('Green');
   });
 
   it('scores the cell on suitability when the API supplies it', () => {
@@ -156,9 +144,6 @@ describe('the card reads the map, not its own thresholds', () => {
     const cell = plannerCellToSiteFeasibility(detail(), null);
     expect(cell.heatmapScore).toBe(42);
     expect(cell.heatmapBand).toBeNull();
-    // Still a sentence, still honest: a threshold on the weighted score is what
-    // this always was, and it is only wrong when a real band exists to contradict.
-    expect(getHeatmapSummary(cell.heatmapScore, cell.heatmapBand)).toContain('Zone');
   });
 });
 
@@ -192,7 +177,7 @@ describe('the headline score is the one the map paints', () => {
     // suitability of 84 sat below the 85 cut and read Low Priority while the map
     // painted the same cell red.
     const d = plannerCellToSiteFeasibility(detail({ suitability: 0.84 }), null);
-    expect(getLocationPriority(d.locationScore, d.heatmapBand)).toBe('High Priority');
+    expect(getLocationPriority(d.locationScore ?? 0, d.heatmapBand)).toBe('High Priority');
   });
 
   it('follows the band through every colour', () => {
@@ -208,14 +193,15 @@ describe('the headline score is the one the map paints', () => {
     const d = plannerCellToSiteFeasibility(
       detail({ suitability: null, suitability_band: null }), null);
     expect(d.locationScore).toBe(65);
-    expect(getLocationPriority(d.locationScore, d.heatmapBand)).toBe('Low Priority');
+    expect(getLocationPriority(d.locationScore ?? 0, d.heatmapBand)).toBe('Low Priority');
   });
 });
 
 it('carries the band through to the components, not just the helpers', () => {
-  // The gap this test exists for: getLocationPriority and getHeatmapSummary both
-  // accept a band, but every call site passed only the score, so the band logic
-  // never ran. A helper that supports something nothing supplies is not wired.
+  // The gap this test exists for: getLocationPriority and getHeatmapDescription
+  // both accept a band, but every call site passed only the score, so the band
+  // logic never ran. A helper that supports something nothing supplies is not
+  // wired.
   const d = plannerCellToSiteFeasibility({
     cell_id: 'JBDTBK_24759', kota: 'Kota Jakarta Utara', latitude: -6.1, longitude: 106.9,
     score: 0.6518, rank_overall: 12, cells_total: 27219, in_scored_set: true,

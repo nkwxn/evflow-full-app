@@ -1,0 +1,362 @@
+  sequenceDiagram
+    autonumber
+    actor User as EV-FLOW User
+    actor Driver as EV Driver
+    actor Planner as Business Planner
+    participant UI as EV-FLOW Frontend
+    participant Store as Session Storage / Memory
+    participant Device as Browser / Device
+    participant API as EV-FLOW API
+    participant Xendit as Xendit Checkout
+    participant TomTom as TomTom Traffic Tiles
+
+    rect rgb(245,245,245)
+      Note over User,API: 1. Access, authentication, and password recovery
+      User->>UI: Open EV-FLOW
+
+      alt Quick login
+        User->>UI: Select demo persona
+        UI->>API: Authenticate demo persona
+        alt Driver persona
+          API-->>UI: Access token and driver profile
+          UI->>Store: Save authentication session
+          UI-->>Driver: Open vehicle onboarding
+        else Business Planner persona
+          API-->>UI: Access token and planner profile
+          UI->>Store: Save authentication session
+          UI-->>Planner: Open /business-dashboard/demand-heatmap
+        else Demo session rejected
+          API-->>UI: Authentication error
+          UI-->>User: Show unavailable-profile error
+        end
+
+      else Standard login
+        User->>UI: Enter username and password
+        UI->>UI: Validate required fields
+        UI->>API: POST /api/v1/auth/login
+        alt Login accepted
+          API-->>UI: Access token and user profile
+          UI->>Store: Save authentication session
+          alt Driver account
+            UI-->>Driver: Open /ev-driver/map
+          else Planner account
+            UI-->>Planner: Open /business-dashboard/demand-heatmap
+          end
+        else Login rejected
+          API-->>UI: Authentication error
+          UI-->>User: Show login error
+        end
+
+      else Registration
+        User->>UI: Enter account and vehicle details
+        UI->>UI: Validate account fields and terms
+        UI->>API: POST /api/v1/auth/register
+        alt Registration accepted
+          API-->>UI: Access token and user profile
+          UI->>Store: Save authentication session
+          UI-->>Driver: Open /ev-driver/map
+        else Registration rejected
+          API-->>UI: Validation or conflict error
+          UI-->>User: Show registration error
+        end
+      end
+
+      opt Forgot password
+        User->>UI: Submit registered email
+        UI->>API: POST /api/v1/auth/forgot-password
+        API-->>UI: Reset-email status
+        UI-->>User: Show reset instructions
+        User->>UI: Open reset link and enter new password
+        UI->>API: POST /api/v1/auth/reset-password
+        API-->>UI: Password-reset result
+        UI-->>User: Return to login
+      end
+    end
+
+    rect rgb(238,248,255)
+      Note over Driver,API: 2. EV Driver onboarding
+      UI->>API: GET /api/v1/ev-models
+      API-->>UI: EV model list
+      UI->>API: GET /api/v1/connectors
+      API-->>UI: Connector type list
+      opt Existing profile available
+        UI->>API: GET /api/v1/users/me
+        API-->>UI: Saved vehicle and connector preferences
+      end
+      Driver->>UI: Select vehicle and main connector
+      UI->>API: PATCH /api/v1/users/me
+      alt Preferences saved
+        API-->>UI: Updated driver profile
+        UI->>Store: Update stored user profile
+        UI-->>Driver: Open /ev-driver/map
+      else Save failed
+        API-->>UI: Profile-update error
+        UI-->>Driver: Show retry or skip option
+      end
+    end
+
+    rect rgb(235,245,255)
+      Note over Driver,API: 3. Station discovery and live station details
+      Driver->>UI: Open station map
+      UI->>Device: Request current location
+      Device-->>UI: Coordinates or permission status
+
+      par Load filter metadata
+        UI->>API: GET /api/v1/connectors
+        API-->>UI: Connector types
+      and
+        UI->>API: GET /api/v1/speed-tiers
+        API-->>UI: Speed tiers
+      end
+
+      alt Coordinates available
+        UI->>API: GET /api/v1/stations/nearby
+        API-->>UI: Nearby station results
+      else Coordinates unavailable or denied
+        UI->>API: GET /api/v1/stations
+        API-->>UI: Station list
+      end
+      UI-->>Driver: Show map, area filters, and stations
+
+      Driver->>UI: Select an SPKLU station
+      par Load live station information
+        UI->>API: GET /api/v1/stations/{station_id}/status
+        API-->>UI: Availability, connector status, and wait time
+      and
+        UI->>API: GET /api/v1/stations/{station_id}/occupancy
+        API-->>UI: Historical peak-hour occupancy
+      end
+      UI-->>Driver: Show station drawer and charging options
+
+      alt Connector available
+        UI-->>Driver: Show Charge Here Now
+      else Connector occupied with estimate
+        UI-->>Driver: Show Wait Here and estimated minutes
+      else No usable connector
+        UI-->>Driver: Show unavailable status
+      end
+    end
+
+    rect rgb(245,240,255)
+      Note over Driver,API: 4. Route charger planning and active navigation
+      Driver->>UI: Open Plan Route
+      UI->>Device: Read current location
+      Device-->>UI: Coordinates or permission status
+
+      opt Coordinates available
+        UI->>API: GET /api/v1/geocoding/reverse
+        API-->>UI: Current-location label
+      end
+
+      Driver->>UI: Search origin or destination
+      UI->>API: GET /api/v1/geocoding/search
+      API-->>UI: Matching locations and stations
+      Driver->>UI: Enter destination, battery, reserve, and preferences
+      UI->>UI: Validate route and vehicle inputs
+      UI->>API: POST /api/v1/route-plans
+
+      alt Destination reachable directly
+        API-->>UI: Route plan without charging stop
+        UI-->>Driver: Show route simulation and arrival battery
+      else Charging stop required
+        API-->>UI: Route plan with recommended SPKLU
+        UI-->>Driver: Show route, charging stop, and battery forecast
+      else Invalid request or no suitable station
+        API-->>UI: Route error
+        UI-->>Driver: Show corrective action
+      end
+
+      opt Driver starts navigation
+        UI-->>Driver: Open active navigation view
+        loop During active navigation
+          UI->>API: POST /api/v1/route-plans/active/evaluate
+          API-->>UI: Updated battery and route assessment
+          UI-->>Driver: Update guidance or replacement route
+        end
+      end
+
+      opt Driver cancels, completes, or leaves navigation
+        UI->>API: DELETE /api/v1/route-plans/{route_plan_id}
+        API-->>UI: Route session closed
+        UI-->>Driver: Return to route planner
+      end
+    end
+
+    rect rgb(255,248,238)
+      Note over Driver,Xendit: 5. Wallet, history, and top-up
+      Driver->>UI: Open wallet
+
+      par Load wallet information
+        UI->>API: GET /api/v1/wallet
+        API-->>UI: Wallet balance
+      and
+        UI->>API: GET /api/v1/wallet/topups
+        API-->>UI: Top-up history
+      and
+        UI->>API: GET /api/v1/charging/sessions
+        API-->>UI: Charging history
+      end
+      UI-->>Driver: Show balance and transactions
+
+      Driver->>UI: Enter top-up amount
+      UI->>UI: Validate minimum amount
+      UI->>API: POST /api/v1/wallet/topup
+
+      alt Top-up created
+        API-->>UI: topup_id, amount, invoice_url
+        UI->>Xendit: Open hosted invoice URL
+        Xendit-->>Driver: Show payment checkout
+
+        loop Until paid or driver leaves
+          UI->>API: GET /api/v1/wallet/topups/{topup_id}
+          API-->>UI: Pending or paid status
+        end
+        UI-->>Driver: Show top-up success or waiting state
+      else Top-up failed
+        API-->>UI: Top-up error
+        UI-->>Driver: Show top-up error
+      end
+    end
+
+    rect rgb(240,255,240)
+      Note over Driver,API: 6. Charging session
+      Driver->>UI: Tap Charge Here or open Scan
+      UI->>Device: Request camera access
+      Device-->>UI: Camera permission and QR result
+
+      alt QR detected
+        UI-->>Driver: Open Initialise Charging
+      else Driver enters station manually
+        UI-->>Driver: Open Initialise Charging
+      end
+
+      UI->>Device: Read current location
+      Device-->>UI: Coordinates or permission status
+      UI->>API: GET /api/v1/stations/{station_id}
+      API-->>UI: Station and connector details
+      UI->>API: GET /api/v1/wallet
+      API-->>UI: Wallet balance
+      UI-->>Driver: Show connector and energy form
+
+      Driver->>UI: Enter required kWh
+      UI->>UI: Validate energy amount
+      UI->>API: POST /api/v1/charging/quote
+      API-->>UI: Energy cost, fee, total due, estimated time
+      UI-->>Driver: Show quote
+
+      Driver->>UI: Confirm and pay
+      UI->>API: POST /api/v1/charging/sessions
+
+      alt Wallet balance sufficient
+        API-->>UI: Charging session and reserved deposit
+        UI-->>Driver: Show plug-in prompt
+        Driver->>UI: Start charging session
+
+        loop Frontend charging simulation
+          UI->>UI: Update delivered kWh, power, cost, and progress
+          UI-->>Driver: Refresh charging status
+        end
+
+        alt Target reached or driver stops
+          UI->>API: POST /api/v1/charging/sessions/{session_id}/settle
+          API-->>UI: Actual cost, refund, updated balance
+          UI-->>Driver: Show completion and receipt
+        end
+      else Insufficient balance
+        API-->>UI: HTTP 402 insufficient balance
+        UI-->>Driver: Show wallet-balance error
+      else API error
+        API-->>UI: Charging-session error
+        UI-->>Driver: Show charging error
+      end
+    end
+
+    rect rgb(250,245,250)
+      Note over Driver,API: 7. EV Driver profile and logout
+      Driver->>UI: Open profile
+      par Load profile data
+        UI->>API: GET /api/v1/users/me
+        API-->>UI: Driver profile
+      and
+        UI->>API: GET /api/v1/ev-models
+        API-->>UI: EV model options
+      end
+      UI-->>Driver: Show account, vehicle, connector, and consent settings
+
+      opt Driver saves changes
+        Driver->>UI: Update profile preferences
+        UI->>API: PATCH /api/v1/users/me
+        API-->>UI: Updated profile
+        UI->>Store: Replace stored user profile
+        UI-->>Driver: Show save result
+      end
+
+      Driver->>UI: Log out
+      UI->>Store: Clear authentication session
+      UI-->>Driver: Return to quick login
+    end
+
+    rect rgb(245,250,255)
+      Note over Planner,TomTom: 8. Business Planner demand and site feasibility
+      Planner->>UI: Open /business-dashboard
+      UI->>Store: Read access token
+
+      par Demand/suitability heatmap
+        UI->>API: GET /api/v1/planner/cells.geojson?bbox&metric=score&weights
+        API-->>UI: Cell polygons, scores, truncation metadata
+        UI->>API: GET /api/v1/planner/predict.area?bbox&limit&top
+        API-->>UI: Predictions, suitability bands, model provenance
+      and Existing SPKLUs
+        UI->>API: GET /api/v1/stations?bbox&limit
+        API-->>UI: Existing station markers
+      and Commercial POIs
+        UI->>API: GET /api/v1/planner/pois.geojson?bbox&limit
+        API-->>UI: POI features and viewport totals
+      and Land-use shapes
+        UI->>API: GET /api/v1/planner/landuse.geojson?bbox&limit
+        API-->>UI: Land-use polygons and coverage note
+      and Optional traffic layer
+        UI->>TomTom: GET live traffic flow tiles
+        TomTom-->>UI: Traffic overlay
+      end
+      UI-->>Planner: Render planning map, legends, and notices
+
+      Planner->>UI: Choose analysis centre and radius
+      UI->>API: POST /api/v1/planner/candidates?lat&lon&radius_km&basis=suitability
+      API-->>UI: Ranked candidates and applied weights
+      UI-->>Planner: Show candidate sites
+
+      Planner->>UI: Select candidate or saved site
+      par Evidence and competition
+        UI->>API: GET /api/v1/planner/cells/{cell_id}
+        API-->>UI: Score inputs and spatial evidence
+        UI->>API: GET /api/v1/planner/benchmark/{cell_id}
+        API-->>UI: Nearby competing stations
+      and Model prediction
+        UI->>API: POST /api/v1/planner/predict
+        API-->>UI: Cell prediction and model interpretation
+      and Bookmark state
+        UI->>API: GET /api/v1/planner/saved-sites/{cell_id}
+        API-->>UI: Saved status
+      and Financial scenario
+        UI->>API: POST /api/v1/planner/roi
+        API-->>UI: Revenue, utilisation, payback, assumptions
+      end
+      UI-->>Planner: Show feasibility, benchmark, and financial tabs
+
+      opt Save or remove a real planning cell
+        Planner->>UI: Toggle bookmark
+        alt Save
+          UI->>API: PUT /api/v1/planner/saved-sites/{cell_id}
+          API-->>UI: saved=true
+        else Remove
+          UI->>API: DELETE /api/v1/planner/saved-sites/{cell_id}
+          API-->>UI: saved=false
+        end
+      end
+
+      Planner->>UI: Open Saved Sites
+      UI->>API: GET /api/v1/planner/saved-sites
+      API-->>UI: Planner-specific saved-site list
+      UI-->>Planner: Show saved sites
+    end
