@@ -193,7 +193,7 @@ function savedSiteData(site: PlannerSavedSiteApi): SiteFeasibilityData {
     // No band: a saved site stores the weighted score it was saved under, not a
     // suitability, so the card falls back to the pre-band rule rather than
     // claiming a zone the map never painted for it.
-    locationScore: score, heatmapScore: score, heatmapBand: null,
+    locationScore: score, criteriaScore: score, heatmapScore: score, heatmapBand: null,
     commercialPoiCount: site.poi_total,
     nearestSpkluDistanceKm: site.nearest_station_m === null ? 5 : site.nearest_station_m / 1000,
     roadType: roadType(site.road_nodes), residentialPoints: Math.round(Math.min(Math.max(site.lu_residential_share, 0), 1) * 50),

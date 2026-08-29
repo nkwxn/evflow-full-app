@@ -23,7 +23,7 @@ export function FeasibilityScoreTab({
   prediction = null, predictionError = null, predictionLoading = false
 }: TabProps) {
   const metrics: Metric[] = [
-    { title: 'Heatmap Zone Score', score: scores.heatmap, description: getHeatmapDescription(scores.heatmap), icon: fireIcon },
+    { title: 'Heatmap Zone Score', score: scores.heatmap, description: getHeatmapDescription(scores.heatmap, scores.band), icon: fireIcon },
     { title: 'POI Density Score', score: scores.poi, description: getPoiDescription(scores.poi, data.commercialPoiCount), icon: buildingIcon },
     { title: 'Network Overlap Score', score: scores.overlap, description: getOverlapDescription(scores.overlap, data.nearestSpkluDistanceKm), icon: shieldIcon },
     { title: 'Demand & Activity Score', score: scores.activity, description: getActivityDescription(data.roadType, data.residentialPoints), icon: carIcon }

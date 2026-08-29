@@ -41,7 +41,22 @@ export type SiteFeasibilityData = {
   optimalSiteId: string;
   locationCode: string;
   locationName: string;
-  locationScore?: number;
+  /**
+   * The number the MAP paints, and therefore the headline on this card.
+   *
+   * It used to be the weighted four-criteria score while the first breakdown row
+   * showed suitability, so the card could read "Low Priority" above "Red Zone"
+   * with nothing saying the two were different quantities.
+   */
+  locationScore: number;
+  /**
+   * The weighted four-criteria score, kept but not displayed.
+   *
+   * The backend still returns it, saved sites still store it, and the adjustable
+   * weights behind it remain a real planner feature. Hidden on this card rather
+   * than removed, so the second opinion is one line away rather than gone.
+   */
+  criteriaScore: number | null;
   heatmapScore: number;
   /**
    * The band the MAP painted this cell, straight from the API.
@@ -69,4 +84,6 @@ export type SiteFeasibilityScores = {
   overlap: number;
   activity: number;
   location: number;
+  /** The band the map painted, so the labels below cannot contradict the colour. */
+  band: string | null;
 };

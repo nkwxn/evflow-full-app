@@ -4,11 +4,13 @@ vi.mock('react-native', () => ({ NativeModules: {} }));
 import { generateMockOptimalSites, jakartaViewport } from '../demandHeatmap';
 import {
   calculateActivityScore,
+  calculateSiteScores,
   calculateLocationScore,
   calculateOverlapScore,
   calculatePoiScore,
   getHeatmapDescription,
   getHeatmapSummary,
+  getLocationPriority,
   getNearbyStationsWithinRadius,
   getOverlapDescription,
   getPaybackStatus,
@@ -143,9 +145,11 @@ describe('the card reads the map, not its own thresholds', () => {
     const cell = plannerCellToSiteFeasibility(
       detail({ score: 0.42, suitability: 0.9975, suitability_band: 'red' }), null);
     expect(cell.heatmapScore).toBe(100);
-    // locationScore stays the four-criteria number: two questions, two answers,
-    // and collapsing them would remove the planner's only cross-check.
-    expect(cell.locationScore).toBe(42);
+    // The headline follows it. The weighted score is not lost, it moves to
+    // criteriaScore: two questions still have two answers, and the planner's
+    // cross-check is one field away rather than gone.
+    expect(cell.locationScore).toBe(100);
+    expect(cell.criteriaScore).toBe(42);
   });
 
   it('falls back to the weighted score when no band was supplied', () => {
@@ -156,4 +160,69 @@ describe('the card reads the map, not its own thresholds', () => {
     // this always was, and it is only wrong when a real band exists to contradict.
     expect(getHeatmapSummary(cell.heatmapScore, cell.heatmapBand)).toContain('Zone');
   });
+});
+
+describe('the headline score is the one the map paints', () => {
+  const detail = (over: Partial<PlannerCellDetailApi> = {}): PlannerCellDetailApi => ({
+    cell_id: 'JBDTBK_24759', kota: 'Kota Jakarta Utara', latitude: -6.1, longitude: 106.9,
+    score: 0.6518, rank_overall: 12, cells_total: 27219, in_scored_set: true,
+    overlap_frac: 1, population: 900, poi: { total: 2 }, land_use: { residential: 0.5 },
+    road_nodes: 22, road_length_m: 1200, station_count: 0, connector_count: 0,
+    nearest_station_m: 2236, stations_2km: 0,
+    suitability: 0.8492, suitability_band: 'red',
+    provenance: {} as PlannerCellDetailApi['provenance'], ...over
+  });
+
+  it('shows the suitability, not the weighted criteria score', () => {
+    // The card used to lead with 65 while the first breakdown row said 85, and
+    // nothing on it said the two were different quantities.
+    const d = plannerCellToSiteFeasibility(detail(), null);
+    expect(d.locationScore).toBe(85);
+    expect(calculateSiteScores(d).location).toBe(85);
+  });
+
+  it('keeps the weighted score rather than discarding it', () => {
+    // Hidden on this card, not deleted: the backend still sends it, saved sites
+    // still store it, and the adjustable weights behind it are a real feature.
+    expect(plannerCellToSiteFeasibility(detail(), null).criteriaScore).toBe(65);
+  });
+
+  it('cannot label a red cell Low Priority', () => {
+    // The contradiction this change exists to remove. Under fixed thresholds a
+    // suitability of 84 sat below the 85 cut and read Low Priority while the map
+    // painted the same cell red.
+    const d = plannerCellToSiteFeasibility(detail({ suitability: 0.84 }), null);
+    expect(getLocationPriority(d.locationScore, d.heatmapBand)).toBe('High Priority');
+  });
+
+  it('follows the band through every colour', () => {
+    for (const [band, label] of [['red', 'High Priority'], ['yellow', 'Moderate Priority'],
+                                 ['green', 'Low Priority']] as const) {
+      expect(getLocationPriority(50, band)).toBe(label);
+    }
+  });
+
+  it('falls back to the weighted score when no suitability was returned', () => {
+    // Any deployment without the utilisation artifact. The old thresholds still
+    // apply there, because there is no band to follow.
+    const d = plannerCellToSiteFeasibility(
+      detail({ suitability: null, suitability_band: null }), null);
+    expect(d.locationScore).toBe(65);
+    expect(getLocationPriority(d.locationScore, d.heatmapBand)).toBe('Low Priority');
+  });
+});
+
+it('carries the band through to the components, not just the helpers', () => {
+  // The gap this test exists for: getLocationPriority and getHeatmapSummary both
+  // accept a band, but every call site passed only the score, so the band logic
+  // never ran. A helper that supports something nothing supplies is not wired.
+  const d = plannerCellToSiteFeasibility({
+    cell_id: 'JBDTBK_24759', kota: 'Kota Jakarta Utara', latitude: -6.1, longitude: 106.9,
+    score: 0.6518, rank_overall: 12, cells_total: 27219, in_scored_set: true,
+    overlap_frac: 1, population: 900, poi: { total: 2 }, land_use: { residential: 0.5 },
+    road_nodes: 22, road_length_m: 1200, station_count: 0, connector_count: 0,
+    nearest_station_m: 2236, stations_2km: 0, suitability: 0.8492, suitability_band: 'red',
+    provenance: {} as PlannerCellDetailApi['provenance']
+  }, null);
+  expect(calculateSiteScores(d).band).toBe('red');
 });

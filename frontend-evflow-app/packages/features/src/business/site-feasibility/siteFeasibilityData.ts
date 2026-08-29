@@ -32,7 +32,14 @@ export function plannerCellToSiteFeasibility(
     optimalSiteId: detail.cell_id,
     locationCode: detail.cell_id,
     locationName: cleanAreaName(detail.kota),
-    locationScore: score,
+    // The headline is the number the map paints. The weighted score travels
+    // alongside it rather than being discarded: the backend still sends it and
+    // its adjustable weights are a real feature, it is simply not the number a
+    // planner should read first.
+    locationScore: suitability === null
+      ? score
+      : Math.round(Math.min(Math.max(suitability, 0), 1) * 100),
+    criteriaScore: score,
     heatmapScore: suitability === null
       ? score
       : Math.round(Math.min(Math.max(suitability, 0), 1) * 100),

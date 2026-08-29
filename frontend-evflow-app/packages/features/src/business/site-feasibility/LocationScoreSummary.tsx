@@ -13,7 +13,7 @@ export function LocationScoreSummary({ embedded = false, isSaved, isSaving, onTo
   scores: SiteFeasibilityScores;
 }) {
   const rows = [
-    { icon: fireIcon, text: getHeatmapSummary(scores.heatmap) },
+    { icon: fireIcon, text: getHeatmapSummary(scores.heatmap, scores.band) },
     { icon: buildingIcon, text: getPoiSummary(scores.poi) },
     { icon: energyIcon, text: getOverlapSummary(scores.overlap) }
   ];
@@ -27,7 +27,7 @@ export function LocationScoreSummary({ embedded = false, isSaved, isSaving, onTo
       </View>
       <View style={styles.copy}>
         <Text style={styles.eyebrow}>LOCATION SCORE</Text>
-        <Text style={styles.priority}>{getLocationPriority(scores.location)}</Text>
+        <Text style={styles.priority}>{getLocationPriority(scores.location, scores.band)}</Text>
         {rows.map((row) => (
           <View key={row.text} style={styles.row}>
             <SvgAssetIcon height={13} svg={row.icon} width={13} />

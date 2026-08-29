@@ -33,11 +33,27 @@ export function calculateSiteScores(data: SiteFeasibilityData): SiteFeasibilityS
     poi,
     overlap,
     activity,
-    location: data.locationScore ?? calculateLocationScore(data.heatmapScore, overlap, poi, activity)
+    location: data.locationScore ?? calculateLocationScore(data.heatmapScore, overlap, poi, activity),
+    band: data.heatmapBand ?? null
   };
 }
 
-export function getLocationPriority(score: number) {
+/**
+ * Priority, taken from the band the map painted wherever there is one.
+ *
+ * Fixed cuts at 85 and 70 belonged to a different score's distribution. Against
+ * suitability they disagreed with the map: the red band starts at 83.4, so a
+ * cell could be painted red and still read Low Priority. Following the band
+ * makes that contradiction impossible rather than unlikely, and it stays true
+ * after a retrain because the floors are recomputed per response.
+ *
+ * The numeric cuts remain for the case with no band, which is any deployment
+ * without the utilisation artifact.
+ */
+export function getLocationPriority(score: number, band?: string | null) {
+  if (band === 'red') return 'High Priority';
+  if (band === 'yellow') return 'Moderate Priority';
+  if (band === 'green') return 'Low Priority';
   return score >= 85 ? 'High Priority' : score >= 70 ? 'Moderate Priority' : 'Low Priority';
 }
 
