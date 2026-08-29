@@ -225,3 +225,26 @@ it('carries the band through to the components, not just the helpers', () => {
   }, null);
   expect(calculateSiteScores(d).band).toBe('red');
 });
+
+describe('the zone comes from the band the map painted', () => {
+  // The redundancy this removes: suitability_band travelled from the API through
+  // heatmapBand into scores.band and was then dropped, while these two functions
+  // re-derived a zone from a different number. Two sources for one question, and
+  // the discarded one was the accurate one.
+  it('uses the band when the response carries one', () => {
+    expect(getHeatmapSummary(52, 'green')).toBe('Located in Green Demand Zone');
+    expect(getHeatmapDescription(52, 'green')).toContain('Green Zone');
+  });
+
+  it('does not contradict the map on a score between a fixed cut and its floor', () => {
+    // 52 clears the old 40 cut but sits below the real yellow floor of 64.04.
+    // Measured across the grid, 12,132 of 27,219 cells fall in a gap like this.
+    expect(getHeatmapSummary(52)).toBe('Located in Yellow Demand Zone');
+    expect(getHeatmapSummary(52, 'green')).toBe('Located in Green Demand Zone');
+  });
+
+  it('keeps the fixed cuts for a response with no band', () => {
+    expect(getHeatmapSummary(80, null)).toBe('Located in Red Demand Zone');
+    expect(getHeatmapSummary(39, null)).toBe('Located in Green Demand Zone');
+  });
+});

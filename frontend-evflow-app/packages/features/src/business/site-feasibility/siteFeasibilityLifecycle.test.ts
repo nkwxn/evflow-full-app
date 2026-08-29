@@ -17,9 +17,9 @@ describe('Site Feasibility ROI lifecycle contract', () => {
     expect(detailSource).toContain('res.distribution.resemblance_ceiling');
     expect(detailSource).toContain("item.cell_id === siteId");
     expect(sheetSource).toContain('regionalCeiling={regionalCeiling}');
-    expect(summarySource).toContain('getHeatmapSummary(scores.heatmap)');
+    expect(summarySource).toContain('getHeatmapSummary(scores.heatmap, scores.band)');
     expect(breakdownSource).toContain('Heatmap Zone Score');
-    expect(breakdownSource).toContain('getHeatmapDescription(scores.heatmap)');
+    expect(breakdownSource).toContain('getHeatmapDescription(scores.heatmap, scores.band)');
   });
 
   it('attaches ROI loading to the selected-site lifecycle rather than tab state', () => {

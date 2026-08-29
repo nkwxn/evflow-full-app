@@ -58,8 +58,22 @@ export function getLocationPriority(score: number, band?: string | null) {
   return score >= 85 ? 'High Priority' : score >= 70 ? 'Moderate Priority' : 'Low Priority';
 }
 
-export function getHeatmapSummary(score: number) {
-  return score >= 80 ? 'Located in Red Demand Zone' : score >= 40 ? 'Located in Yellow Demand Zone' : 'Located in Green Demand Zone';
+/**
+ * The zone, read from the band the map painted rather than guessed from a score.
+ *
+ * The API sends suitability_band on every response and it reached this module
+ * already; nothing read it, so the zone was re-derived from fixed cuts at 80 and
+ * 40. Those cuts belong to a different score's distribution. The regional floors
+ * are recomputed per response and currently sit at 83.42 and 64.04, so the two
+ * disagree on 12,132 of 27,219 cells -- 44.6%, most of them a card reading
+ * "Yellow" over ground the map paints green.
+ *
+ * The cuts stay for a response that carries no band, which is any deployment
+ * without the utilisation artifact.
+ */
+export function getHeatmapSummary(score: number, band?: string | null) {
+  const zone = band ?? (score >= 80 ? 'red' : score >= 40 ? 'yellow' : 'green');
+  return `Located in ${zone === 'red' ? 'Red' : zone === 'yellow' ? 'Yellow' : 'Green'} Demand Zone`;
 }
 
 /**
@@ -75,12 +89,15 @@ export function getRegionalResemblanceSummary(probability: number | null, ceilin
   return resemblanceBand(probability, ceiling);
 }
 
-export function getHeatmapDescription(score: number) {
-  return score >= 80
-    ? 'Red Zone • High priority for unmet demand'
-    : score >= 40
-      ? 'Yellow Zone • Moderate demand; monitor for future growth'
-      : 'Green Zone • Low priority due to limited commercial activity';
+export function getHeatmapDescription(score: number, band?: string | null) {
+  switch (band ?? (score >= 80 ? 'red' : score >= 40 ? 'yellow' : 'green')) {
+    case 'red':
+      return 'Red Zone • High priority for unmet demand';
+    case 'yellow':
+      return 'Yellow Zone • Moderate demand; monitor for future growth';
+    default:
+      return 'Green Zone • Low priority due to limited commercial activity';
+  }
 }
 
 export function getPoiSummary(score: number) {
