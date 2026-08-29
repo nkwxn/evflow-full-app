@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { BookmarkButton } from '../BookmarkButton';
 import { SvgAssetIcon } from '../../shared/SvgAssetIcon';
-import { buildingIcon, energyIcon } from './siteFeasibilityIcons';
-import { getLocationPriority, getOverlapSummary, getPoiSummary, getRegionalResemblanceSummary } from './siteFeasibilityLogic';
+import { buildingIcon, energyIcon, fireIcon } from './siteFeasibilityIcons';
+import { getHeatmapSummary, getLocationPriority, getOverlapSummary, getPoiSummary } from './siteFeasibilityLogic';
 import type { SiteFeasibilityScores } from './siteFeasibilityTypes';
 
 export function LocationScoreSummary({ embedded = false, isSaved, isSaving, onToggleSaved, regionalCeiling = null, resemblance = null, resemblanceLoading = false, scores }: {
@@ -15,13 +15,8 @@ export function LocationScoreSummary({ embedded = false, isSaved, isSaving, onTo
   resemblanceLoading?: boolean;
   scores: SiteFeasibilityScores;
 }) {
-  const regionalBand = getRegionalResemblanceSummary(resemblance, regionalCeiling);
   const rows = [
-    {
-      colour: regionalBand?.colour ?? '#CBD5E1',
-      text: regionalBand?.label
-        ?? (resemblanceLoading ? 'Loading regional comparison...' : 'Regional comparison unavailable')
-    },
+    { icon: fireIcon, text: getHeatmapSummary(scores.heatmap) },
     { icon: buildingIcon, text: getPoiSummary(scores.poi) },
     { icon: energyIcon, text: getOverlapSummary(scores.overlap) }
   ];
@@ -35,12 +30,10 @@ export function LocationScoreSummary({ embedded = false, isSaved, isSaving, onTo
       </View>
       <View style={styles.copy}>
         <Text style={styles.eyebrow}>LOCATION SCORE</Text>
-        <Text style={styles.priority}>{getLocationPriority(scores.location, scores.band)}</Text>
+        <Text style={styles.priority}>{getLocationPriority(scores.location)}</Text>
         {rows.map((row) => (
           <View key={row.text} style={styles.row}>
-            {row.icon
-              ? <SvgAssetIcon height={13} svg={row.icon} width={13} />
-              : <View accessibilityLabel={`Demand heatmap tier: ${row.text}`} style={[styles.heatmapSwatch, { backgroundColor: row.colour }]} />}
+            <SvgAssetIcon height={13} svg={row.icon} width={13} />
             <Text style={styles.rowText}>{row.text}</Text>
           </View>
         ))}
@@ -58,7 +51,6 @@ const styles = StyleSheet.create({
   outOf: { color: '#64748B', fontSize: 9 },
   copy: { flex: 1, marginLeft: 20, paddingRight: 32 },
   eyebrow: { color: '#64748B', fontSize: 10, fontWeight: '800', letterSpacing: 0.7 },
-  heatmapSwatch: { borderRadius: 2, height: 10, marginHorizontal: 1.5, width: 10 },
   priority: { color: '#172033', fontSize: 15, fontWeight: '800', marginBottom: 9, marginTop: 2 },
   row: { alignItems: 'center', flexDirection: 'row', gap: 5, marginBottom: 7 },
   rowText: { color: '#55637A', flex: 1, fontSize: 11 }

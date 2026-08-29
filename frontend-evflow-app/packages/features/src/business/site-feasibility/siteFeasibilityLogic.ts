@@ -58,6 +58,10 @@ export function getLocationPriority(score: number, band?: string | null) {
   return score >= 85 ? 'High Priority' : score >= 70 ? 'Moderate Priority' : 'Low Priority';
 }
 
+export function getHeatmapSummary(score: number) {
+  return score >= 80 ? 'Located in Red Demand Zone' : score >= 40 ? 'Located in Yellow Demand Zone' : 'Located in Green Demand Zone';
+}
+
 /**
  * The zone, from the map's own band where there is one.
  *

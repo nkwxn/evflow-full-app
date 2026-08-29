@@ -17,8 +17,7 @@ describe('Site Feasibility ROI lifecycle contract', () => {
     expect(detailSource).toContain('res.distribution.resemblance_ceiling');
     expect(detailSource).toContain("item.cell_id === siteId");
     expect(sheetSource).toContain('regionalCeiling={regionalCeiling}');
-    expect(summarySource).toContain('getRegionalResemblanceSummary');
-    expect(summarySource).not.toContain('Demand Zone');
+    expect(summarySource).toContain('getHeatmapSummary(scores.heatmap)');
     expect(breakdownSource).toContain('Heatmap Zone Score');
     expect(breakdownSource).toContain('getHeatmapDescription(scores.heatmap)');
   });

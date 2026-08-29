@@ -10,6 +10,7 @@ import {
   calculatePoiScore,
   getHeatmapDescription,
   getLocationPriority,
+  getHeatmapSummary,
   getRegionalResemblanceSummary,
   getNearbyStationsWithinRadius,
   getOverlapDescription,
@@ -73,6 +74,12 @@ describe('Epic 5 dynamic classifications', () => {
     expect(getHeatmapDescription(80)).toContain('Red Zone');
     expect(getHeatmapDescription(40)).toContain('Yellow Zone');
     expect(getHeatmapDescription(39)).toContain('Green Zone');
+  });
+
+  it('summarises heatmap scores as demand zones', () => {
+    expect(getHeatmapSummary(80)).toBe('Located in Red Demand Zone');
+    expect(getHeatmapSummary(40)).toBe('Located in Yellow Demand Zone');
+    expect(getHeatmapSummary(39)).toBe('Located in Green Demand Zone');
   });
 
   it('classifies payback periods at the boundaries', () => {
