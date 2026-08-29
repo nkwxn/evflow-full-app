@@ -69,6 +69,12 @@ describe('Epic 5 dynamic classifications', () => {
     expect(getOverlapDescription(39, 1.9)).toContain('High network overlap risk');
   });
 
+  it('explains heatmap scores with red, yellow, and green zones', () => {
+    expect(getHeatmapDescription(80)).toContain('Red Zone');
+    expect(getHeatmapDescription(40)).toContain('Yellow Zone');
+    expect(getHeatmapDescription(39)).toContain('Green Zone');
+  });
+
   it('classifies payback periods at the boundaries', () => {
     expect(getPaybackStatus(2.9)).toBe('Rapid capital recovery');
     expect(getPaybackStatus(3)).toBe('Standard capital recovery');

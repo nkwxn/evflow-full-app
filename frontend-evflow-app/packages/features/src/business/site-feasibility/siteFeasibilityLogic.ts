@@ -71,23 +71,12 @@ export function getRegionalResemblanceSummary(probability: number | null, ceilin
   return resemblanceBand(probability, ceiling);
 }
 
-export function getHeatmapDescription(score: number, band?: string | null) {
-  switch (band ?? zoneFromScore(score)) {
-    case 'red':
-      return 'Red Zone • Top 10% of Jabodetabek, with no station within 2 km';
-    case 'yellow':
-      return 'Yellow Zone • Above the regional median; worth watching';
-    default:
-      // Never "low demand": a green cell in Sudirman predicts among the highest
-      // utilisation in the region and is green because 38 stations already sit
-      // within 2 km of it. Saying "low demand" there would be false.
-      return 'Green Zone • Lower half of the region, or already well served';
-  }
-}
-
-/** The pre-band rule, kept for responses that carry no band. */
-function zoneFromScore(score: number) {
-  return score >= 80 ? 'red' : score >= 40 ? 'yellow' : 'green';
+export function getHeatmapDescription(score: number) {
+  return score >= 80
+    ? 'Red Zone • High priority for unmet demand'
+    : score >= 40
+      ? 'Yellow Zone • Moderate demand; monitor for future growth'
+      : 'Green Zone • Low priority due to limited commercial activity';
 }
 
 export function getPoiSummary(score: number) {
