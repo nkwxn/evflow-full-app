@@ -36,7 +36,18 @@ describe('Saved Sites lifecycle', () => {
     expect(screen).toContain("navigate('/business-dashboard/demand-heatmap')");
     expect(screen).toContain('<SiteFeasibilitySheet');
     expect(screen).toContain('setSelectedSite(site)');
-    expect(screen).toContain('<LocationScoreSummary embedded');
+    expect(screen).toMatch(/<LocationScoreSummary\s+embedded/);
+    expect(screen).toContain('regionalCeiling={detail.regionalCeiling}');
+    expect(screen).toContain('prediction={detail.prediction}');
+  });
+
+  it('loads and renders the heatmap regional tier on every saved-site list card', () => {
+    expect(screen).toContain('items.slice(start, start + 500).map((item) => item.cell_id)');
+    expect(screen).toContain('area.distribution.resemblance_ceiling');
+    expect(screen).toContain('predictionResponses.flatMap((response) => response.predictions)');
+    expect(screen).toContain('regionalCeiling={savedRegionalCeiling}');
+    expect(screen).toContain('resemblance={savedPredictions[site.cell_id] ?? null}');
+    expect(screen).not.toContain('Open details for regional comparison');
   });
 
   it('opens as a full-height drawer and exposes saved-site pins when collapsed', () => {

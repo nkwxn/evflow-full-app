@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   deletePlannerSavedSite,
-  fetchPlannerPredictions,
+  fetchPlannerAreaPrediction,
   fetchPlannerSavedSiteStatus,
   PlannerApiError,
   savePlannerSite,
@@ -36,6 +36,7 @@ export function useSiteFeasibilityDetail(siteId: string | null, options: DetailO
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [prediction, setPrediction] = useState<number | null>(null);
+  const [regionalCeiling, setRegionalCeiling] = useState<number | null>(null);
   const [model, setModel] = useState<PlannerModelInfoApi | null>(null);
   const [interpretation, setInterpretation] = useState<string | null>(null);
   const [predictionLoading, setPredictionLoading] = useState(false);
@@ -46,17 +47,25 @@ export function useSiteFeasibilityDetail(siteId: string | null, options: DetailO
   // leave the rest of the sheet working rather than blanking the whole panel.
   useEffect(() => {
     setPrediction(null);
+    setRegionalCeiling(null);
     setModel(null);
     setInterpretation(null);
     setPredictionError(null);
-    if (!siteId || isMock) return undefined;
+    if (!siteId || isMock || !data || data.optimalSiteId !== siteId) return undefined;
 
     let cancelled = false;
     setPredictionLoading(true);
-    fetchPlannerPredictions([siteId])
+    fetchPlannerAreaPrediction({
+      latitude: data.latitude,
+      longitude: data.longitude,
+      radiusKm: 0.5,
+      limit: 100,
+      top: 100
+    })
       .then((res) => {
         if (cancelled) return;
-        setPrediction(res.predictions[0]?.probability ?? null);
+        setPrediction(res.predictions.find((item) => item.cell_id === siteId)?.probability ?? null);
+        setRegionalCeiling(res.distribution.resemblance_ceiling);
         setModel(res.model);
         setInterpretation(res.interpretation);
       })
@@ -75,7 +84,7 @@ export function useSiteFeasibilityDetail(siteId: string | null, options: DetailO
     return () => {
       cancelled = true;
     };
-  }, [siteId, isMock]);
+  }, [data, siteId, isMock]);
 
   useEffect(() => {
     setActiveTab('feasibility');
@@ -185,6 +194,7 @@ export function useSiteFeasibilityDetail(siteId: string | null, options: DetailO
     prediction,
     predictionError,
     predictionLoading,
+    regionalCeiling,
     retry: () => setRetry((value) => value + 1),
     retryFinancial: () => setFinancialRetry((value) => value + 1),
     setActiveTab,

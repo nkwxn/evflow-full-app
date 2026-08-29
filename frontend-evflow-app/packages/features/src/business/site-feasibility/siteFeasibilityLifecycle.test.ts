@@ -8,8 +8,21 @@ const detailSource = readFileSync(resolve(currentDirectory, 'useSiteFeasibilityD
 const financialTabSource = readFileSync(resolve(currentDirectory, 'FinancialProjectionsTab.tsx'), 'utf8');
 const nearbyTabSource = readFileSync(resolve(currentDirectory, 'NearbyStationsTab.tsx'), 'utf8');
 const sheetSource = readFileSync(resolve(currentDirectory, 'SiteFeasibilitySheet.tsx'), 'utf8');
+const summarySource = readFileSync(resolve(currentDirectory, 'LocationScoreSummary.tsx'), 'utf8');
+const breakdownSource = readFileSync(resolve(currentDirectory, 'FeasibilityScoreTab.tsx'), 'utf8');
 
 describe('Site Feasibility ROI lifecycle contract', () => {
+  it('uses the backend regional scale for the detail tier and restores heatmap zone copy', () => {
+    expect(detailSource).toContain('fetchPlannerAreaPrediction({');
+    expect(detailSource).toContain('res.distribution.resemblance_ceiling');
+    expect(detailSource).toContain("item.cell_id === siteId");
+    expect(sheetSource).toContain('regionalCeiling={regionalCeiling}');
+    expect(summarySource).toContain('getRegionalResemblanceSummary');
+    expect(summarySource).not.toContain('Demand Zone');
+    expect(breakdownSource).toContain('Heatmap Zone Score');
+    expect(breakdownSource).toContain('getHeatmapDescription(scores.heatmap)');
+  });
+
   it('attaches ROI loading to the selected-site lifecycle rather than tab state', () => {
     const request = detailSource.indexOf('getSiteFinancialProjection(siteId)');
     const effectStart = detailSource.lastIndexOf('useEffect(() => {', request);

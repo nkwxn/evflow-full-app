@@ -1,20 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useNavigate } from 'react-router';
 import { fetchEvModels, getMe, type EVModelApiItem } from '@evflow/shared';
 import { colors, onboardingStyles as styles } from '@evflow/ui';
 import { useAppSafeAreaInsets } from '../shared/useAppSafeAreaInsets';
 import { SvgAssetIcon } from '../shared/SvgAssetIcon';
-
-const OTHER_BRAND = 'Other';
+import { brandOf, filterVehicleModels } from './vehicleSelection';
 
 type VehicleSelection = {
   evModelId: string | null;
 };
-
-function brandOf(model: EVModelApiItem): string {
-  return model.make?.trim() || OTHER_BRAND;
-}
 
 function modelMeta(model: EVModelApiItem): string | null {
   const parts: string[] = [];
@@ -33,10 +28,13 @@ function modelMeta(model: EVModelApiItem): string | null {
 export function VehicleSelectScreen() {
   const navigate = useNavigate();
   const insets = useAppSafeAreaInsets();
+  const { height } = useWindowDimensions();
   const [models, setModels] = useState<EVModelApiItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [brandPickerOpen, setBrandPickerOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [selection, setSelection] = useState<VehicleSelection | null>(null);
   const [prefillModelId, setPrefillModelId] = useState<string | null>(null);
 
@@ -119,9 +117,9 @@ export function VehicleSelectScreen() {
     return names.sort((a, b) => a.localeCompare(b));
   }, [models]);
 
-  const brandModels = useMemo(
-    () => models.filter((model) => selectedBrand !== null && brandOf(model) === selectedBrand),
-    [models, selectedBrand]
+  const visibleModels = useMemo(
+    () => filterVehicleModels(models, selectedBrand, searchQuery),
+    [models, searchQuery, selectedBrand]
   );
 
   const canContinue = selection !== null;
@@ -135,9 +133,9 @@ export function VehicleSelectScreen() {
   };
 
   return (
-    <View style={styles.page}>
-      <View style={styles.contentShell}>
-        <View style={[styles.header, { paddingTop: insets.top }]}>
+    <View style={[styles.page, styles.vehiclePage, { height, maxHeight: height, minHeight: height }]}>
+      <View style={[styles.contentShell, styles.vehicleContentShell]}>
+        <View style={[styles.header, { paddingTop: insets.top, paddingLeft: 22 + insets.left, paddingRight: 22 + insets.right }]}>
           <Pressable accessibilityLabel="Back" accessibilityRole="button" onPress={() => navigate('/')} style={styles.backButton}>
             <SvgAssetIcon color="#191C1D" height={12} name="leftChevron" width={8} />
           </Pressable>
@@ -145,7 +143,11 @@ export function VehicleSelectScreen() {
           <View style={styles.headerSpacer} />
         </View>
 
-        <ScrollView contentContainerStyle={[styles.content, { paddingBottom: 140 + insets.bottom }]}>
+        <ScrollView
+          contentContainerStyle={[styles.content, { paddingBottom: 24, paddingLeft: 24 + insets.left, paddingRight: 24 + insets.right }]}
+          scrollIndicatorInsets={{ bottom: insets.bottom, left: insets.left, right: insets.right }}
+          style={styles.contentScroll}
+        >
           <Text style={styles.title}>What car do you drive?</Text>
           <Text style={styles.subtitle}>Pick your brand, then your model. This helps us match chargers to your car.</Text>
 
@@ -165,26 +167,54 @@ export function VehicleSelectScreen() {
           ) : null}
 
           {brands.length > 0 ? (
-            <View style={styles.brandChipsRow}>
-              {brands.map((brand) => (
+            <View style={styles.vehicleControls}>
+              <TextInput
+                accessibilityLabel="Search vehicle manufacturer or model"
+                autoCapitalize="none"
+                autoCorrect={false}
+                onChangeText={setSearchQuery}
+                placeholder="Search manufacturer or model"
+                placeholderTextColor="#718087"
+                returnKeyType="search"
+                style={styles.vehicleSearchInput}
+                value={searchQuery}
+              />
+              <View style={styles.brandSelectWrap}>
                 <Pressable
+                  accessibilityLabel="Filter vehicles by brand"
                   accessibilityRole="button"
-                  accessibilityState={{ selected: selectedBrand === brand }}
-                  key={brand}
-                  onPress={() => setSelectedBrand(brand)}
-                  style={[styles.brandChip, selectedBrand === brand && styles.brandChipSelected]}
+                  accessibilityState={{ expanded: brandPickerOpen }}
+                  onPress={() => setBrandPickerOpen((open) => !open)}
+                  style={styles.brandSelectButton}
                 >
-                  <Text style={[styles.brandChipText, selectedBrand === brand && styles.brandChipTextSelected]}>
-                    {brand}
-                  </Text>
+                  <Text style={styles.brandSelectText}>{selectedBrand ?? 'Choose a brand'}</Text>
+                  <Text style={styles.brandSelectChevron}>{brandPickerOpen ? '▲' : '▼'}</Text>
                 </Pressable>
-              ))}
+                {brandPickerOpen ? (
+                  <ScrollView keyboardShouldPersistTaps="handled" nestedScrollEnabled style={styles.brandOptions}>
+                    <Pressable accessibilityRole="button" onPress={() => { setSelectedBrand(null); setBrandPickerOpen(false); }} style={styles.brandOption}>
+                      <Text style={styles.brandOptionText}>All brands</Text>
+                    </Pressable>
+                    {brands.map((brand) => (
+                      <Pressable
+                        accessibilityRole="button"
+                        accessibilityState={{ selected: selectedBrand === brand }}
+                        key={brand}
+                        onPress={() => { setSelectedBrand(brand); setBrandPickerOpen(false); }}
+                        style={[styles.brandOption, selectedBrand === brand && styles.brandOptionSelected]}
+                      >
+                        <Text style={styles.brandOptionText}>{brand}</Text>
+                      </Pressable>
+                    ))}
+                  </ScrollView>
+                ) : null}
+              </View>
             </View>
           ) : null}
 
-          {brandModels.length > 0 ? (
+          {visibleModels.length > 0 ? (
             <View style={styles.optionList}>
-              {brandModels.map((model) => (
+              {visibleModels.map((model) => (
                 <ModelCard
                   key={model.id}
                   model={model}
@@ -193,6 +223,10 @@ export function VehicleSelectScreen() {
                 />
               ))}
             </View>
+          ) : null}
+
+          {(selectedBrand || searchQuery.trim()) && visibleModels.length === 0 && !loading ? (
+            <Text accessibilityLiveRegion="polite" style={styles.emptyModelsText}>No matching EV models found.</Text>
           ) : null}
 
           <Pressable
@@ -212,7 +246,7 @@ export function VehicleSelectScreen() {
           </Pressable>
         </ScrollView>
 
-        <View style={[styles.footer, { paddingBottom: 20 + insets.bottom }]}>
+        <View style={[styles.vehicleFooter, { paddingBottom: 20 + insets.bottom, paddingLeft: 20 + insets.left, paddingRight: 20 + insets.right }]}>
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ disabled: !canContinue }}

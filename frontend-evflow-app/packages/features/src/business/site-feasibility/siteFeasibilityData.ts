@@ -32,6 +32,8 @@ export function plannerCellToSiteFeasibility(
     optimalSiteId: detail.cell_id,
     locationCode: detail.cell_id,
     locationName: cleanAreaName(detail.kota),
+    latitude: detail.latitude,
+    longitude: detail.longitude,
     locationScore: score,
     heatmapScore: suitability === null
       ? score

@@ -2017,15 +2017,17 @@ export const driverMapStyles = StyleSheet.create({
   resultsHeader: {
     alignItems: 'center',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: 12,
     marginBottom: 16
   },
   resultsTitle: {
     color: '#1f2529',
     flex: 1,
+    flexShrink: 1,
     fontSize: fontSizes.titleSmall,
     fontWeight: '900',
-    lineHeight: 27
+    lineHeight: 27,
+    minWidth: 0
   },
   filterButton: {
     alignItems: 'center',
@@ -2033,6 +2035,7 @@ export const driverMapStyles = StyleSheet.create({
     borderColor: '#d8dee1',
     borderRadius: 11,
     borderWidth: 1,
+    flexShrink: 0,
     flexDirection: 'row',
     gap: 7,
     justifyContent: 'center',
@@ -2341,6 +2344,15 @@ export const onboardingStyles = StyleSheet.create({
     minHeight: '100%',
     width: '100%'
   },
+  vehiclePage: {
+    overflow: 'hidden'
+  },
+  vehicleContentShell: {
+    height: '100%',
+    maxHeight: '100%',
+    minHeight: 0,
+    overflow: 'hidden'
+  },
   header: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -2366,6 +2378,9 @@ export const onboardingStyles = StyleSheet.create({
   content: {
     paddingHorizontal: 24,
     paddingTop: 16
+  },
+  contentScroll: {
+    flex: 1
   },
   title: {
     color: '#1f2529',
@@ -2409,32 +2424,68 @@ export const onboardingStyles = StyleSheet.create({
     fontSize: fontSizes.label,
     fontWeight: '700'
   },
-  brandChipsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
+  vehicleControls: {
+    gap: 10,
     marginTop: 16
   },
-  brandChip: {
+  vehicleSearchInput: {
     backgroundColor: colors.white,
     borderColor: colors.border,
-    borderRadius: 20,
+    borderRadius: 10,
     borderWidth: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 8
+    color: colors.text,
+    fontSize: fontSizes.control,
+    minHeight: 48,
+    paddingHorizontal: 14
   },
-  brandChipSelected: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary
+  brandSelectWrap: {
+    backgroundColor: colors.white,
+    borderColor: colors.border,
+    borderRadius: 10,
+    borderWidth: 1,
+    overflow: 'hidden'
   },
-  brandChipText: {
-    color: '#2b3337',
-    fontSize: fontSizes.label,
-    fontWeight: '600'
+  brandSelectButton: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    minHeight: 48,
+    paddingHorizontal: 14
   },
-  brandChipTextSelected: {
-    color: colors.white,
-    fontWeight: '700'
+  brandSelectText: {
+    color: colors.text,
+    flex: 1,
+    fontSize: fontSizes.control
+  },
+  brandSelectChevron: {
+    color: '#718087',
+    fontSize: fontSizes.tiny,
+    marginLeft: 8
+  },
+  brandOptions: {
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
+    maxHeight: 180
+  },
+  brandOption: {
+    borderBottomColor: colors.border,
+    borderBottomWidth: 1,
+    justifyContent: 'center',
+    minHeight: 44,
+    paddingHorizontal: 14
+  },
+  brandOptionSelected: {
+    backgroundColor: '#e3f8fa'
+  },
+  brandOptionText: {
+    color: colors.text,
+    fontSize: fontSizes.control
+  },
+  emptyModelsText: {
+    color: '#4e5d63',
+    fontSize: fontSizes.control,
+    marginTop: 16,
+    textAlign: 'center'
   },
   optionList: {
     gap: 10,
@@ -2488,6 +2539,17 @@ export const onboardingStyles = StyleSheet.create({
     padding: 20,
     position: 'absolute',
     right: 0,
+    shadowColor: '#000000',
+    shadowOffset: { height: -2, width: 0 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10
+  },
+  vehicleFooter: {
+    backgroundColor: colors.white,
+    borderTopColor: '#edf0f2',
+    borderTopWidth: 1,
+    flexShrink: 0,
+    padding: 20,
     shadowColor: '#000000',
     shadowOffset: { height: -2, width: 0 },
     shadowOpacity: 0.08,
