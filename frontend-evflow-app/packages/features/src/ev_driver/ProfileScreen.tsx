@@ -17,6 +17,7 @@ import { HelpDeskScreen } from '../support/HelpDeskScreen';
 type ProfileScreenProps = {
   topInset?: number;
   bottomOffset?: number;
+  onLogout?: () => void | Promise<void>;
 };
 
 const CONNECTOR_OPTIONS = ['CCS2', 'CHAdeMO', 'Type 2', 'GB/T', 'Type 1'];
@@ -35,7 +36,7 @@ function memberSince(iso?: string): string {
   return date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
 }
 
-export function ProfileScreen({ topInset = 0, bottomOffset = 0 }: ProfileScreenProps) {
+export function ProfileScreen({ topInset = 0, bottomOffset = 0, onLogout }: ProfileScreenProps) {
   const navigate = useNavigate();
   const sessionUser = getAuthSession()?.user ?? null;
 
@@ -109,7 +110,8 @@ export function ProfileScreen({ topInset = 0, bottomOffset = 0 }: ProfileScreenP
       .finally(() => setSaving(false));
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await onLogout?.();
     clearAuthSession();
     navigate('/');
   };
@@ -191,23 +193,34 @@ export function ProfileScreen({ topInset = 0, bottomOffset = 0 }: ProfileScreenP
 
         {modelPickerOpen ? (
           <View style={styles.picker}>
-            <Pressable
-              onPress={() => { setEvModelId(null); setModelPickerOpen(false); }}
-              style={styles.pickerItem}
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              nestedScrollEnabled
+              showsVerticalScrollIndicator
+              style={styles.pickerScroll}
             >
-              <Text style={styles.pickerItemText}>None</Text>
-            </Pressable>
-            {models.map((model) => (
               <Pressable
-                key={model.id}
-                onPress={() => { setEvModelId(model.id); setModelPickerOpen(false); setMessage(null); }}
-                style={[styles.pickerItem, model.id === evModelId && styles.pickerItemActive]}
+                accessibilityRole="button"
+                accessibilityState={{ selected: evModelId === null }}
+                onPress={() => { setEvModelId(null); setModelPickerOpen(false); setMessage(null); }}
+                style={[styles.pickerItem, evModelId === null && styles.pickerItemActive]}
               >
-                <Text style={styles.pickerItemText} numberOfLines={1}>{model.name}</Text>
-                {model.range_km ? <Text style={styles.pickerItemMeta}>{model.range_km} km</Text> : null}
+                <Text style={styles.pickerItemText}>None</Text>
               </Pressable>
-            ))}
-            {models.length === 0 ? <Text style={styles.pickerEmpty}>No models available.</Text> : null}
+              {models.map((model) => (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: model.id === evModelId }}
+                  key={model.id}
+                  onPress={() => { setEvModelId(model.id); setModelPickerOpen(false); setMessage(null); }}
+                  style={[styles.pickerItem, model.id === evModelId && styles.pickerItemActive]}
+                >
+                  <Text style={styles.pickerItemText} numberOfLines={1}>{model.name}</Text>
+                  {model.range_km ? <Text style={styles.pickerItemMeta}>{model.range_km} km</Text> : null}
+                </Pressable>
+              ))}
+              {models.length === 0 ? <Text style={styles.pickerEmpty}>No models available.</Text> : null}
+            </ScrollView>
           </View>
         ) : null}
 
@@ -275,7 +288,7 @@ export function ProfileScreen({ topInset = 0, bottomOffset = 0 }: ProfileScreenP
         <Text style={styles.saveButtonText}>{saving ? 'Saving…' : 'Save Changes'}</Text>
       </Pressable>
 
-      <Pressable accessibilityRole="button" onPress={handleLogout} style={styles.logoutButton}>
+      <Pressable accessibilityRole="button" onPress={() => void handleLogout()} style={styles.logoutButton}>
         <Text style={styles.logoutButtonText}>Log Out</Text>
       </Pressable>
     </ScrollView>
@@ -434,8 +447,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     marginTop: 8,
-    maxHeight: 240,
     overflow: 'hidden'
+  },
+  pickerScroll: {
+    maxHeight: 240
   },
   pickerItem: {
     alignItems: 'center',

@@ -1,4 +1,5 @@
 import type { OptimalSite } from '../demandHeatmap';
+import { resemblanceBand } from '../site-prediction/areaPrediction';
 import type {
   NearbyStationBenchmark,
   RoadType,
@@ -49,9 +50,9 @@ export function getLocationPriority(score: number) {
  * the claim as a sentence rather than a colour, so it is the place the
  * disagreement did the most damage.
  */
-export function getHeatmapSummary(score: number, band?: string | null) {
-  const zone = band ?? zoneFromScore(score);
-  return `Located in ${zone === 'red' ? 'Red' : zone === 'yellow' ? 'Yellow' : 'Green'} Demand Zone`;
+export function getRegionalResemblanceSummary(probability: number | null, ceiling: number | null) {
+  if (probability === null) return null;
+  return resemblanceBand(probability, ceiling);
 }
 
 export function getHeatmapDescription(score: number, band?: string | null) {

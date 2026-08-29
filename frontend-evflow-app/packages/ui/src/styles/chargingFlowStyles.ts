@@ -119,6 +119,53 @@ export const chargingFlowStyles = StyleSheet.create({
     fontWeight: '600',
     marginTop: 16
   },
+  scanErrorText: {
+    backgroundColor: 'rgba(127, 29, 29, 0.92)',
+    borderRadius: 8,
+    color: colors.white,
+    fontSize: fontSizes.caption,
+    fontWeight: '700',
+    lineHeight: 18,
+    marginTop: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    textAlign: 'center'
+  },
+  manualEntryPanel: {
+    alignItems: 'stretch',
+    backgroundColor: colors.white,
+    borderRadius: 10,
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 10,
+    maxWidth: 360,
+    padding: 8,
+    width: '100%'
+  },
+  manualEntryInput: {
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    color: colors.text,
+    flex: 1,
+    fontSize: fontSizes.control,
+    minHeight: 44,
+    minWidth: 0,
+    paddingHorizontal: 10
+  },
+  manualEntryButton: {
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    justifyContent: 'center',
+    minHeight: 44,
+    paddingHorizontal: 12
+  },
+  manualEntryButtonText: {
+    color: colors.text,
+    fontSize: fontSizes.caption,
+    fontWeight: '800'
+  },
   cameraNoticeCard: {
     backgroundColor: '#ffffff',
     padding: 20,

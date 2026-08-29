@@ -41,6 +41,8 @@ export type SiteFeasibilityData = {
   optimalSiteId: string;
   locationCode: string;
   locationName: string;
+  latitude: number;
+  longitude: number;
   locationScore?: number;
   heatmapScore: number;
   /**

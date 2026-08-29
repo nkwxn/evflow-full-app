@@ -1,3 +1,37 @@
+import type { ManualVehicleInput, RoutePlanResponse, RoutePreferencesInput } from '@evflow/shared';
+import type { LocationState } from './planRouteTypes';
+
+export type ActiveNavigationSessionState = {
+  status: 'active_navigation';
+  result: RoutePlanResponse;
+  destination: LocationState;
+  navigationStartSocPct: number;
+  estimatedCurrentSocPct: number;
+  cumulativeDistanceKm: number;
+  routeBaseDistanceKm: number;
+  manualVehicle?: ManualVehicleInput;
+  evModelId?: string;
+  minimumArrivalSocPct: number;
+  preferences: Required<RoutePreferencesInput>;
+};
+
+export type ActiveNavigationSessionAction =
+  | { type: 'start'; session: ActiveNavigationSessionState }
+  | { type: 'progress'; snapshot: Pick<ActiveNavigationSessionState, 'result' | 'estimatedCurrentSocPct' | 'cumulativeDistanceKm' | 'routeBaseDistanceKm'> }
+  | { type: 'replace_route'; result: RoutePlanResponse }
+  | { type: 'clear' };
+
+export function activeNavigationSessionReducer(
+  state: ActiveNavigationSessionState | null,
+  action: ActiveNavigationSessionAction,
+): ActiveNavigationSessionState | null {
+  if (action.type === 'start') return action.session;
+  if (action.type === 'clear') return null;
+  if (!state) return null;
+  if (action.type === 'replace_route') return { ...state, result: action.result };
+  return { ...state, ...action.snapshot };
+}
+
 export type RemovableSubscription = { remove(): void };
 export type WatchFactory<T> = (
   onValue: (value: T) => void,

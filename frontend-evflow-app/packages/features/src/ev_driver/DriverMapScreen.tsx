@@ -994,7 +994,7 @@ function ResultsDrawer({
   return (
     <View style={styles.drawerBody}>
       <View style={styles.resultsHeader}>
-        <Text style={styles.resultsTitle}>{filteredBySearch ? 'Search Results' : getAreaResultsTitle(areaResolution, fetchDecision)} ({stations.length})</Text>
+        <Text numberOfLines={2} style={styles.resultsTitle}>{filteredBySearch ? 'Search Results' : getAreaResultsTitle(areaResolution, fetchDecision)} ({stations.length})</Text>
         <Pressable accessibilityRole="button" onPress={onFilter} style={styles.filterButton}>
           <SvgAssetIcon color="#4c5960" height={14} name="filter" svg={filterSettingIcon} width={14} />
           <Text style={styles.filterButtonText}>Filter</Text>

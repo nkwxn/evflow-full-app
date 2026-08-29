@@ -50,6 +50,8 @@ type Props = {
   preferences: Required<RoutePreferencesInput>;
   minimumArrivalSocPct: number;
   onOverview: (snapshot: NavigationSnapshot) => void;
+  onProgress: (snapshot: NavigationSnapshot) => void;
+  onSuspend: (snapshot: NavigationSnapshot) => void;
   onEndNavigation: () => void | Promise<void>;
   onCancel: () => void | Promise<void>;
   onCompleted: () => void | Promise<void>;
@@ -90,6 +92,8 @@ export function ActiveNavigationScreen({
   preferences,
   minimumArrivalSocPct,
   onOverview,
+  onProgress,
+  onSuspend,
   onEndNavigation,
   onCancel,
   onCompleted,
@@ -131,6 +135,16 @@ export function ActiveNavigationScreen({
   const stoppedRef = useRef(false);
   const reroutingRef = useRef(false);
   const completingRef = useRef(false);
+  const suspendOnUnmountRef = useRef(true);
+  const onSuspendRef = useRef(onSuspend);
+  onSuspendRef.current = onSuspend;
+
+  const getSnapshot = useCallback((): NavigationSnapshot => ({
+    result: routeRef.current,
+    cumulativeDistanceKm: cumulativeDistanceRef.current,
+    estimatedCurrentSocPct: estimatedCurrentSocRef.current,
+    routeBaseDistanceKm: routeBaseDistanceRef.current,
+  }), []);
 
   const updateRoute = useCallback((next: RoutePlanResponse) => {
     routeRef.current = next;
@@ -221,6 +235,7 @@ export function ActiveNavigationScreen({
         );
         evaluationRef.current = { ...value, estimated_current_soc_pct: estimatedCurrentSocRef.current };
         setEvaluation(evaluationRef.current);
+        onProgress(getSnapshot());
         latestEvaluationAtRef.current = Date.now();
         latestEvaluationLocationRef.current = position;
         onConnectionRestored?.();
@@ -231,7 +246,7 @@ export function ActiveNavigationScreen({
         if ((cause as RouteApiError).isNetworkError) onConnectionError?.();
       }
     }
-  }, [destination, evModelId, manualVehicle, minimumArrivalSocPct, navigationStartSocPct, onConnectionError, onConnectionRestored, preferences.maximum_detour_km]);
+  }, [destination, evModelId, getSnapshot, manualVehicle, minimumArrivalSocPct, navigationStartSocPct, onConnectionError, onConnectionRestored, onProgress, preferences.maximum_detour_km]);
 
   const processFixRef = useRef<(position: NavigationFix) => void>(() => undefined);
   processFixRef.current = (position) => {
@@ -248,6 +263,7 @@ export function ActiveNavigationScreen({
     setRouteMatch(matched);
     const cumulativeKm = routeBaseDistanceRef.current + matched.travelledM / 1000;
     cumulativeDistanceRef.current = monotonicDistance(cumulativeDistanceRef.current, cumulativeKm);
+    onProgress(getSnapshot());
     const advanced = advanceStep(
       stepsRef.current,
       stepIndexRef.current,
@@ -264,6 +280,7 @@ export function ActiveNavigationScreen({
     void requestEvaluation(position, isOffRoute(invalidFixesRef.current));
     if (matched.remainingM <= 25 && !completingRef.current) {
       completingRef.current = true;
+      suspendOnUnmountRef.current = false;
       stopTracking();
       void onCompleted();
     }
@@ -280,27 +297,25 @@ export function ActiveNavigationScreen({
     );
     return () => {
       disposed = true;
+      if (suspendOnUnmountRef.current) onSuspendRef.current(getSnapshot());
       stopTracking();
     };
-  }, [stopTracking]);
+  }, [getSnapshot, stopTracking]);
 
   const finish = useCallback(async (kind: 'end' | 'cancel') => {
     if (ending) return;
     setEnding(true);
+    suspendOnUnmountRef.current = false;
     stopTracking();
     if (kind === 'cancel') await onCancel();
     else await onEndNavigation();
   }, [ending, onCancel, onEndNavigation, stopTracking]);
 
   const showOverview = useCallback(() => {
+    suspendOnUnmountRef.current = false;
     stopTracking();
-    onOverview({
-      result: routeRef.current,
-      cumulativeDistanceKm: cumulativeDistanceRef.current,
-      estimatedCurrentSocPct: estimatedCurrentSocRef.current,
-      routeBaseDistanceKm: routeBaseDistanceRef.current,
-    });
-  }, [onOverview, stopTracking]);
+    onOverview(getSnapshot());
+  }, [getSnapshot, onOverview, stopTracking]);
 
   const addStop = async (stop: RecommendedStop) => {
     if (!latestFixRef.current || addingStopId) return;

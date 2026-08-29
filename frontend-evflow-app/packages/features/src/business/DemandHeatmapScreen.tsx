@@ -909,6 +909,7 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
           prediction={detail.prediction}
           predictionError={detail.predictionError}
           predictionLoading={detail.predictionLoading}
+          regionalCeiling={detail.regionalCeiling}
         />
       ) : null}
     </View>
