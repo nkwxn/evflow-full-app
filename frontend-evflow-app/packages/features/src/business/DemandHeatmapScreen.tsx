@@ -38,6 +38,9 @@ import { RADIUS_CHOICES } from './site-prediction/areaPrediction';
 import { plannerConnectionLines } from './site-connection/connectionLines';
 import { formatPeople, legendRows, type DensityScale } from './density/densityScale';
 import {
+  legendMaxHeight, LEGEND_MAX_WIDTH, legendPillLabel, shouldCollapseLegends
+} from './legend/legendLayout';
+import {
   RADIUS_DEFAULT_KM, RADIUS_MAX_KM, RADIUS_MIN_KM, RADIUS_STEP_KM,
   circleBbox, clipToRadius, formatRadius, geometryCentre
 } from './radius/radiusScope';
@@ -152,6 +155,9 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
   const dockedPanel = width >= 768;
   const [layers, setLayers] = useState<PlannerLayerState>(defaultPlannerLayers);
   const [expanded, setExpanded] = useState(false);
+  // Closed by default on a phone. An open key there covers the map it explains,
+  // and a planner who has just tapped a layer on wants to see the layer first.
+  const [legendsOpen, setLegendsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [viewport, setViewport] = useState<MapViewport>(jakartaViewport);
   const [center, setCenter] = useState<Coordinates>(searchShortcuts.jakarta);
@@ -723,37 +729,67 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
           hand-added offset for whichever others happened to be on, and with
           three live those guesses overlapped. Here the container owns the
           spacing, so a legend growing a row cannot collide with anything. */}
-      {sheetMode === 'layers' ? (
-        <View style={[plannerStyles.legendStack,
-                      { bottom: dockedPanel ? bottomOffset + 16
-                                            : bottomOffset + collapsedSheetHeight + 12 }]}>
-          {layers.liveTraffic && trafficKey ? <TrafficLegend /> : null}
-          {layers.populationDensity && populationScale ? (
+      {sheetMode === 'layers' ? (() => {
+        const keys = [
+          layers.liveTraffic && trafficKey ? <TrafficLegend key="traffic" /> : null,
+          layers.populationDensity && populationScale ? (
             <DensityLegend
               colour={POPULATION_COLOUR}
+              key="density"
               scale={populationScale}
               title="PEOPLE PER CELL"
             />
-          ) : null}
-          {layers.landUse && landUseCoverage ? (
-            <LandUseLegend coverage={landUseCoverage} />
-          ) : null}
-          {/* `!expanded` alone hid this on desktop, where opening Map Layers sets
-              expanded and the docked panel leaves the map fully visible beside
-              it — so the one layer whose colours cannot be guessed lost its key
-              exactly when someone opened the panel to find out what they meant.
-              On a phone the expanded sheet really does cover the map, so the
-              legend still stands down there. */}
-          {layers.demandHeatmap && (dockedPanel || !expanded) && demandScale ? (
+          ) : null,
+          layers.landUse && landUseCoverage ? (
+            <LandUseLegend coverage={landUseCoverage} key="landuse" />
+          ) : null,
+          // `!expanded` alone hid this on desktop, where opening Map Layers sets
+          // expanded and the docked panel leaves the map fully visible beside
+          // it — so the one layer whose colours cannot be guessed lost its key
+          // exactly when someone opened the panel to find out what they meant.
+          // On a phone the expanded sheet really does cover the map, so the
+          // legend still stands down there.
+          layers.demandHeatmap && (dockedPanel || !expanded) && demandScale ? (
             <ModelPredictionLegend
-              suitability={demandScale.suitability}
-              ceiling={demandScale.ceiling}
               builtCells={demandScale.built}
+              ceiling={demandScale.ceiling}
+              key="demand"
+              suitability={demandScale.suitability}
               title="DEMAND HEATMAP"
             />
-          ) : null}
-        </View>
-      ) : null}
+          ) : null
+        ].filter(Boolean);
+        const bottom = dockedPanel ? bottomOffset + 16
+                                   : bottomOffset + collapsedSheetHeight + 12;
+        if (!shouldCollapseLegends(width, keys.length)) {
+          return <View style={[plannerStyles.legendStack, { bottom }]}>{keys}</View>;
+        }
+        // Phone. Closed, one pill naming how many layers are keyed; open, the
+        // same cards inside a capped scroll area so they can never grow past the
+        // map again however many rows a legend gains.
+        return (
+          <View style={[plannerStyles.legendStack, { bottom }]}>
+            {legendsOpen ? (
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                style={[plannerStyles.legendScroll, { maxHeight: legendMaxHeight(height) }]}
+              >
+                <View style={plannerStyles.legendScrollInner}>{keys}</View>
+              </ScrollView>
+            ) : null}
+            <Pressable
+              accessibilityLabel={legendsOpen ? 'Hide map key' : 'Show map key'}
+              accessibilityRole="button"
+              onPress={() => setLegendsOpen((v) => !v)}
+              style={plannerStyles.legendPill}
+            >
+              <Text style={plannerStyles.legendPillText}>
+                {legendsOpen ? 'Hide key' : legendPillLabel(keys.length)}
+              </Text>
+            </Pressable>
+          </View>
+        );
+      })() : null}
 
       {/* Docked, the panel is present or it is not: fading its contents to zero
           while a 360px white slab stays over the map would be the worst of
@@ -1367,6 +1403,19 @@ const plannerStyles = StyleSheet.create({
     left: 14,
     position: 'absolute',
     zIndex: 9999
+  },
+  // Capped so the cards scroll inside it rather than pushing the pill off screen.
+  legendScroll: { borderRadius: 10, maxWidth: LEGEND_MAX_WIDTH },
+  legendScrollInner: { alignItems: 'flex-start', gap: 10, paddingBottom: 2 },
+  legendPill: {
+    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderRadius: 999,
+    boxShadow: '0 3px 10px rgba(21,35,38,0.14)',
+    paddingHorizontal: 14,
+    paddingVertical: 8
+  },
+  legendPillText: {
+    color: '#364246', fontSize: 12, fontWeight: '700', letterSpacing: 0.2
   },
   legendRow: {
     alignItems: 'center',
