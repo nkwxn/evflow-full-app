@@ -18,7 +18,7 @@ const tabs: Array<{ key: SiteFeasibilityTab; label: string }> = [
   { key: 'nearby', label: 'Nearby Stations' }
 ];
 
-export function SiteFeasibilitySheet({ activeTab, bottom, data, error, expanded, financial, financialError, financialLoading, height, interpretation = null, isSaved, isSaving, loading, model = null, onClose, onFinancialRetry, onRetry, onScrollTopChange, onTabChange, onToggleExpanded, onToggleSaved, panHandlers, prediction = null, predictionError = null, predictionLoading = false }: {
+export function SiteFeasibilitySheet({ activeTab, bottom, data, error, expanded, financial, financialError, financialLoading, height, interpretation = null, isSaved, isSaving, loading, model = null, onClose, onFinancialRetry, onRetry, onScrollTopChange, onTabChange, onToggleExpanded, onToggleSaved, panHandlers, prediction = null, predictionError = null, predictionLoading = false, regionalCeiling = null }: {
   activeTab: SiteFeasibilityTab;
   bottom: number;
   data: SiteFeasibilityData | null;
@@ -45,6 +45,7 @@ export function SiteFeasibilitySheet({ activeTab, bottom, data, error, expanded,
   prediction?: number | null;
   predictionError?: string | null;
   predictionLoading?: boolean;
+  regionalCeiling?: number | null;
 }) {
   const scores = data ? calculateSiteScores(data) : null;
   let content: ReactNode = null;
@@ -105,7 +106,7 @@ export function SiteFeasibilitySheet({ activeTab, bottom, data, error, expanded,
         <View style={styles.loading}><ActivityIndicator color="#007D8C" /><Text style={styles.loadingText}>Loading site analysis...</Text></View>
       ) : (
         <>
-          <View style={styles.summary}><LocationScoreSummary isSaved={isSaved} isSaving={isSaving} onToggleSaved={onToggleSaved} scores={scores} /></View>
+          <View style={styles.summary}><LocationScoreSummary isSaved={isSaved} isSaving={isSaving} onToggleSaved={onToggleSaved} regionalCeiling={regionalCeiling} resemblance={prediction} resemblanceLoading={predictionLoading} scores={scores} /></View>
           <View
             accessibilityElementsHidden={!expanded}
             importantForAccessibility={expanded ? 'auto' : 'no-hide-descendants'}

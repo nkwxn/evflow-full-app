@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useReducer, useState } from 'react';
 import { Text, useWindowDimensions, View, Platform } from 'react-native';
 import { useLocation, useNavigate } from 'react-router';
 import { BottomNavigation, evDriverContainerStyles as styles, SideMenu, type NavigationItem } from '@evflow/ui';
@@ -12,10 +12,13 @@ import { ProfileScreen } from './ProfileScreen';
 import { TopUpSuccessScreen, TopUpWalletScreen } from './TopUpWalletScreen';
 import { WalletScreen } from './WalletScreen';
 import type { DriverTabKey } from './types';
+import { deleteRoutePlan } from '@evflow/shared';
+import { activeNavigationSessionReducer } from './plan_route/navigationSession';
 
 
 export function EVDriverContainer() {
   const [immersiveNavigation, setImmersiveNavigation] = useState(false);
+  const [activeNavigationSession, dispatchNavigationSession] = useReducer(activeNavigationSessionReducer, null);
   const location = useLocation();
   const navigate = useNavigate();
   const { height, width } = useWindowDimensions();
@@ -68,10 +71,21 @@ export function EVDriverContainer() {
         ) : activeTab === 'wallet' ? (
           <WalletScreen bottomInset={insets.bottom} bottomOffset={bottomNavOffset} topInset={topInset} />
         ) : activeTab === 'profile' ? (
-          <ProfileScreen bottomOffset={bottomNavOffset} topInset={topInset} />
+          <ProfileScreen
+            bottomOffset={bottomNavOffset}
+            topInset={topInset}
+            onLogout={async () => {
+              if (activeNavigationSession?.result.route_plan_id) {
+                try { await deleteRoutePlan(activeNavigationSession.result.route_plan_id); } catch { /* Server expiry remains the fallback. */ }
+              }
+              dispatchNavigationSession({ type: 'clear' });
+            }}
+          />
         ) : activeTab === 'plan_route' ? (
           <PlanRouteScreen
+            activeNavigationSession={activeNavigationSession}
             bottomOffset={bottomNavOffset}
+            dispatchNavigationSession={dispatchNavigationSession}
             onNavigationModeChange={setImmersiveNavigation}
             topInset={topInset}
           />

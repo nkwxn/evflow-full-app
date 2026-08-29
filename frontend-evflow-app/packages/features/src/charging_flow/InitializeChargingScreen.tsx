@@ -1,5 +1,5 @@
 import { View, Text, Pressable, ScrollView, TextInput, ActivityIndicator } from 'react-native';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { chargingFlowStyles as styles } from '@evflow/ui';
 import { useState, useMemo, useEffect } from 'react';
 import { ChargingFlowIcon } from './components/ChargingFlowIcon';
@@ -27,6 +27,7 @@ function formatRupiah(value: number) {
 
 export function InitializeChargingScreen() {
   const navigate = useNavigate();
+  const location = useLocation();
   const insets = useAppSafeAreaInsets();
   const [energy, setEnergy] = useState('');
   const [isCalculated, setIsCalculated] = useState(false);
@@ -54,6 +55,14 @@ export function InitializeChargingScreen() {
   useEffect(() => {
     async function loadStation() {
       try {
+        const validatedSelection = (location.state as { selection?: { station: StationApiItem; connector: StationConnectorApiItem } } | null)?.selection;
+        if (validatedSelection?.station && validatedSelection.connector) {
+          setStation(validatedSelection.station);
+          setConnector(validatedSelection.connector);
+          if (!validatedSelection.connector.power_kw) setRandomSpeed(DEFAULT_DISPLAY_POWER_KW);
+          return;
+        }
+
         const locationResult = await getUserLocation({ requestPermission: false });
         
         let targetStationId = '';
@@ -95,7 +104,7 @@ export function InitializeChargingScreen() {
     }
     
     loadStation();
-  }, []);
+  }, [location.state]);
 
   const parsedEnergy = Number(energy) || 0;
   const totalDue = quote?.total_due_idr ?? 0;

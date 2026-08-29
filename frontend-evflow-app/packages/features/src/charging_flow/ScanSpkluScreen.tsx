@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, TextInput } from 'react-native';
 import { useNavigate } from 'react-router';
 import { Html5Qrcode } from 'html5-qrcode';
 import { chargingFlowStyles as styles } from '@evflow/ui';
 import { ChargingFlowHeader } from './components/ChargingFlowHeader';
+import { SpkluSubmissionGate, validateSpkluPayload, type ValidSpkluSelection } from './spkluQrValidation';
 
 const scannerRegionId = 'spklu-qr-reader';
 
@@ -20,7 +21,12 @@ export function ScanSpkluScreen() {
   const [permissionLoading, setPermissionLoading] = useState(true);
   const [hasTorch, setHasTorch] = useState(false);
   const [torchOn, setTorchOn] = useState(false);
+  const [scanError, setScanError] = useState<string | null>(null);
+  const [manualEntryOpen, setManualEntryOpen] = useState(false);
+  const [manualStationId, setManualStationId] = useState('');
+  const [validating, setValidating] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const submissionGateRef = useRef(new SpkluSubmissionGate());
 
   const stopScanner = useCallback(async () => {
     const scanner = scannerRef.current;
@@ -71,9 +77,22 @@ export function ScanSpkluScreen() {
       });
   }, [hasTorch, torchOn]);
 
-  const stopAndNavigate = useCallback((path: string) => {
-    stopScanner().finally(() => navigate(path));
+  const stopAndNavigate = useCallback((path: string, state?: { selection: ValidSpkluSelection }) => {
+    stopScanner().finally(() => navigate(path, state ? { state } : undefined));
   }, [navigate, stopScanner]);
+
+  const submitStationPayload = useCallback(async (payload: string) => {
+    setValidating(true);
+    setScanError(null);
+    const result = await submissionGateRef.current.submit(payload, validateSpkluPayload);
+    if ('ignored' in result) return;
+    if (!result.ok) {
+      setScanError(result.error);
+      setValidating(false);
+      return;
+    }
+    stopAndNavigate('/charging-flow/initialize', { selection: result.value });
+  }, [stopAndNavigate]);
 
   const checkCameraPermission = useCallback(() => {
     setPermissionLoading(true);
@@ -145,8 +164,8 @@ export function ScanSpkluScreen() {
           fps: 10,
           qrbox: { width: 250, height: 250 }
         },
-        (decodedText, decodedResult) => {
-          stopAndNavigate('/charging-flow/initialize');
+        (decodedText) => {
+          void submitStationPayload(decodedText);
         },
         (errorMessage) => {
           // ignore scan errors (they happen every frame that no code is detected)
@@ -175,7 +194,7 @@ export function ScanSpkluScreen() {
         stopScanner();
       };
     }
-  }, [hasPermission, stopAndNavigate, stopScanner]);
+  }, [hasPermission, stopScanner, submitStationPayload]);
 
   return (
     <View style={styles.page}>
@@ -227,11 +246,30 @@ export function ScanSpkluScreen() {
                   <Text style={styles.cameraInstructions}>
                     Position the QR code or barcode found on the SPKLU connector inside the frame to initialize payment.
                   </Text>
-                  <Text style={styles.manualEntryLink} onPress={() => {
-                    stopAndNavigate('/charging-flow/initialize');
-                  }}>
+                  {scanError ? <Text accessibilityLiveRegion="assertive" style={styles.scanErrorText}>{scanError}</Text> : null}
+                  <Text accessibilityRole="button" style={styles.manualEntryLink} onPress={() => { setManualEntryOpen((open) => !open); setScanError(null); }}>
                     Can't scan? Enter Station ID manually
                   </Text>
+                  {manualEntryOpen ? (
+                    <View style={styles.manualEntryPanel}>
+                      <TextInput
+                        accessibilityLabel="Station ID"
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        editable={!validating}
+                        onChangeText={setManualStationId}
+                        onSubmitEditing={() => void submitStationPayload(manualStationId)}
+                        placeholder="e.g. pln_spklu-1"
+                        placeholderTextColor="#718087"
+                        returnKeyType="go"
+                        style={styles.manualEntryInput}
+                        value={manualStationId}
+                      />
+                      <Pressable accessibilityRole="button" disabled={validating} onPress={() => void submitStationPayload(manualStationId)} style={styles.manualEntryButton}>
+                        <Text style={styles.manualEntryButtonText}>{validating ? 'Checking…' : 'Continue'}</Text>
+                      </Pressable>
+                    </View>
+                  ) : null}
                 </View>
               </View>
             </View>

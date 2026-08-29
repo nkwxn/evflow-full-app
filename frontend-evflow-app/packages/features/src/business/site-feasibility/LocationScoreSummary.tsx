@@ -5,11 +5,14 @@ import { buildingIcon, energyIcon, fireIcon } from './siteFeasibilityIcons';
 import { getHeatmapSummary, getLocationPriority, getOverlapSummary, getPoiSummary } from './siteFeasibilityLogic';
 import type { SiteFeasibilityScores } from './siteFeasibilityTypes';
 
-export function LocationScoreSummary({ embedded = false, isSaved, isSaving, onToggleSaved, scores }: {
+export function LocationScoreSummary({ embedded = false, isSaved, isSaving, onToggleSaved, regionalCeiling = null, resemblance = null, resemblanceLoading = false, scores }: {
   embedded?: boolean;
   isSaved?: boolean;
   isSaving?: boolean;
   onToggleSaved?: () => void;
+  regionalCeiling?: number | null;
+  resemblance?: number | null;
+  resemblanceLoading?: boolean;
   scores: SiteFeasibilityScores;
 }) {
   const rows = [

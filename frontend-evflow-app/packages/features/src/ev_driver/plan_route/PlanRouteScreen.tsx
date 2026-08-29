@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { LeafletMap, type LeafletMapMarker } from '@evflow/ui';
 import {
   createRoutePlan,
@@ -18,7 +18,7 @@ import { RouteBottomSheet } from './components/RouteBottomSheet';
 import { RouteDialog } from './components/RouteDialog';
 import { DestinationSearchModal, type LocationSearchMode } from './DestinationSearchModal';
 import { getLocationDialogCopy } from './locationDialogCopy';
-import { createRouteSessionCleaner, shouldDeleteReplacedPlanningSession } from './navigationSession';
+import { createRouteSessionCleaner, shouldDeleteReplacedPlanningSession, type ActiveNavigationSessionAction, type ActiveNavigationSessionState } from './navigationSession';
 import { buildRouteRequest, clearFieldError, hasUsableVehicle, locationEntryDecision, validateRouteInput, type RouteInputErrors, type RouteInputField } from './routePlanningLogic';
 import { isImmersiveRouteView, transitionPlannerSheet, transitionRouteView, type PlannerSheetMode, type RouteViewAction } from './routeViewState';
 import { routeColors, routeRadius, routeShadow, routeSpacing } from './routeTheme';
@@ -26,46 +26,51 @@ import { TripInputScreen, type VehicleDisplay } from './TripInputScreen';
 import { TripSimulationScreen } from './TripSimulationScreen';
 import type { LocationState, PickedMapPoint, RouteViewMode } from './planRouteTypes';
 
-type Props = { topInset?: number; bottomOffset?: number; onNavigationModeChange?: (active: boolean) => void };
+type Props = {
+  topInset?: number;
+  bottomOffset?: number;
+  onNavigationModeChange?: (active: boolean) => void;
+  activeNavigationSession: ActiveNavigationSessionState | null;
+  dispatchNavigationSession: (action: ActiveNavigationSessionAction) => void;
+};
 
 const defaultPreferences: Required<RoutePreferencesInput> = { route_type: 'fastest', maximum_detour_km: 15, prefer_fast_charging: true };
 const defaultCenter = { latitude: -6.1754, longitude: 106.8272 };
 
-export function PlanRouteScreen({ topInset = 0, bottomOffset = 0, onNavigationModeChange }: Props) {
-  const [viewMode, setViewMode] = useState<RouteViewMode>('input');
+export function PlanRouteScreen({ topInset = 0, bottomOffset = 0, onNavigationModeChange, activeNavigationSession, dispatchNavigationSession }: Props) {
+  const restoredSession = activeNavigationSession;
+  const [viewMode, setViewMode] = useState<RouteViewMode>(restoredSession ? 'active_navigation' : 'input');
   const [sheetMode, setSheetMode] = useState<PlannerSheetMode>('peek');
   const [resultExpanded, setResultExpanded] = useState(true);
   const [plannerFocus, setPlannerFocus] = useState<'battery' | 'preferences' | null>(null);
   const [origin, setOrigin] = useState<LocationState | null>(null);
-  const [destination, setDestination] = useState<LocationState | null>(null);
-  const [currentSocPct, setCurrentSocPct] = useState(72);
-  const [socInputText, setSocInputText] = useState('72');
-  const [minimumArrivalSocPct, setMinimumArrivalSocPct] = useState(20);
-  const [preferences, setPreferences] = useState<Required<RoutePreferencesInput>>(defaultPreferences);
-  const [manualVehicle, setManualVehicle] = useState<ManualVehicleInput>({ usable_range_km: 0 });
+  const [destination, setDestination] = useState<LocationState | null>(restoredSession?.destination ?? null);
+  const [currentSocPct, setCurrentSocPct] = useState(restoredSession?.navigationStartSocPct ?? 72);
+  const [socInputText, setSocInputText] = useState(String(restoredSession?.navigationStartSocPct ?? 72));
+  const [minimumArrivalSocPct, setMinimumArrivalSocPct] = useState(restoredSession?.minimumArrivalSocPct ?? 20);
+  const [preferences, setPreferences] = useState<Required<RoutePreferencesInput>>(restoredSession?.preferences ?? defaultPreferences);
+  const [manualVehicle, setManualVehicle] = useState<ManualVehicleInput>(restoredSession?.manualVehicle ?? { usable_range_km: 0 });
   const [profileVehicle, setProfileVehicle] = useState<VehicleDisplay | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
   const [routeError, setRouteError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<RouteInputErrors>({});
-  const [simulationResult, setSimulationResult] = useState<RoutePlanResponse | null>(null);
+  const [simulationResult, setSimulationResult] = useState<RoutePlanResponse | null>(restoredSession?.result ?? null);
   const [searchMode, setSearchMode] = useState<LocationSearchMode | null>(null);
   const [pickedPoint, setPickedPoint] = useState<PickedMapPoint | null>(null);
   const [locationDialog, setLocationDialog] = useState<LocationPermissionStatus | null>(null);
   const [locationAttempts, setLocationAttempts] = useState(0);
   const [locationBusy, setLocationBusy] = useState(false);
   const [connectionError, setConnectionError] = useState(false);
-  const [navigationStartSocPct, setNavigationStartSocPct] = useState(currentSocPct);
-  const [navigationEstimatedCurrentSocPct, setNavigationEstimatedCurrentSocPct] = useState(currentSocPct);
-  const [cumulativeDistanceKm, setCumulativeDistanceKm] = useState(0);
-  const [routeBaseDistanceKm, setRouteBaseDistanceKm] = useState(0);
-  const sessionRef = useRef<RoutePlanResponse | null>(null);
-  const modeRef = useRef<RouteViewMode>('input');
+  const [navigationStartSocPct, setNavigationStartSocPct] = useState(restoredSession?.navigationStartSocPct ?? currentSocPct);
+  const [navigationEstimatedCurrentSocPct, setNavigationEstimatedCurrentSocPct] = useState(restoredSession?.estimatedCurrentSocPct ?? currentSocPct);
+  const [cumulativeDistanceKm, setCumulativeDistanceKm] = useState(restoredSession?.cumulativeDistanceKm ?? 0);
+  const [routeBaseDistanceKm, setRouteBaseDistanceKm] = useState(restoredSession?.routeBaseDistanceKm ?? 0);
+  const sessionRef = useRef<RoutePlanResponse | null>(restoredSession?.result ?? null);
   const sessionCleanerRef = useRef(createRouteSessionCleaner(deleteRoutePlan));
   const planningAbort = useRef<AbortController | null>(null);
   const retryRef = useRef<(() => void) | null>(null);
 
   useEffect(() => { sessionRef.current = simulationResult; }, [simulationResult]);
-  useEffect(() => { modeRef.current = viewMode; }, [viewMode]);
   // A tagged point belongs to one picking session: opening, switching, or
   // closing the search sheet always starts from a clean map.
   useEffect(() => { setPickedPoint(null); }, [searchMode]);
@@ -80,7 +85,7 @@ export function PlanRouteScreen({ topInset = 0, bottomOffset = 0, onNavigationMo
   const changeView = useCallback((action: RouteViewAction) => setViewMode((current) => transitionRouteView(current, action)), []);
   const blockingDialog = Boolean(locationDialog || connectionError);
   useEffect(() => { onNavigationModeChange?.(isImmersiveRouteView(viewMode) || blockingDialog); }, [blockingDialog, onNavigationModeChange, viewMode]);
-  useEffect(() => () => { onNavigationModeChange?.(false); void cleanupRouteSession(); }, [cleanupRouteSession, onNavigationModeChange]);
+  useEffect(() => () => { planningAbort.current?.abort(); onNavigationModeChange?.(false); }, [onNavigationModeChange]);
 
   useEffect(() => {
     let mounted = true;
@@ -91,15 +96,6 @@ export function PlanRouteScreen({ topInset = 0, bottomOffset = 0, onNavigationMo
     });
     return () => { mounted = false; };
   }, []);
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (state) => {
-      if (state !== 'active' && modeRef.current === 'active_navigation') {
-        void cleanupRouteSession(); setSimulationResult(null); setViewMode('input'); setSheetMode('peek');
-      }
-    });
-    return () => subscription.remove();
-  }, [cleanupRouteSession]);
 
   useEffect(() => {
     if (Platform.OS !== 'web' || typeof window === 'undefined') return;
@@ -194,18 +190,30 @@ export function PlanRouteScreen({ topInset = 0, bottomOffset = 0, onNavigationMo
   }
 
   async function cancelRoute(focus?: 'preferences' | 'battery') {
-    await cleanupRouteSession(); setSimulationResult(null); sessionRef.current = null; setCumulativeDistanceKm(0); setRouteBaseDistanceKm(0); setNavigationEstimatedCurrentSocPct(currentSocPct); changeView('cancel'); setSheetMode(focus ? 'expanded' : 'peek');
+    await cleanupRouteSession(); dispatchNavigationSession({ type: 'clear' }); setSimulationResult(null); sessionRef.current = null; setCumulativeDistanceKm(0); setRouteBaseDistanceKm(0); setNavigationEstimatedCurrentSocPct(currentSocPct); changeView('cancel'); setSheetMode(focus ? 'expanded' : 'peek');
     setPlannerFocus(focus ?? null);
     if (focus === 'battery') setRouteError('Increase the departure battery enough to preserve the requested reserve.');
   }
   async function finishRoute(action: 'end_navigation' | 'complete') {
-    await cleanupRouteSession(); setSimulationResult(null); sessionRef.current = null; setCumulativeDistanceKm(0); setRouteBaseDistanceKm(0); setNavigationEstimatedCurrentSocPct(currentSocPct); setSheetMode('peek'); setViewMode(action === 'complete' ? 'completed' : 'input');
+    await cleanupRouteSession(); dispatchNavigationSession({ type: 'clear' }); setSimulationResult(null); sessionRef.current = null; setCumulativeDistanceKm(0); setRouteBaseDistanceKm(0); setNavigationEstimatedCurrentSocPct(currentSocPct); setSheetMode('peek'); setViewMode(action === 'complete' ? 'completed' : 'input');
   }
-  function startNavigation() { if (!cumulativeDistanceKm) { setNavigationStartSocPct(currentSocPct); setNavigationEstimatedCurrentSocPct(currentSocPct); } changeView('start_navigation'); }
+  function startNavigation() {
+    if (!simulationResult || !destination) return;
+    const startSoc = cumulativeDistanceKm ? navigationStartSocPct : currentSocPct;
+    if (!cumulativeDistanceKm) { setNavigationStartSocPct(currentSocPct); setNavigationEstimatedCurrentSocPct(currentSocPct); }
+    dispatchNavigationSession({ type: 'start', session: {
+      status: 'active_navigation', result: simulationResult, destination,
+      navigationStartSocPct: startSoc,
+      estimatedCurrentSocPct: cumulativeDistanceKm ? navigationEstimatedCurrentSocPct : currentSocPct,
+      cumulativeDistanceKm, routeBaseDistanceKm, manualVehicle: requestVehicle,
+      evModelId: profileVehicle?.id, minimumArrivalSocPct, preferences,
+    } });
+    changeView('start_navigation');
+  }
   function showOverview(snapshot: NavigationSnapshot) { setSimulationResult(snapshot.result); sessionRef.current = snapshot.result; setCumulativeDistanceKm(snapshot.cumulativeDistanceKm); setRouteBaseDistanceKm(snapshot.routeBaseDistanceKm); setNavigationEstimatedCurrentSocPct(snapshot.estimatedCurrentSocPct); changeView('overview'); }
 
   if (viewMode === 'active_navigation' && simulationResult && destination) return <>
-    <ActiveNavigationScreen result={simulationResult} destination={destination} destinationName={destination.label || 'Destination'} topInset={topInset} navigationStartSocPct={navigationStartSocPct} initialCumulativeDistanceKm={cumulativeDistanceKm} initialRouteBaseDistanceKm={routeBaseDistanceKm} initialEstimatedCurrentSocPct={navigationEstimatedCurrentSocPct} manualVehicle={requestVehicle} evModelId={profileVehicle?.id} minimumArrivalSocPct={minimumArrivalSocPct} preferences={preferences} onOverview={showOverview} onCancel={() => finishRoute('end_navigation')} onCompleted={() => finishRoute('complete')} onEndNavigation={() => finishRoute('end_navigation')} onRouteReplaced={(result) => { setSimulationResult(result); sessionRef.current = result; }} onRouteSessionReplaced={cleanupRouteSession} onConnectionError={() => setConnectionError(true)} onConnectionRestored={() => setConnectionError(false)} />
+    <ActiveNavigationScreen result={simulationResult} destination={destination} destinationName={destination.label || 'Destination'} topInset={topInset} navigationStartSocPct={navigationStartSocPct} initialCumulativeDistanceKm={cumulativeDistanceKm} initialRouteBaseDistanceKm={routeBaseDistanceKm} initialEstimatedCurrentSocPct={navigationEstimatedCurrentSocPct} manualVehicle={restoredSession?.manualVehicle ?? requestVehicle} evModelId={restoredSession?.evModelId ?? profileVehicle?.id} minimumArrivalSocPct={minimumArrivalSocPct} preferences={preferences} onOverview={showOverview} onSuspend={(snapshot) => dispatchNavigationSession({ type: 'progress', snapshot })} onProgress={(snapshot) => dispatchNavigationSession({ type: 'progress', snapshot })} onCancel={() => finishRoute('end_navigation')} onCompleted={() => finishRoute('complete')} onEndNavigation={() => finishRoute('end_navigation')} onRouteReplaced={(result) => { setSimulationResult(result); sessionRef.current = result; dispatchNavigationSession({ type: 'replace_route', result }); }} onRouteSessionReplaced={cleanupRouteSession} onConnectionError={() => setConnectionError(true)} onConnectionRestored={() => setConnectionError(false)} />
     <RouteDialog visible={connectionError} title="Lost connection" primaryLabel="Retry" onPrimary={() => { void checkRouteApiHealth().then(() => setConnectionError(false)).catch(() => setConnectionError(true)); }} secondaryLabel={Platform.OS === 'web' ? 'Close' : 'Connection settings'} onSecondary={() => Platform.OS === 'web' ? setConnectionError(false) : void Linking.openSettings()}><Text style={styles.dialogText}>Navigation is still open in memory. Reconnect to resume route evaluation.</Text></RouteDialog>
   </>;
 

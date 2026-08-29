@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { NavigationWatcherSession, createRouteSessionCleaner } from './navigationSession';
+import { NavigationWatcherSession, activeNavigationSessionReducer, createRouteSessionCleaner, type ActiveNavigationSessionState } from './navigationSession';
 import { advanceStep, isOffRoute, maneuverDistances, matchRoute } from './navigationProgress';
 import { isImmersiveRouteView, transitionRouteView } from './routeViewState';
 
@@ -66,5 +66,45 @@ describe('mocked active-navigation movement flow', () => {
     await cleanup('plan-integration');
     expect(isImmersiveRouteView(mode)).toBe(false);
     expect(deleteRequest).toHaveBeenCalledWith('plan-integration');
+  });
+});
+
+describe('active navigation ownership across driver tabs', () => {
+  it('preserves the route plan and metrics across tab switches, then clears only on explicit end', async () => {
+    const deleteRequest = vi.fn(async () => undefined);
+    const cleanup = createRouteSessionCleaner(deleteRequest);
+    const result = { route_plan_id: 'plan-persisted' } as ActiveNavigationSessionState['result'];
+    const started: ActiveNavigationSessionState = {
+      status: 'active_navigation', result,
+      destination: { latitude: -6.2, longitude: 106.8, label: 'Jakarta Golf Club' },
+      navigationStartSocPct: 72, estimatedCurrentSocPct: 68,
+      cumulativeDistanceKm: 12.5, routeBaseDistanceKm: 7.25,
+      minimumArrivalSocPct: 20,
+      preferences: { route_type: 'fastest', maximum_detour_km: 15, prefer_fast_charging: true },
+    };
+
+    let session = activeNavigationSessionReducer(null, { type: 'start', session: started });
+    for (const tab of ['map', 'wallet', 'profile', 'plan_route']) {
+      // Tab selection is presentation state and intentionally dispatches no session action.
+      expect(tab).toBeTruthy();
+      expect(session?.result.route_plan_id).toBe('plan-persisted');
+      expect(session?.estimatedCurrentSocPct).toBe(68);
+      expect(session?.cumulativeDistanceKm).toBe(12.5);
+      expect(session?.routeBaseDistanceKm).toBe(7.25);
+      expect(deleteRequest).not.toHaveBeenCalled();
+    }
+
+    session = activeNavigationSessionReducer(session, {
+      type: 'progress',
+      snapshot: { result, estimatedCurrentSocPct: 67.5, cumulativeDistanceKm: 13, routeBaseDistanceKm: 7.25 },
+    });
+    expect(session?.estimatedCurrentSocPct).toBe(67.5);
+    expect(session?.cumulativeDistanceKm).toBe(13);
+
+    await cleanup(session?.result.route_plan_id);
+    session = activeNavigationSessionReducer(session, { type: 'clear' });
+    expect(deleteRequest).toHaveBeenCalledTimes(1);
+    expect(deleteRequest).toHaveBeenCalledWith('plan-persisted');
+    expect(session).toBeNull();
   });
 });
