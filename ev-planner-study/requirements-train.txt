@@ -17,6 +17,8 @@
 scikit-learn>=1.5
 joblib>=1.4
 pandas>=2.2
+# train_siting_model.py writes and can reuse a Parquet training snapshot.
+pyarrow>=16.0
 numpy>=1.26
 sqlalchemy>=2.0
 psycopg[binary]>=3.1

@@ -1,0 +1,1081 @@
+station_id,station_name,city,province,connector_types,connector_count,qr_payload,qr_file
+pln_spklu-1,SPKLU PLN UID JAKARTA RAYA,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2 | CCS2 | CCS2 | CCS2 | CCS2,17,pln_spklu-1,svg/pln_spklu-1.svg
+pln_spklu-2,SPKLU AEON Mall BSD,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-2,svg/pln_spklu-2.svg
+pln_spklu-3,SPKLU Supermall Karawaci,Kab Tangerang,Banten,AC Type 2 | CCS2,3,pln_spklu-3,svg/pln_spklu-3.svg
+pln_spklu-18,SPKLU PLN UP3 Jatinegara,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-18,svg/pln_spklu-18.svg
+pln_spklu-23,SPKLU INDOMOBIL,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-23,svg/pln_spklu-23.svg
+pln_spklu-25,SPKLU PT POS FATMAWATI,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,3,pln_spklu-25,svg/pln_spklu-25.svg
+pln_spklu-54,SPKLU AEON MALL TANJUNG BARAT,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,3,pln_spklu-54,svg/pln_spklu-54.svg
+pln_spklu-58,SPKLU AEON JGC,Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-58,svg/pln_spklu-58.svg
+pln_spklu-73,SPKLU PLN UIP JBB,Kota Depok,Jawa Barat,AC Type 2 | CCS2 | CCS2,7,pln_spklu-73,svg/pln_spklu-73.svg
+pln_spklu-78,SPKLU KFC Artha Gading,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2 | CCS2 | CCS2,5,pln_spklu-78,svg/pln_spklu-78.svg
+pln_spklu-84,SPKLU Apartemen Aeropolis,Kota Tangerang,Banten,AC Type 2 | CCS2,6,pln_spklu-84,svg/pln_spklu-84.svg
+pln_spklu-90,SPKLU MENARA BNI,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-90,svg/pln_spklu-90.svg
+pln_spklu-91,SPKLU GRHA BNI,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-91,svg/pln_spklu-91.svg
+pln_spklu-92,SPKLU HVT Rest Area KM 10.6 Tol Jagorawi,Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | CCS2 | CCS2,13,pln_spklu-92,svg/pln_spklu-92.svg
+pln_spklu-96,SPKLU KFC JALAN PANJANG,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-96,svg/pln_spklu-96.svg
+pln_spklu-100,SPKLU Brilian 1,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-100,svg/pln_spklu-100.svg
+pln_spklu-102,SPKLU SUMMIT MAS,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,5,pln_spklu-102,svg/pln_spklu-102.svg
+pln_spklu-103,SPKLU PLN PUSLITBANG,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | CCS2,5,pln_spklu-103,svg/pln_spklu-103.svg
+pln_spklu-104,SPKLU POOL DAMRI KEMAYORAN,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | CCS2,6,pln_spklu-104,svg/pln_spklu-104.svg
+pln_spklu-114,SPKLU PLN UP3 BEKASI,Kota Bekasi,Jawa Barat,AC Type 2 | CCS2 | CCS2 | CCS2,16,pln_spklu-114,svg/pln_spklu-114.svg
+pln_spklu-118,SPKLU PLN UP3 SUKABUMI,Kota Sukabumi,Jawa Barat,AC Type 2,2,pln_spklu-118,svg/pln_spklu-118.svg
+pln_spklu-119,SPKLU PLN ULP SUKABUMI KOTA,Kota Sukabumi,Jawa Barat,AC Type 2 | AC Type 2,3,pln_spklu-119,svg/pln_spklu-119.svg
+pln_spklu-123,SPKLU PLN UP3 DEPOK,Kota Depok,Jawa Barat,AC Type 2 | AC Type 2 | CCS2,6,pln_spklu-123,svg/pln_spklu-123.svg
+pln_spklu-124,SPKLU PLN ULP DEPOK KOTA,Kota Depok,Jawa Barat,AC Type 2 | AC Type 2,2,pln_spklu-124,svg/pln_spklu-124.svg
+pln_spklu-125,SPKLU PLN ULP CIBADAK,Kab Sukabumi,Jawa Barat,AC Type 2,1,pln_spklu-125,svg/pln_spklu-125.svg
+pln_spklu-126,SPKLU PLN ULP CICURUG,Kab Sukabumi,Jawa Barat,AC Type 2,1,pln_spklu-126,svg/pln_spklu-126.svg
+pln_spklu-127,SPKLU PLN ULP BEKASI KOTA,Kota Bekasi,Jawa Barat,AC Type 2 | AC Type 2 | CCS2,4,pln_spklu-127,svg/pln_spklu-127.svg
+pln_spklu-129,SPKLU PLN ULP BANTARGEBANG,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-129,svg/pln_spklu-129.svg
+pln_spklu-130,SPKLU PLN ULP MEDAN SATRIA,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-130,svg/pln_spklu-130.svg
+pln_spklu-131,SPKLU PLN ULP BOGOR KOTA,Kota Bogor,Jawa Barat,AC Type 2 | CCS2 | CCS2,5,pln_spklu-131,svg/pln_spklu-131.svg
+pln_spklu-132,SPKLU PLN UP3 BOGOR,Kota Bogor,Jawa Barat,AC Type 2 | AC Type 2 | CCS2 | CCS2,7,pln_spklu-132,svg/pln_spklu-132.svg
+pln_spklu-133,SPKLU PLN UP3 CIANJUR,Kab Cianjur,Jawa Barat,AC Type 2 | CCS2,3,pln_spklu-133,svg/pln_spklu-133.svg
+pln_spklu-134,SPKLU PLN POSKO CIMACAN,Kab Cianjur,Jawa Barat,AC Type 2,4,pln_spklu-134,svg/pln_spklu-134.svg
+pln_spklu-135,SPKLU PLN UP3 CIKARANG,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-135,svg/pln_spklu-135.svg
+pln_spklu-145,SPKLU PLN ULP TAMBUN,Kab Bekasi,Jawa Barat,AC Type 2 | AC Type 2,4,pln_spklu-145,svg/pln_spklu-145.svg
+pln_spklu-148,SPKLU PLN UP3 GUNUNG PUTRI,Kab Bogor,Jawa Barat,AC Type 2 | CCS2,4,pln_spklu-148,svg/pln_spklu-148.svg
+pln_spklu-158,SPKLU PLN ULP MUSTIKA JAYA,Kab Bekasi,Jawa Barat,AC Type 2 | AC Type 2,3,pln_spklu-158,svg/pln_spklu-158.svg
+pln_spklu-159,SPKLU PLN ULP BOGOR BARAT,Kab Bogor,Jawa Barat,AC Type 2 | AC Type 2 | CCS2,4,pln_spklu-159,svg/pln_spklu-159.svg
+pln_spklu-160,SPKLU PLN ULP LEUWILIANG,Kab Bogor,Jawa Barat,AC Type 2 | AC Type 2,2,pln_spklu-160,svg/pln_spklu-160.svg
+pln_spklu-161,SPKLU PLN ULP CIPANAS,Kab Cianjur,Jawa Barat,AC Type 2 | AC Type 2,2,pln_spklu-161,svg/pln_spklu-161.svg
+pln_spklu-162,SPKLU PEMDA CIANJUR,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-162,svg/pln_spklu-162.svg
+pln_spklu-163,SPKLU PLN ULP CIBITUNG,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-163,svg/pln_spklu-163.svg
+pln_spklu-164,SPKLU PLN ULP CIKARANG KOTA,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-164,svg/pln_spklu-164.svg
+pln_spklu-165,SPKLU PLN ULP LEMAHABANG,Kab Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-165,svg/pln_spklu-165.svg
+pln_spklu-168,SPKLU PLN ULP CIBINONG,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-168,svg/pln_spklu-168.svg
+pln_spklu-169,SPKLU PLN ULP SAWANGAN,Kab Bogor,Jawa Barat,AC Type 2 | AC Type 2,2,pln_spklu-169,svg/pln_spklu-169.svg
+pln_spklu-170,SPKLU PLN ULP CITEUREUP,Kab Bogor,Jawa Barat,AC Type 2,3,pln_spklu-170,svg/pln_spklu-170.svg
+pln_spklu-171,SPKLU PLN ULP JONGGOL,Kab Bogor,Jawa Barat,AC Type 2 | AC Type 2,3,pln_spklu-171,svg/pln_spklu-171.svg
+pln_spklu-186,SPKLU PLN ULP JASINGA,Kab Bogor,Jawa Barat,AC Type 2 | AC Type 2,2,pln_spklu-186,svg/pln_spklu-186.svg
+pln_spklu-187,SPKLU PLN ULP CIPAYUNG,Kab Bogor,Jawa Barat,AC Type 2 | AC Type 2 | CCS2,5,pln_spklu-187,svg/pln_spklu-187.svg
+pln_spklu-195,SPKLU PLN ULP CIMANGGIS,Kota Depok,Jawa Barat,AC Type 2 | AC Type 2,2,pln_spklu-195,svg/pln_spklu-195.svg
+pln_spklu-196,SPKLU PLN ULP BOJONGGEDE,Kab Bogor,Jawa Barat,AC Type 2 | AC Type 2,2,pln_spklu-196,svg/pln_spklu-196.svg
+pln_spklu-211,SPKLU BALAI KOTA BOGOR,Kota Bogor,Jawa Barat,AC Type 2 | CCS2,3,pln_spklu-211,svg/pln_spklu-211.svg
+pln_spklu-215,SPKLU PLN UP3 CIKUPA,Kab Tangerang,Banten,AC Type 2,2,pln_spklu-215,svg/pln_spklu-215.svg
+pln_spklu-231,SPKLU Terrace 8 Suvarna Sutera,Kab Tangerang,Banten,AC Type 2 | AC Type 2,2,pln_spklu-231,svg/pln_spklu-231.svg
+pln_spklu-233,"SPKLU HVT Rest Area Pinang KM 13,5",Kota Tangerang,Banten,CCS2 | AC Type 2 | CCS2,8,pln_spklu-233,svg/pln_spklu-233.svg
+pln_spklu-234,SPKLU Mall Ciputra Tangerang,Kab Tangerang,Banten,AC Type 2 | CCS2,4,pln_spklu-234,svg/pln_spklu-234.svg
+pln_spklu-235,SPKLU TMII (Taman Mini Indonesia Indah),Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-235,svg/pln_spklu-235.svg
+pln_spklu-250,SPKLU Gedung Kementrian BUMN,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-250,svg/pln_spklu-250.svg
+pln_spklu-252,SPKLU BTN Tower,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-252,svg/pln_spklu-252.svg
+pln_spklu-293,SPKLU ULP CIKANDE,Kota Serang,Banten,CCS2 | AC Type 2,2,pln_spklu-293,svg/pln_spklu-293.svg
+pln_spklu-299,SPKLU PT Asuransi Ramayana Tbk (Claim Center),Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-299,svg/pln_spklu-299.svg
+pln_spklu-324,SPKLU PLN UP3 MARUNDA,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2 | CCS2,4,pln_spklu-324,svg/pln_spklu-324.svg
+pln_spklu-325,SPKLU PLN UP3 KRAMAT JATI,Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | AC Type 2 | CCS2 | CCS2,10,pln_spklu-325,svg/pln_spklu-325.svg
+pln_spklu-336,SPKLU PLN UP3 CIRACAS,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | CCS2,8,pln_spklu-336,svg/pln_spklu-336.svg
+pln_spklu-348,SPKLU Alun-Alun Kota Bogor,Kota Bogor,Jawa Barat,AC Type 2,1,pln_spklu-348,svg/pln_spklu-348.svg
+pln_spklu-349,SPKLU Istana Negara,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-349,svg/pln_spklu-349.svg
+pln_spklu-354,SPKLU DOPA COFFEE STUDIO,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-354,svg/pln_spklu-354.svg
+pln_spklu-357,SPKLU PLN RAJA FO CIMACAN,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-357,svg/pln_spklu-357.svg
+pln_spklu-358,SPKLU PLN HOTEL LE EMINENCE,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-358,svg/pln_spklu-358.svg
+pln_spklu-359,SPKLU PLN MARKETING HARVEST CITY,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-359,svg/pln_spklu-359.svg
+pln_spklu-360,SPKLU PLN SPORT CLUB KOTAWISATA,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-360,svg/pln_spklu-360.svg
+pln_spklu-361,SPKLU SEKDA SUKABUMI,Kota Sukabumi,Jawa Barat,AC Type 2,1,pln_spklu-361,svg/pln_spklu-361.svg
+pln_spklu-363,SPKLU REST AREA 43 MERAK,Kab Tangerang,Banten,CCS2 | AC Type 2 | CCS2,8,pln_spklu-363,svg/pln_spklu-363.svg
+pln_spklu-364,SPKLU HVT Rest Area Tol Serpong KM 7,Kota Tangerang Selatan,Banten,CCS2 | CCS2 | CCS2,5,pln_spklu-364,svg/pln_spklu-364.svg
+pln_spklu-365,SPKLU PLN UP3 CENGKARENG,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2 | CCS2 | CCS2,7,pln_spklu-365,svg/pln_spklu-365.svg
+pln_spklu-367,SPKLU Bandara Halim Perdana Kusuma,Kota ADM Jakarta Timur,DKI Jakarta,CCS2,2,pln_spklu-367,svg/pln_spklu-367.svg
+pln_spklu-384,SPKLU PLN ULP SUKARAJA,Kab Sukabumi,Jawa Barat,AC Type 2,2,pln_spklu-384,svg/pln_spklu-384.svg
+pln_spklu-388,SPKLU HVT Rest Area KM 45 Ciawi,Kab Bogor,Jawa Barat,CCS2 | CCS2 | CCS2,6,pln_spklu-388,svg/pln_spklu-388.svg
+pln_spklu-390,SPKLU BPKP (Badan Pengawasan Keuangan dan Pembangunan),Kota ADM Jakarta Timur,DKI Jakarta,CCS2,2,pln_spklu-390,svg/pln_spklu-390.svg
+pln_spklu-394,SPKLU SAKURA HARVEST CITY,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-394,svg/pln_spklu-394.svg
+pln_spklu-414,SPKLU Karawaci Kreasi Building,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-414,svg/pln_spklu-414.svg
+pln_spklu-415,SPKLU PLN UP3 TELUKNAGA,Kab Tangerang,Banten,AC Type 2 | AC Type 2,2,pln_spklu-415,svg/pln_spklu-415.svg
+pln_spklu-416,SPKLU PLN ULP BABELAN,Kab Bekasi,Jawa Barat,AC Type 2 | AC Type 2 | CCS2,5,pln_spklu-416,svg/pln_spklu-416.svg
+pln_spklu-417,SPKLU YASPORBI,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-417,svg/pln_spklu-417.svg
+pln_spklu-421,SPKLU POLRESTA TANGERANG,Kab Tangerang,Banten,AC Type 2 | CCS2,4,pln_spklu-421,svg/pln_spklu-421.svg
+pln_spklu-432,SPKLU Grand Batavia,Kab Tangerang,Banten,AC Type 2 | AC Type 2,3,pln_spklu-432,svg/pln_spklu-432.svg
+pln_spklu-433,SPKLU Jaya Imperial Park,Kab Tangerang,Banten,AC Type 2 | AC Type 2,2,pln_spklu-433,svg/pln_spklu-433.svg
+pln_spklu-436,SPKLU PLN Enjiniring,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-436,svg/pln_spklu-436.svg
+pln_spklu-439,SPKLU Rest Area KM 45 Tol Merak - Tangerang,Kab Tangerang,Banten,CCS2,1,pln_spklu-439,svg/pln_spklu-439.svg
+pln_spklu-448,SPKLU REST AREA KM 19 B RUAS JAKARTA - CIKAMPEK,Kab Bekasi,Jawa Barat,CCS2 | AC Type 2 | CCS2 | CCS2 | CCS2,8,pln_spklu-448,svg/pln_spklu-448.svg
+pln_spklu-449,SPKLU REST AREA KM 39 A RUAS JAKARTA - CIKAMPEK,Kab Bekasi,Jawa Barat,CCS2 | AC Type 2,4,pln_spklu-449,svg/pln_spklu-449.svg
+pln_spklu-454,SPKLU REST AREA KM 19 A RUAS JAKARTA - CIKAMPEK,Kab Bekasi,Jawa Barat,CCS2,2,pln_spklu-454,svg/pln_spklu-454.svg
+pln_spklu-457,SPKLU REST AREA KM 42 B RUAS JAKARTA - CIKAMPEK,Kab Karawang,Jawa Barat,CCS2 | CCS2,6,pln_spklu-457,svg/pln_spklu-457.svg
+pln_spklu-505,SPKLU (ARISTA POWER) BYD BSD CITY,Kab Tangerang,Banten,CCS2,4,pln_spklu-505,svg/pln_spklu-505.svg
+pln_spklu-518,SPKLU (ARISTA POWER) NETA TEBET,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-518,svg/pln_spklu-518.svg
+pln_spklu-519,SPKLU (ARISTA POWER) BYD SUNTER,Kota ADM Jakarta Utara,DKI Jakarta,CCS2 | CCS2,4,pln_spklu-519,svg/pln_spklu-519.svg
+pln_spklu-520,SPKLU (ARISTA POWER) BYD KALIMALANG,Kota ADM Jakarta Timur,DKI Jakarta,CCS2,2,pln_spklu-520,svg/pln_spklu-520.svg
+pln_spklu-521,SPKLU (ARISTA POWER) GUDANG EV ARISTA CIKARANG (Khusus EV Milik Grup Arista),Kab Bekasi,Jawa Barat,CCS2,2,pln_spklu-521,svg/pln_spklu-521.svg
+pln_spklu-522,SPKLU (ARISTA POWER) BYD DEPOK,Kota Depok,Jawa Barat,CCS2,2,pln_spklu-522,svg/pln_spklu-522.svg
+pln_spklu-528,SPKLU PT PLN Icon Plus Cawang,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-528,svg/pln_spklu-528.svg
+pln_spklu-532,SPKLU HVT HARCO MANGGA DUA,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,3,pln_spklu-532,svg/pln_spklu-532.svg
+pln_spklu-533,SPKLU HVT MAMPANG BUSINESS PARK,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-533,svg/pln_spklu-533.svg
+pln_spklu-534,SPKLU Perumahan Citra Maja Raya,Kab Lebak,Banten,AC Type 2,2,pln_spklu-534,svg/pln_spklu-534.svg
+pln_spklu-535,SPKLU MENARA DANAREKSA,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2,2,pln_spklu-535,svg/pln_spklu-535.svg
+pln_spklu-537,SPKLU KLHK FC (Kementrian Lingkungan Hidup dan Kehutanan),Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | AC Type 2,3,pln_spklu-537,svg/pln_spklu-537.svg
+pln_spklu-547,SPKLU KOTA SUTERA,Kab Tangerang,Banten,CCS2,1,pln_spklu-547,svg/pln_spklu-547.svg
+pln_spklu-548,SPKLU Duta Indah Residence,Kota Tangerang,Banten,CCS2,1,pln_spklu-548,svg/pln_spklu-548.svg
+pln_spklu-555,SPKLU KOTA TUA,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,3,pln_spklu-555,svg/pln_spklu-555.svg
+pln_spklu-560,SPKLU Dinas Perhubungan Kabupaten Cianjur,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-560,svg/pln_spklu-560.svg
+pln_spklu-578,SPKLU HVT THE MANSION AT KEMANG,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-578,svg/pln_spklu-578.svg
+pln_spklu-583,SPKLU APARTEMEN GARDENIA BOULEVARD,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-583,svg/pln_spklu-583.svg
+pln_spklu-585,SPKLU TSpace by dr Tompi,Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-585,svg/pln_spklu-585.svg
+pln_spklu-586,SPKLU Hotel Narita Tangerang,Kota Tangerang,Banten,AC Type 2 | AC Type 2,5,pln_spklu-586,svg/pln_spklu-586.svg
+pln_spklu-597,SPKLU PBSI,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-597,svg/pln_spklu-597.svg
+pln_spklu-598,SPKLU EV LOKA WAROENG KEBOENKOE,Kota Depok,Jawa Barat,AC Type 2,2,pln_spklu-598,svg/pln_spklu-598.svg
+pln_spklu-599,SPKLU KANTOR KELURAHAN KRAMAT JATI,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-599,svg/pln_spklu-599.svg
+pln_spklu-611,SPKLU HOTEL POMELOTEL,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-611,svg/pln_spklu-611.svg
+pln_spklu-618,SPKLU METLAND PURI JUNTION,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-618,svg/pln_spklu-618.svg
+pln_spklu-620,SPKLU KANTOR YANTEK PLN UP3 KEBON JERUK,Kota Tangerang,Banten,AC Type 2,3,pln_spklu-620,svg/pln_spklu-620.svg
+pln_spklu-638,SPKLU SPBU KEBON NANAS,Kota Tangerang,Banten,AC Type 2 | AC Type 2,2,pln_spklu-638,svg/pln_spklu-638.svg
+pln_spklu-690,SPKLU BANK BNI SUNTER,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-690,svg/pln_spklu-690.svg
+pln_spklu-691,SPKLU PLN HALEYORA,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-691,svg/pln_spklu-691.svg
+pln_spklu-694,SPKLU EV LOKA AEON Mall BSD,Kab Tangerang,Banten,AC Type 2 | CCS2,4,pln_spklu-694,svg/pln_spklu-694.svg
+pln_spklu-703,SPKLU IDD PIK 2,Kab Tangerang,Banten,AC Type 2 | CCS2,3,pln_spklu-703,svg/pln_spklu-703.svg
+pln_spklu-705,SPKLU PLN CITRALAND CIBUBUR,Kab Bogor,Jawa Barat,AC Type 2,2,pln_spklu-705,svg/pln_spklu-705.svg
+pln_spklu-706,SPKLU LRT JATIBENING,Kota Bekasi,Jawa Barat,CCS2,2,pln_spklu-706,svg/pln_spklu-706.svg
+pln_spklu-707,SPKLU NAGA SWALAYAN,Kota Bekasi,Jawa Barat,CCS2,2,pln_spklu-707,svg/pln_spklu-707.svg
+pln_spklu-709,SPKLU SPBU KELAPA DUA,Kota ADM Jakarta Barat,DKI Jakarta,CCS2,1,pln_spklu-709,svg/pln_spklu-709.svg
+pln_spklu-717,SPKLU CV HIDUP MAKMUR,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-717,svg/pln_spklu-717.svg
+pln_spklu-724,SPKLU EV LOKA ORANGE GROVES PIK 2,Kab Tangerang,Banten,AC Type 2,4,pln_spklu-724,svg/pln_spklu-724.svg
+pln_spklu-725,SPKLU EV LOKA LANDS END PIK 2,Kab Tangerang,Banten,AC Type 2,4,pln_spklu-725,svg/pln_spklu-725.svg
+pln_spklu-726,SPKLU (ARISTA POWER) BYD ARISTA PONDOK INDAH,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | CCS2 | CCS2,10,pln_spklu-726,svg/pln_spklu-726.svg
+pln_spklu-763,SPKLU RS SENTOSA,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-763,svg/pln_spklu-763.svg
+pln_spklu-784,SPKLU HVT Rest Area KM 14B,Kota Tangerang,Banten,CCS2,2,pln_spklu-784,svg/pln_spklu-784.svg
+pln_spklu-797,SPKLU MALL SAMANEA,Kab Tangerang,Banten,CCS2 | AC Type 2,3,pln_spklu-797,svg/pln_spklu-797.svg
+pln_spklu-804,SPKLU PLN PUNCAK PASS RESORT,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-804,svg/pln_spklu-804.svg
+pln_spklu-806,SPKLU PLN ISTANA PRESIDEN CIPANAS (Khusus Internal Istana Presiden),Kab Cianjur,Jawa Barat,CCS2,2,pln_spklu-806,svg/pln_spklu-806.svg
+pln_spklu-811,SPKLU Eco Business Park,Kota Tangerang,Banten,AC Type 2 | CCS2,3,pln_spklu-811,svg/pln_spklu-811.svg
+pln_spklu-837,SPKLU XLSMART TOWER,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-837,svg/pln_spklu-837.svg
+pln_spklu-846,SPKLU KOPI NAKO,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-846,svg/pln_spklu-846.svg
+pln_spklu-850,SPKLU CIANJUR ASRI,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-850,svg/pln_spklu-850.svg
+pln_spklu-866,SPKLU HOTEL GLORIA SUITES,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-866,svg/pln_spklu-866.svg
+pln_spklu-880,SPKLU KANTOR KEMENTRIAN PUPR,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,4,pln_spklu-880,svg/pln_spklu-880.svg
+pln_spklu-881,SPKLU Bina Bangsa School,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-881,svg/pln_spklu-881.svg
+pln_spklu-884,SPKLU KEMENKUMHAM,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-884,svg/pln_spklu-884.svg
+pln_spklu-886,SPKLU RSU Bhakti Asih,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-886,svg/pln_spklu-886.svg
+pln_spklu-887,SPKLU TRANSMART CILANDAK,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-887,svg/pln_spklu-887.svg
+pln_spklu-888,SPKLU Masjid Agung Al-Ikhlas,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-888,svg/pln_spklu-888.svg
+pln_spklu-891,SPKLU MASJID JAMI' ASSA'ADAH,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-891,svg/pln_spklu-891.svg
+pln_spklu-894,SPKLU PASAR SARASWATI,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-894,svg/pln_spklu-894.svg
+pln_spklu-897,SPKLU Auto7 Carwash,Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-897,svg/pln_spklu-897.svg
+pln_spklu-898,SPKLU Kejaksaan Negeri Jakarta Barat,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-898,svg/pln_spklu-898.svg
+pln_spklu-903,SPKLU POSKO GUNUNG SARI,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-903,svg/pln_spklu-903.svg
+pln_spklu-904,SPKLU Green Cleosa Ciledug,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-904,svg/pln_spklu-904.svg
+pln_spklu-905,SPKLU Mall Balekota,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-905,svg/pln_spklu-905.svg
+pln_spklu-908,SPKLU LABSCHOOL CIBUBUR,Kota Bekasi,Jawa Barat,AC Type 2,4,pln_spklu-908,svg/pln_spklu-908.svg
+pln_spklu-910,SPKLU PP URBAN TOWN SERPONG,Kota Tangerang Selatan,Banten,CCS2,2,pln_spklu-910,svg/pln_spklu-910.svg
+pln_spklu-917,SPKLU POSKO YANTEK KAPUK,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-917,svg/pln_spklu-917.svg
+pln_spklu-930,SPKLU TRANSMART KALIMALANG,Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-930,svg/pln_spklu-930.svg
+pln_spklu-931,SPKLU Ruko Sentra Niaga Kalimalang,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-931,svg/pln_spklu-931.svg
+pln_spklu-943,SPKLU RS AU dr Esnawan Antariksa,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-943,svg/pln_spklu-943.svg
+pln_spklu-945,SPKLU TRANSMART CEMPAKA PUTIH,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2,4,pln_spklu-945,svg/pln_spklu-945.svg
+pln_spklu-946,SPKLU HERO SUPERMARKET,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-946,svg/pln_spklu-946.svg
+pln_spklu-947,SPKLU Kantor Kelurahan Cawang,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-947,svg/pln_spklu-947.svg
+pln_spklu-949,SPKLU SPBU Cisauk,Kab Tangerang,Banten,CCS2 | AC Type 2,2,pln_spklu-949,svg/pln_spklu-949.svg
+pln_spklu-951,SPKLU GUDANG PLN CIPUTAT,Kota Tangerang Selatan,Banten,AC Type 2 | CCS2,4,pln_spklu-951,svg/pln_spklu-951.svg
+pln_spklu-969,SPKLU Perumahan Taman Nyiur 3,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-969,svg/pln_spklu-969.svg
+pln_spklu-973,SPKLU Kantor PT Marga Trans Nusantara,Kota Tangerang Selatan,Banten,AC Type 2 | CCS2,2,pln_spklu-973,svg/pln_spklu-973.svg
+pln_spklu-989,SPKLU PASAR BARU JATIASIH,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-989,svg/pln_spklu-989.svg
+pln_spklu-997,SPKLU JIEP BUSINESS CENTRE,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-997,svg/pln_spklu-997.svg
+pln_spklu-999,SPKLU MENARA 2 BANK BTN,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-999,svg/pln_spklu-999.svg
+pln_spklu-1015,SPKLU Apartemen Permata Eksekutif,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-1015,svg/pln_spklu-1015.svg
+pln_spklu-1016,SPKLU Louie Café,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | CCS2 | CCS2 | CCS2,7,pln_spklu-1016,svg/pln_spklu-1016.svg
+pln_spklu-1017,SPKLU Apartement Kebagusan,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1017,svg/pln_spklu-1017.svg
+pln_spklu-1026,SPKLU Setwapres,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2,2,pln_spklu-1026,svg/pln_spklu-1026.svg
+pln_spklu-1027,SPKLU Pasar Kota Pondok Gede,Kota Bekasi,Jawa Barat,AC Type 2 | CCS2,4,pln_spklu-1027,svg/pln_spklu-1027.svg
+pln_spklu-1029,SPKLU Universitas Binawan,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-1029,svg/pln_spklu-1029.svg
+pln_spklu-1031,SPKLU East Park Apartement,Kota ADM Jakarta Timur,DKI Jakarta,CCS2,2,pln_spklu-1031,svg/pln_spklu-1031.svg
+pln_spklu-1033,SPKLU Kampus IT PLN,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2 | CCS2,2,pln_spklu-1033,svg/pln_spklu-1033.svg
+pln_spklu-1041,SPKLU Sahassra Venue & Resto,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1041,svg/pln_spklu-1041.svg
+pln_spklu-1044,SPKLU Bonjur Cafe & Resto,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-1044,svg/pln_spklu-1044.svg
+pln_spklu-1056,SPKLU JIEP Gedung Graha Daya Guna,Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | AC Type 2 | CCS2,7,pln_spklu-1056,svg/pln_spklu-1056.svg
+pln_spklu-1059,SPKLU Budha Tzu Chi,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-1059,svg/pln_spklu-1059.svg
+pln_spklu-1066,SPKLU Gedung Graha Inti Fauzi UFC,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | CCS2 | AC Type 2,4,pln_spklu-1066,svg/pln_spklu-1066.svg
+pln_spklu-1068,SPKLU Posko Yantek PLN Pondok Indah,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1068,svg/pln_spklu-1068.svg
+pln_spklu-1086,SPKLU Pasar 8 Suvarna Sutera,Kab Tangerang,Banten,CCS2 | AC Type 2,2,pln_spklu-1086,svg/pln_spklu-1086.svg
+pln_spklu-1087,SPKLU Flavor Bliss Suvarna Sutera,Kab Tangerang,Banten,AC Type 2 | CCS2,2,pln_spklu-1087,svg/pln_spklu-1087.svg
+pln_spklu-1102,SPKLU Citra 8 (Danau),Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,3,pln_spklu-1102,svg/pln_spklu-1102.svg
+pln_spklu-1130,SPKLU PT PRODUKSI FILM NEGARA (PERSERO) - PFN,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1130,svg/pln_spklu-1130.svg
+pln_spklu-1138,SPKLU MESJID SUNDA KELAPA,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-1138,svg/pln_spklu-1138.svg
+pln_spklu-1141,SPKLU MCD Green Garden,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-1141,svg/pln_spklu-1141.svg
+pln_spklu-1155,SPKLU Sport Club Cluster Heliconia Harapan Indah,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-1155,svg/pln_spklu-1155.svg
+pln_spklu-1156,SPKLU Marketing Galery Summarecon Crown,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-1156,svg/pln_spklu-1156.svg
+pln_spklu-1172,SPKLU Aryana Karawaci,Kab Tangerang,Banten,AC Type 2,2,pln_spklu-1172,svg/pln_spklu-1172.svg
+pln_spklu-1178,SPKLU MASJID AL IKHLAS CIJANTUNG,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-1178,svg/pln_spklu-1178.svg
+pln_spklu-1179,SPKLU POSKO YANTEK RADAR AURI,Kota Depok,Jawa Barat,AC Type 2,3,pln_spklu-1179,svg/pln_spklu-1179.svg
+pln_spklu-1185,SPKLU Apartemen Annora Living,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-1185,svg/pln_spklu-1185.svg
+pln_spklu-1191,SPKLU PUSZIAD,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1191,svg/pln_spklu-1191.svg
+pln_spklu-1192,SPKLU Aljazeerah Polonia,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-1192,svg/pln_spklu-1192.svg
+pln_spklu-1193,SPKLU Kalia Restaurant,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-1193,svg/pln_spklu-1193.svg
+pln_spklu-1194,SPKLU Depo Bangunan Pondok Gede - Ground Mounted,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-1194,svg/pln_spklu-1194.svg
+pln_spklu-1205,SPKLU ALOHA PIK 2,Kab Tangerang,Banten,CCS2 | AC Type 2 | CCS2 | CCS2,19,pln_spklu-1205,svg/pln_spklu-1205.svg
+pln_spklu-1207,SPKLU Badan Intelijen Negara (BIN),Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,6,pln_spklu-1207,svg/pln_spklu-1207.svg
+pln_spklu-1210,SPKLU Rukan Permata Senayan,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-1210,svg/pln_spklu-1210.svg
+pln_spklu-1217,SPKLU RUKO PALEM INDAH,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-1217,svg/pln_spklu-1217.svg
+pln_spklu-1227,SPKLU Mess AD Pejambon,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-1227,svg/pln_spklu-1227.svg
+pln_spklu-1234,SPKLU Jatiwarna Square,Kab Bekasi,Jawa Barat,AC Type 2 | CCS2,4,pln_spklu-1234,svg/pln_spklu-1234.svg
+pln_spklu-1236,SPKLU PLN TRANSPARK MALL BINTARO,Kota Tangerang Selatan,Banten,CCS2 | AC Type 2,4,pln_spklu-1236,svg/pln_spklu-1236.svg
+pln_spklu-1239,SPKLU Griya CIMB Niaga,Kota Tangerang Selatan,Banten,CCS2,1,pln_spklu-1239,svg/pln_spklu-1239.svg
+pln_spklu-1242,SPKLU LRT CITY CIRACAS,Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-1242,svg/pln_spklu-1242.svg
+pln_spklu-1243,SPKLU JIEP Gedung Serba Guna,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-1243,svg/pln_spklu-1243.svg
+pln_spklu-1244,SPKLU JIEP Food Center Rawa Terate,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1244,svg/pln_spklu-1244.svg
+pln_spklu-1247,SPKLU KEMENSOS,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-1247,svg/pln_spklu-1247.svg
+pln_spklu-1248,SPKLU Amuya Cafe Kemayoran,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | CCS2,3,pln_spklu-1248,svg/pln_spklu-1248.svg
+pln_spklu-1250,SPKLU POLDA METRO JAYA (KHUSUS PEGAWAI POLDA),Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,4,pln_spklu-1250,svg/pln_spklu-1250.svg
+pln_spklu-1256,SPKLU PLN Kawasan Puri Beta 2,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-1256,svg/pln_spklu-1256.svg
+pln_spklu-1257,SPKLU PT Molino Pramuka 1,Kota Depok,Jawa Barat,AC Type 2 | CCS2,5,pln_spklu-1257,svg/pln_spklu-1257.svg
+pln_spklu-1258,SPKLU PT Molino Pramuka 2,Kota Depok,Jawa Barat,AC Type 2,1,pln_spklu-1258,svg/pln_spklu-1258.svg
+pln_spklu-1259,SPKLU Gedung Arsip PLN Jagakarsa,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1259,svg/pln_spklu-1259.svg
+pln_spklu-1260,SPKLU MENZIKON,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-1260,svg/pln_spklu-1260.svg
+pln_spklu-1269,SPKLU TRANSPARK MALL BEKASI JUANDA,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-1269,svg/pln_spklu-1269.svg
+pln_spklu-1273,SPKLU Puri Casablanca,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1273,svg/pln_spklu-1273.svg
+pln_spklu-1276,SPKLU MABES AD,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | AC Type 2,2,pln_spklu-1276,svg/pln_spklu-1276.svg
+pln_spklu-1277,SPKLU Griya Inti Sentosa 1,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-1277,svg/pln_spklu-1277.svg
+pln_spklu-1281,SPKLU MENARA BANK MEGA,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,7,pln_spklu-1281,svg/pln_spklu-1281.svg
+pln_spklu-1282,SPKLU Perum Akasia MC,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2 | CCS2,6,pln_spklu-1282,svg/pln_spklu-1282.svg
+pln_spklu-1283,SPKLU EST JAKARTA,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-1283,svg/pln_spklu-1283.svg
+pln_spklu-1285,SPKLU KOMODOR 40,Kota ADM Jakarta Timur,DKI Jakarta,CCS2,1,pln_spklu-1285,svg/pln_spklu-1285.svg
+pln_spklu-1289,SPKLU PLN POSKO CIBEBER,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-1289,svg/pln_spklu-1289.svg
+pln_spklu-1290,SPKLU PLN POSKO WARUNG KONDANG,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-1290,svg/pln_spklu-1290.svg
+pln_spklu-1292,SPKLU Lapangan Jati Universitas Mercu Buana,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,4,pln_spklu-1292,svg/pln_spklu-1292.svg
+pln_spklu-1293,SPKLU Apartement Vasaka Soltera,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1293,svg/pln_spklu-1293.svg
+pln_spklu-1299,SPKLU West Hub,Kota ADM Jakarta Barat,DKI Jakarta,CCS2 | CCS2,4,pln_spklu-1299,svg/pln_spklu-1299.svg
+pln_spklu-1304,SPKLU UCI BENY Angke Heritage PIK 2,Kab Tangerang,Banten,AC Type 2 | CCS2,3,pln_spklu-1304,svg/pln_spklu-1304.svg
+pln_spklu-1308,SPKLU Villa Gading Indah,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-1308,svg/pln_spklu-1308.svg
+pln_spklu-1309,SPKLU Masjid An Nizam,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-1309,svg/pln_spklu-1309.svg
+pln_spklu-1315,SPKLU LIPPO MALL PARKIR P3 R-39,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2 | CCS2,5,pln_spklu-1315,svg/pln_spklu-1315.svg
+pln_spklu-1322,SPKLU TSM CIBUBUR,Kota Depok,Jawa Barat,CCS2 | AC Type 2,7,pln_spklu-1322,svg/pln_spklu-1322.svg
+pln_spklu-1330,SPKLU POOL GRAB BANDARA HALIM,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-1330,svg/pln_spklu-1330.svg
+pln_spklu-1331,SPKLU Hotel Laska Sukabumi Kota,Kota Sukabumi,Jawa Barat,AC Type 2,1,pln_spklu-1331,svg/pln_spklu-1331.svg
+pln_spklu-1333,SPKLU Boulevard Hijau Harapan Indah,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-1333,svg/pln_spklu-1333.svg
+pln_spklu-1341,SPKLU MASJID AL HUDA,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-1341,svg/pln_spklu-1341.svg
+pln_spklu-1342,SPKLU MASJID AL JIHAD,Kota Tangerang Selatan,Banten,AC Type 2,2,pln_spklu-1342,svg/pln_spklu-1342.svg
+pln_spklu-1351,SPKLU STUDIO TRANS 7,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-1351,svg/pln_spklu-1351.svg
+pln_spklu-1353,SPKLU PLN PARADISO SENTUL,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-1353,svg/pln_spklu-1353.svg
+pln_spklu-1355,SPKLU TERRACE 9C SUVARNA SUTERA,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-1355,svg/pln_spklu-1355.svg
+pln_spklu-1356,SPKLU PLN KP CISARUA,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-1356,svg/pln_spklu-1356.svg
+pln_spklu-1357,SPKLU PLN UPDL BOGOR,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-1357,svg/pln_spklu-1357.svg
+pln_spklu-1358,SPKLU KFC BUMI INDAH,Kab Tangerang,Banten,AC Type 2,2,pln_spklu-1358,svg/pln_spklu-1358.svg
+pln_spklu-1365,SPKLU The Campus Coffee and Eatery,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-1365,svg/pln_spklu-1365.svg
+pln_spklu-1367,SPKLU BANDARA CITY MALL,Kab Tangerang,Banten,CCS2 | AC Type 2,2,pln_spklu-1367,svg/pln_spklu-1367.svg
+pln_spklu-1372,SPKLU Bali Resort Sepatan,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-1372,svg/pln_spklu-1372.svg
+pln_spklu-1377,SPKLU FASUM PERUMAHAN ROYAL RESIDENCE,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-1377,svg/pln_spklu-1377.svg
+pln_spklu-1383,SPKLU Pisa Grande Paramount Serpong,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-1383,svg/pln_spklu-1383.svg
+pln_spklu-1384,SPKLU Gallery Marketing Bumi Indah,Kab Tangerang,Banten,AC Type 2,2,pln_spklu-1384,svg/pln_spklu-1384.svg
+pln_spklu-1385,SPKLU Terrace 9A Suvarna Sutera,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-1385,svg/pln_spklu-1385.svg
+pln_spklu-1386,SPKLU Ashta Arcade Blok A,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-1386,svg/pln_spklu-1386.svg
+pln_spklu-1387,SPKLU Ashta Arcade Blok B,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-1387,svg/pln_spklu-1387.svg
+pln_spklu-1388,SPKLU Maggiore Junction,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-1388,svg/pln_spklu-1388.svg
+pln_spklu-1389,SPKLU Paramount Maggiore Bussiness Loft,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-1389,svg/pln_spklu-1389.svg
+pln_spklu-1390,SPKLU Paramount Petals Club House,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-1390,svg/pln_spklu-1390.svg
+pln_spklu-1399,SPKLU BlueCharge - Margocity,Kota Depok,Jawa Barat,AC Type 2,2,pln_spklu-1399,svg/pln_spklu-1399.svg
+pln_spklu-1406,SPKLU PLN RM SAMOLO,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-1406,svg/pln_spklu-1406.svg
+pln_spklu-1411,SPKLU RUMAH SAKIT ALTIUS HARAPAN INDAH,Kab Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-1411,svg/pln_spklu-1411.svg
+pln_spklu-1414,SPKLU KLHK Panjaitan Ground,Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | AC Type 2,3,pln_spklu-1414,svg/pln_spklu-1414.svg
+pln_spklu-1421,SPKLU Transmart Graha Raya,Kota Tangerang Selatan,Banten,AC Type 2,2,pln_spklu-1421,svg/pln_spklu-1421.svg
+pln_spklu-1424,SPKLU PLN GREENLAND BOGOR,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-1424,svg/pln_spklu-1424.svg
+pln_spklu-1429,SPKLU PLN GADOG FARM,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-1429,svg/pln_spklu-1429.svg
+pln_spklu-1430,SPKLU BSPACE GRAND DEPOK CITY,Kota Depok,Jawa Barat,AC Type 2 | CCS2,5,pln_spklu-1430,svg/pln_spklu-1430.svg
+pln_spklu-1435,SPKLU PLN BALI RESORT EXTENSION,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-1435,svg/pln_spklu-1435.svg
+pln_spklu-1443,SPKLU PLN HOTEL GREENPEAK CISARUA,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-1443,svg/pln_spklu-1443.svg
+pln_spklu-1447,SPKLU Urban Sport Dome,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1447,svg/pln_spklu-1447.svg
+pln_spklu-1448,SPKLU Synthesis Square,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1448,svg/pln_spklu-1448.svg
+pln_spklu-1451,SPKLU Express Group Cipondoh,Kota Tangerang,Banten,AC Type 2,4,pln_spklu-1451,svg/pln_spklu-1451.svg
+pln_spklu-1455,SPKLU Posko Yantek Samratulangi UP3 Menteng,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-1455,svg/pln_spklu-1455.svg
+pln_spklu-1465,SPKLU Universitas Binus Kampus Anggrek,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-1465,svg/pln_spklu-1465.svg
+pln_spklu-1466,SPKLU PLN MARKETING GALLERY KOTA WISATA,Kab Bogor,Jawa Barat,AC Type 2,2,pln_spklu-1466,svg/pln_spklu-1466.svg
+pln_spklu-1471,SPKLU Adira Sayang Bumiku,Kota Tangerang Selatan,Banten,CCS2 | AC Type 2,3,pln_spklu-1471,svg/pln_spklu-1471.svg
+pln_spklu-1472,SPKLU UNJ PARKIR GEDUNG SFD,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1472,svg/pln_spklu-1472.svg
+pln_spklu-1473,SPKLU Klangen Coffee & Resto,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-1473,svg/pln_spklu-1473.svg
+pln_spklu-1493,SPKLU MAHATA MARGONDA,Kota Depok,Jawa Barat,CCS2,1,pln_spklu-1493,svg/pln_spklu-1493.svg
+pln_spklu-1494,SPKLU STARVISION KHARISMA,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-1494,svg/pln_spklu-1494.svg
+pln_spklu-1495,SPKLU HI AVENUE HARAPAN INDAH,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-1495,svg/pln_spklu-1495.svg
+pln_spklu-1499,SPKLU PP DMI MATRAMAN,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-1499,svg/pln_spklu-1499.svg
+pln_spklu-1503,SPKLU KANTOR BPHN,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,4,pln_spklu-1503,svg/pln_spklu-1503.svg
+pln_spklu-1506,SPKLU Institut Pariwisata Trisakti,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-1506,svg/pln_spklu-1506.svg
+pln_spklu-1508,SPKLU Belmont Residence,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-1508,svg/pln_spklu-1508.svg
+pln_spklu-1509,SPKLU Mall Cipinang Indah,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | CCS2 | CCS2,5,pln_spklu-1509,svg/pln_spklu-1509.svg
+pln_spklu-1513,SPKLU Graha Kaji,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-1513,svg/pln_spklu-1513.svg
+pln_spklu-1514,SPKLU Madame Delima,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-1514,svg/pln_spklu-1514.svg
+pln_spklu-1520,SPKLU PLN KANTOR IMIGRASI BEKASI,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-1520,svg/pln_spklu-1520.svg
+pln_spklu-1522,SPKLU Apart Baileys City,Kota Tangerang Selatan,Banten,AC Type 2,2,pln_spklu-1522,svg/pln_spklu-1522.svg
+pln_spklu-1525,SPKLU Posko Yantek Matraman 1,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1525,svg/pln_spklu-1525.svg
+pln_spklu-1528,SPKLU CBD Ciledug,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-1528,svg/pln_spklu-1528.svg
+pln_spklu-1533,SPKLU Puri 11 Cluster Royal,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-1533,svg/pln_spklu-1533.svg
+pln_spklu-1538,SPKLU Club House Puri 11,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-1538,svg/pln_spklu-1538.svg
+pln_spklu-1541,SPKLU Yaski (Heartline),Kab Tangerang,Banten,AC Type 2,2,pln_spklu-1541,svg/pln_spklu-1541.svg
+pln_spklu-1543,SPKLU CENTER UCI BENY KM38B TOL JAGORAWI,Kota Bogor,Jawa Barat,AC Type 2 | CCS2,9,pln_spklu-1543,svg/pln_spklu-1543.svg
+pln_spklu-1544,SPKLU ALFAMIDI BOTANICA,Kota Tangerang Selatan,Banten,CCS2 | AC Type 2,3,pln_spklu-1544,svg/pln_spklu-1544.svg
+pln_spklu-1545,SPKLU RS HAJI JAKARTA,Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | AC Type 2,6,pln_spklu-1545,svg/pln_spklu-1545.svg
+pln_spklu-1546,SPKLU Dealer Vinfast,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-1546,svg/pln_spklu-1546.svg
+pln_spklu-1549,SPKLU Apartemen Samesta East Point,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1549,svg/pln_spklu-1549.svg
+pln_spklu-1550,SPKLU GOR BUKIT KENCANA,Kota Bekasi,Jawa Barat,AC Type 2,4,pln_spklu-1550,svg/pln_spklu-1550.svg
+pln_spklu-1551,SPKLU SPBU BP AKR TB SIMATUPANG,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-1551,svg/pln_spklu-1551.svg
+pln_spklu-1552,SPKLU Ditjen Imigrasi,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1552,svg/pln_spklu-1552.svg
+pln_spklu-1554,SPKLU Masjid Al Muhajirin,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1554,svg/pln_spklu-1554.svg
+pln_spklu-1556,SPKLU TOMANG TOL,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-1556,svg/pln_spklu-1556.svg
+pln_spklu-1560,SPKLU GEDUNG CYBER-1,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-1560,svg/pln_spklu-1560.svg
+pln_spklu-1561,SPKLU LOKAKAMA CINERE,Kota Depok,Jawa Barat,AC Type 2,1,pln_spklu-1561,svg/pln_spklu-1561.svg
+pln_spklu-1562,SPKLU PT SPE,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-1562,svg/pln_spklu-1562.svg
+pln_spklu-1565,SPKLU Gedung Pegadaian Kenari Baru,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-1565,svg/pln_spklu-1565.svg
+pln_spklu-1566,SPKLU APARTEMEN PARAMA,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1566,svg/pln_spklu-1566.svg
+pln_spklu-1572,SPKLU PLN RESORT PRIMA CISARUA,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-1572,svg/pln_spklu-1572.svg
+pln_spklu-1573,SPKLU PLN PR Millennium City Parung Panjang,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-1573,svg/pln_spklu-1573.svg
+pln_spklu-1579,SPKLU Summarecon Tangerang Marketing Gallery,Kab Tangerang,Banten,AC Type 2,2,pln_spklu-1579,svg/pln_spklu-1579.svg
+pln_spklu-1581,SPKLU UNIVERSITAS PANCASILA,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-1581,svg/pln_spklu-1581.svg
+pln_spklu-1582,SPKLU RS ISLAM AYSHA,Kab Bogor,Jawa Barat,AC Type 2,2,pln_spklu-1582,svg/pln_spklu-1582.svg
+pln_spklu-1584,SPKLU (ARISTA POWER) BYD ARISTA PLUIT,Kota ADM Jakarta Utara,DKI Jakarta,CCS2 | CCS2 | CCS2,8,pln_spklu-1584,svg/pln_spklu-1584.svg
+pln_spklu-1585,SPKLU Hotel Bigland Bogor,Kota Bogor,Jawa Barat,AC Type 2,5,pln_spklu-1585,svg/pln_spklu-1585.svg
+pln_spklu-1586,SPKLU RS EMC KEDOYA,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-1586,svg/pln_spklu-1586.svg
+pln_spklu-1587,SPKLU CLUSTER DAMAR,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,4,pln_spklu-1587,svg/pln_spklu-1587.svg
+pln_spklu-1590,SPKLU PANTAI MUTIARA,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-1590,svg/pln_spklu-1590.svg
+pln_spklu-1591,SPKLU PLN ADVENTURE CAMP CIJERUK,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-1591,svg/pln_spklu-1591.svg
+pln_spklu-1595,SPKLU (ARISTA POWER) DENZA ARISTA BSD CITY,Kab Tangerang,Banten,CCS2,12,pln_spklu-1595,svg/pln_spklu-1595.svg
+pln_spklu-1599,SPKLU (ARISTA POWER) BYD ARISTA SUMMARECON BEKASI,Kota Bekasi,Jawa Barat,CCS2,2,pln_spklu-1599,svg/pln_spklu-1599.svg
+pln_spklu-1600,SPKLU EVCITY Apartemen Pantai Mutiara,Kota ADM Jakarta Utara,DKI Jakarta,CCS2 | CCS2 | AC Type 2,5,pln_spklu-1600,svg/pln_spklu-1600.svg
+pln_spklu-1602,SPKLU KADIN JAKSEL,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1602,svg/pln_spklu-1602.svg
+pln_spklu-1603,SPKLU Meneers Koffie,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1603,svg/pln_spklu-1603.svg
+pln_spklu-1604,SPKLU PERUM CITRA GARDEN,Kota Tangerang Selatan,Banten,AC Type 2,2,pln_spklu-1604,svg/pln_spklu-1604.svg
+pln_spklu-1605,SPKLU INDONET,Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-1605,svg/pln_spklu-1605.svg
+pln_spklu-1606,SPKLU PLN CGE AVENUE,Kota Depok,Jawa Barat,AC Type 2,2,pln_spklu-1606,svg/pln_spklu-1606.svg
+pln_spklu-1607,SPKLU Kantor Kelurahan Sudimara Barat,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-1607,svg/pln_spklu-1607.svg
+pln_spklu-1608,SPKLU Temenasi Resto,Kota Tangerang Selatan,Banten,AC Type 2,3,pln_spklu-1608,svg/pln_spklu-1608.svg
+pln_spklu-1609,SPKLU JOGLO KEMANG,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2 | CCS2,5,pln_spklu-1609,svg/pln_spklu-1609.svg
+pln_spklu-1611,SPKLU RM Sarwono,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,4,pln_spklu-1611,svg/pln_spklu-1611.svg
+pln_spklu-1612,SPKLU AZ-KO,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,3,pln_spklu-1612,svg/pln_spklu-1612.svg
+pln_spklu-1613,SPKLU Pondok Kopi Warehouse,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1613,svg/pln_spklu-1613.svg
+pln_spklu-1614,SPKLU UCI BENY Grand Tropic,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-1614,svg/pln_spklu-1614.svg
+pln_spklu-1615,SPKLU BPK RI,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-1615,svg/pln_spklu-1615.svg
+pln_spklu-1616,SPKLU UJB RUKO SUNTER,Kota ADM Jakarta Utara,DKI Jakarta,CCS2 | CCS2 | AC Type 2,6,pln_spklu-1616,svg/pln_spklu-1616.svg
+pln_spklu-1617,SPKLU NENG GOCIR,Kota Depok,Jawa Barat,AC Type 2,1,pln_spklu-1617,svg/pln_spklu-1617.svg
+pln_spklu-1618,SPKLU RS BUAH HATI CIPUTAT,Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-1618,svg/pln_spklu-1618.svg
+pln_spklu-1619,SPKLU POS RW TAMAN NYIUR IV,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-1619,svg/pln_spklu-1619.svg
+pln_spklu-1620,SPKLU Masjid Raya Al-Ittihad,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1620,svg/pln_spklu-1620.svg
+pln_spklu-1621,SPKLU JTOWN Food and Entertaiment Center,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | CCS2,5,pln_spklu-1621,svg/pln_spklu-1621.svg
+pln_spklu-1622,SPKLU PLN Pancar Garden,Kab Bogor,Jawa Barat,AC Type 2,2,pln_spklu-1622,svg/pln_spklu-1622.svg
+pln_spklu-1623,SPKLU HOTEL THE TAVIA HERITAGE,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-1623,svg/pln_spklu-1623.svg
+pln_spklu-1624,SPKLU HOTEL C’ONE PULOMAS,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-1624,svg/pln_spklu-1624.svg
+pln_spklu-1625,SPKLU HOTEL D’ARCICI,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-1625,svg/pln_spklu-1625.svg
+pln_spklu-1627,SPKLU PIDI 4.0,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-1627,svg/pln_spklu-1627.svg
+pln_spklu-1628,SPKLU RSU FATMAWATI Parkir IGD,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-1628,svg/pln_spklu-1628.svg
+pln_spklu-1632,SPKLU PLN Dishub Kota Bekasi,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-1632,svg/pln_spklu-1632.svg
+pln_spklu-1633,SPKLU Posko Kelapa Gading,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-1633,svg/pln_spklu-1633.svg
+pln_spklu-1635,SPKLU Menara Bidakara 2,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1635,svg/pln_spklu-1635.svg
+pln_spklu-1636,SPKLU PLN CLUSTER CENDANA,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,3,pln_spklu-1636,svg/pln_spklu-1636.svg
+pln_spklu-1637,SPKLU Virginia Arcade,Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-1637,svg/pln_spklu-1637.svg
+pln_spklu-1638,SPKLU Latinos Business District,Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-1638,svg/pln_spklu-1638.svg
+pln_spklu-1640,SPKLU PLN POLRES CIANJUR,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-1640,svg/pln_spklu-1640.svg
+pln_spklu-1645,SPKLU Apartemen Mahata,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-1645,svg/pln_spklu-1645.svg
+pln_spklu-1646,SPKLU KAMPUS LIA,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-1646,svg/pln_spklu-1646.svg
+pln_spklu-1647,SPKLU HVT Plaza SUA,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-1647,svg/pln_spklu-1647.svg
+pln_spklu-1652,SPKLU PT Wijaya Karya (Persero) Tbk,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-1652,svg/pln_spklu-1652.svg
+pln_spklu-1653,SPKLU Rumah Duka Carolus,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2,5,pln_spklu-1653,svg/pln_spklu-1653.svg
+pln_spklu-1654,SPKLU Taman Safari Bogor,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-1654,svg/pln_spklu-1654.svg
+pln_spklu-1658,SPKLU KBN CAKUNG,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-1658,svg/pln_spklu-1658.svg
+pln_spklu-1660,SPKLU CITRA GRAN,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-1660,svg/pln_spklu-1660.svg
+pln_spklu-1662,SPKLU THE BALE,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,3,pln_spklu-1662,svg/pln_spklu-1662.svg
+pln_spklu-1663,SPKLU HVT TANGCITY,Kota Tangerang,Banten,CCS2 | CCS2 | AC Type 2,5,pln_spklu-1663,svg/pln_spklu-1663.svg
+pln_spklu-1664,SPKLU DPP Partai Demokrat,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2,3,pln_spklu-1664,svg/pln_spklu-1664.svg
+pln_spklu-1665,SPKLU CSE PLN Pusat,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | CCS2 | AC Type 2 | CCS2 | CCS2,15,pln_spklu-1665,svg/pln_spklu-1665.svg
+pln_spklu-1666,SPKLU INTIBIOS HANGTUAH,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1666,svg/pln_spklu-1666.svg
+pln_spklu-1668,SPKLU Modular Coffee,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-1668,svg/pln_spklu-1668.svg
+pln_spklu-1669,SPKLU Samara Village,Kab Tangerang,Banten,AC Type 2,2,pln_spklu-1669,svg/pln_spklu-1669.svg
+pln_spklu-1670,SPKLU Estate Management Alam Sutera,Kota Tangerang Selatan,Banten,AC Type 2,2,pln_spklu-1670,svg/pln_spklu-1670.svg
+pln_spklu-1671,SPKLU Downtown Lake Alam Sutera,Kota Tangerang,Banten,AC Type 2 | CCS2,10,pln_spklu-1671,svg/pln_spklu-1671.svg
+pln_spklu-1673,SPKLU EVCITY PLN UPDL JAKARTA,Kota ADM Jakarta Barat,DKI Jakarta,CCS2 | AC Type 2,3,pln_spklu-1673,svg/pln_spklu-1673.svg
+pln_spklu-1674,SPKLU (ARISTA POWER) BYD KELAPA GADING,Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | CCS2,8,pln_spklu-1674,svg/pln_spklu-1674.svg
+pln_spklu-1675,SPKLU (ARISTA POWER) BYD SAMANHUDI,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | CCS2,6,pln_spklu-1675,svg/pln_spklu-1675.svg
+pln_spklu-1676,SPKLU Batavia TCC,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2,6,pln_spklu-1676,svg/pln_spklu-1676.svg
+pln_spklu-1677,SPKLU BAKMI SEDJUK BINTARO,Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-1677,svg/pln_spklu-1677.svg
+pln_spklu-1678,SPKLU BAKMI SEDJUK CINERE,Kota Depok,Jawa Barat,AC Type 2,1,pln_spklu-1678,svg/pln_spklu-1678.svg
+pln_spklu-1679,SPKLU BRITS HOTEL PURI INDAH,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,3,pln_spklu-1679,svg/pln_spklu-1679.svg
+pln_spklu-1681,SPKLU UCI BENY Q SQUARE LIFESTYLE PARK,Kab Bogor,Jawa Barat,CCS2 | CCS2,5,pln_spklu-1681,svg/pln_spklu-1681.svg
+pln_spklu-1682,SPKLU STAN,Kota Tangerang Selatan,Banten,AC Type 2,4,pln_spklu-1682,svg/pln_spklu-1682.svg
+pln_spklu-1683,SPKLU TELKOM SDA,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-1683,svg/pln_spklu-1683.svg
+pln_spklu-1693,SPKLU LIVING PLAZA CINERE,Kota Depok,Jawa Barat,AC Type 2,2,pln_spklu-1693,svg/pln_spklu-1693.svg
+pln_spklu-1694,SPKLU SOUTH CITY,Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-1694,svg/pln_spklu-1694.svg
+pln_spklu-1695,SPKLU Club House Florence,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,4,pln_spklu-1695,svg/pln_spklu-1695.svg
+pln_spklu-1696,SPKLU ARCICI SPORT CENTER,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-1696,svg/pln_spklu-1696.svg
+pln_spklu-1698,SPKLU Cipondoh Lake View,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-1698,svg/pln_spklu-1698.svg
+pln_spklu-1699,SPKLU Pinang Comm Graha Raya,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-1699,svg/pln_spklu-1699.svg
+pln_spklu-1700,SPKLU Universitas Terbuka,Kota Tangerang Selatan,Banten,AC Type 2,2,pln_spklu-1700,svg/pln_spklu-1700.svg
+pln_spklu-1702,SPKLU Warung Tenda Alam Sutera,Kota Tangerang Selatan,Banten,AC Type 2,2,pln_spklu-1702,svg/pln_spklu-1702.svg
+pln_spklu-1703,SPKLU UNIVERSITAS MUHAMADIYAH JAKARTA,Kota Tangerang Selatan,Banten,AC Type 2,2,pln_spklu-1703,svg/pln_spklu-1703.svg
+pln_spklu-1706,SPKLU KANAKA RESIDANCE,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-1706,svg/pln_spklu-1706.svg
+pln_spklu-1707,SPKLU PT. Usaha Jaya Prima Karya (UJPK),Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-1707,svg/pln_spklu-1707.svg
+pln_spklu-1708,SPKLU BINTARO LESTARI RESIDANCE,Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-1708,svg/pln_spklu-1708.svg
+pln_spklu-1709,SPKLU (ARISTA POWER) BYD BOGOR,Kota Bogor,Jawa Barat,CCS2 | AC Type 2 | CCS2,5,pln_spklu-1709,svg/pln_spklu-1709.svg
+pln_spklu-1710,SPKLU PLAZA HNI,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-1710,svg/pln_spklu-1710.svg
+pln_spklu-1712,SPKLU RS SENTRA MEDIKA,Kota Depok,Jawa Barat,AC Type 2,2,pln_spklu-1712,svg/pln_spklu-1712.svg
+pln_spklu-1713,SPKLU MASJID JGC,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1713,svg/pln_spklu-1713.svg
+pln_spklu-1714,SPKLU Splash Water Park,Kota Tangerang Selatan,Banten,AC Type 2,2,pln_spklu-1714,svg/pln_spklu-1714.svg
+pln_spklu-1716,SPKLU RSIA SAMMARIE BASRA,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1716,svg/pln_spklu-1716.svg
+pln_spklu-1717,SPKLU MASJID AL MUHAJIRIN,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-1717,svg/pln_spklu-1717.svg
+pln_spklu-1718,SPKLU PLN Rindu Alam Story Puncak,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-1718,svg/pln_spklu-1718.svg
+pln_spklu-1719,SPKLU UCI BENY UNIVERSITAS PERBANAS II,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-1719,svg/pln_spklu-1719.svg
+pln_spklu-1720,SPKLU UCI BENY UNIVERSITAS PERBANAS I,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,5,pln_spklu-1720,svg/pln_spklu-1720.svg
+pln_spklu-1721,SPKLU FNB PAKUBUWONO,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1721,svg/pln_spklu-1721.svg
+pln_spklu-1722,SPKLU PLN PR Bali Resort Bogor,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-1722,svg/pln_spklu-1722.svg
+pln_spklu-1723,SPKLU MUTIARA GADING CITY,Kab Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-1723,svg/pln_spklu-1723.svg
+pln_spklu-1724,SPKLU GUDANG PLN UP3 TANJUNG PRIOK,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,4,pln_spklu-1724,svg/pln_spklu-1724.svg
+pln_spklu-1726,SPKLU YAYASAN MENARA BHAKTI,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | CCS2,5,pln_spklu-1726,svg/pln_spklu-1726.svg
+pln_spklu-1727,SPKLU PLN TERAS TEH POPI,Kota Bogor,Jawa Barat,AC Type 2 | CCS2,2,pln_spklu-1727,svg/pln_spklu-1727.svg
+pln_spklu-1729,SPKLU RS ISLAM PONDOK KOPI,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1729,svg/pln_spklu-1729.svg
+pln_spklu-1732,SPKLU BHAWATA,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-1732,svg/pln_spklu-1732.svg
+pln_spklu-1733,SPKLU APARTEMEN SIGNATURE PARK GRANDE,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | CCS2 | CCS2 | CCS2,13,pln_spklu-1733,svg/pln_spklu-1733.svg
+pln_spklu-1734,SPKLU GEDUNG GRAHA DIRGANTARA,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-1734,svg/pln_spklu-1734.svg
+pln_spklu-1738,SPKLU PLN FAMILY PARK CITRAGRAN,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-1738,svg/pln_spklu-1738.svg
+pln_spklu-1739,SPKLU BP2TL (Balai Pendidikan dan Pelatihan Transportasi Laut),Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-1739,svg/pln_spklu-1739.svg
+pln_spklu-1740,SPKLU UJB HOTEL TAMARIN,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2,4,pln_spklu-1740,svg/pln_spklu-1740.svg
+pln_spklu-1741,SPKLU Great Western Resort,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-1741,svg/pln_spklu-1741.svg
+pln_spklu-1742,SPKLU HVT GADING FESTIVAL,Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-1742,svg/pln_spklu-1742.svg
+pln_spklu-1743,SPKLU HVT OLD SHANGHAI,Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-1743,svg/pln_spklu-1743.svg
+pln_spklu-1745,SPKLU GRAHA MIR,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-1745,svg/pln_spklu-1745.svg
+pln_spklu-1746,SPKLU CITYWALK LIPPO CIKARANG,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-1746,svg/pln_spklu-1746.svg
+pln_spklu-1747,SPKLU RM PONDOK LARAS,Kota Depok,Jawa Barat,AC Type 2,2,pln_spklu-1747,svg/pln_spklu-1747.svg
+pln_spklu-1748,SPKLU TAKUA CAFE,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1748,svg/pln_spklu-1748.svg
+pln_spklu-1749,SPKLU FOODCORT GDC,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-1749,svg/pln_spklu-1749.svg
+pln_spklu-1750,SPKLU HARUMA BAY GDC,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-1750,svg/pln_spklu-1750.svg
+pln_spklu-1751,SPKLU GWF SEDAYU CITY,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,4,pln_spklu-1751,svg/pln_spklu-1751.svg
+pln_spklu-1752,SPKLU PLN MALL LIPPO CIKARANG,Kab Bekasi,Jawa Barat,CCS2 | AC Type 2,2,pln_spklu-1752,svg/pln_spklu-1752.svg
+pln_spklu-1753,SPKLU TRIBOON KEMANG,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1753,svg/pln_spklu-1753.svg
+pln_spklu-1754,SPKLU Sakura Garden,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | CCS2 | CCS2 | CCS2,13,pln_spklu-1754,svg/pln_spklu-1754.svg
+pln_spklu-1755,SPKLU PERMATA HIJAU SUITES,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-1755,svg/pln_spklu-1755.svg
+pln_spklu-1756,SPKLU Teras Basofi,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1756,svg/pln_spklu-1756.svg
+pln_spklu-1759,SPKLU CAFE LIWET,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-1759,svg/pln_spklu-1759.svg
+pln_spklu-1762,SPKLU PUSDIKLAT PLN RAGUNAN,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-1762,svg/pln_spklu-1762.svg
+pln_spklu-1770,SPKLU Bukit Golf,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-1770,svg/pln_spklu-1770.svg
+pln_spklu-1771,SPKLU UCI BENY JAECOO ARTA PLUIT,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,2,pln_spklu-1771,svg/pln_spklu-1771.svg
+pln_spklu-1773,SPKLU TAMAN PURI SRIWEDARI,Kota Depok,Jawa Barat,AC Type 2,2,pln_spklu-1773,svg/pln_spklu-1773.svg
+pln_spklu-1774,SPKLU Victoria Square,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-1774,svg/pln_spklu-1774.svg
+pln_spklu-1775,SPKLU VLOCITY ARENA,Kota ADM Jakarta Barat,DKI Jakarta,CCS2,2,pln_spklu-1775,svg/pln_spklu-1775.svg
+pln_spklu-1777,SPKLU CALMING CARE INDONESIA,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,4,pln_spklu-1777,svg/pln_spklu-1777.svg
+pln_spklu-1778,SPKLU PLN RS AU dr M Hassan Toto,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-1778,svg/pln_spklu-1778.svg
+pln_spklu-1779,SPKLU MASJID RAYA BINTARO JAYA,Kota Tangerang Selatan,Banten,AC Type 2 | CCS2,3,pln_spklu-1779,svg/pln_spklu-1779.svg
+pln_spklu-1782,SPKLU HVT BINTARO TRADE CENTER,Kota Tangerang Selatan,Banten,CCS2 | AC Type 2,4,pln_spklu-1782,svg/pln_spklu-1782.svg
+pln_spklu-1783,SPKLU PULOGEBANG PERMAI,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-1783,svg/pln_spklu-1783.svg
+pln_spklu-1784,SPKLU ELMIS CAFE,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,3,pln_spklu-1784,svg/pln_spklu-1784.svg
+pln_spklu-1785,SPKLU UCI BENY WISMA GADING PERMAI,Kota ADM Jakarta Utara,DKI Jakarta,CCS2 | CCS2,4,pln_spklu-1785,svg/pln_spklu-1785.svg
+pln_spklu-1787,SPKLU Kantor Kelurahan Meruya Selatan,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-1787,svg/pln_spklu-1787.svg
+pln_spklu-1788,SPKLU UCI BENY CHERY TRIMEGAH BEKASI,Kota Bekasi,Jawa Barat,CCS2,4,pln_spklu-1788,svg/pln_spklu-1788.svg
+pln_spklu-1789,SPKLU CITRA 2 EXT,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,4,pln_spklu-1789,svg/pln_spklu-1789.svg
+pln_spklu-1790,"SPKLU TENGAH, PEOPLE & PLACE PALMERAH",Kota ADM Jakarta Barat,DKI Jakarta,CCS2,2,pln_spklu-1790,svg/pln_spklu-1790.svg
+pln_spklu-1791,SPKLU ELEVATED PARKING UTARA GBK,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | AC Type 2,6,pln_spklu-1791,svg/pln_spklu-1791.svg
+pln_spklu-1792,SPKLU Kantor PLN Kalideres,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-1792,svg/pln_spklu-1792.svg
+pln_spklu-1795,SPKLU Kantor Kelurahan Meruya Utara,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-1795,svg/pln_spklu-1795.svg
+pln_spklu-1796,SPKLU Gereja Kemah Tabernakel PIK 2,Kota Tangerang Selatan,Banten,AC Type 2,4,pln_spklu-1796,svg/pln_spklu-1796.svg
+pln_spklu-1797,SPKLU CIBUBUR INN,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-1797,svg/pln_spklu-1797.svg
+pln_spklu-1801,SPKLU Marketing Gallery Asthara,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-1801,svg/pln_spklu-1801.svg
+pln_spklu-1802,SPKLU UCI BENY SUPPAWASH BSD,Kab Tangerang,Banten,CCS2,2,pln_spklu-1802,svg/pln_spklu-1802.svg
+pln_spklu-1804,SPKLU UJB Rest Area KM 45B Merak - Jakarta,Kab Tangerang,Banten,CCS2 | CCS2,5,pln_spklu-1804,svg/pln_spklu-1804.svg
+pln_spklu-1806,SPKLU UJB MALL ARTHA GADING,Kota ADM Jakarta Utara,DKI Jakarta,CCS2 | CCS2,8,pln_spklu-1806,svg/pln_spklu-1806.svg
+pln_spklu-1808,SPKLU UDIKLAT CENGKARENG,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-1808,svg/pln_spklu-1808.svg
+pln_spklu-1810,SPKLU JAKARTA GOLF CLUB,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-1810,svg/pln_spklu-1810.svg
+pln_spklu-1812,SPKLU Boho Coffee & Kitchen,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-1812,svg/pln_spklu-1812.svg
+pln_spklu-1814,SPKLU HVT SOTHERN LAKE RESIDENCE,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,2,pln_spklu-1814,svg/pln_spklu-1814.svg
+pln_spklu-1818,SPKLU Apartemen Maple Park,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-1818,svg/pln_spklu-1818.svg
+pln_spklu-1819,SPKLU Kopi Insight,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-1819,svg/pln_spklu-1819.svg
+pln_spklu-1824,SPKLU Kementerian Perindustrian,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,7,pln_spklu-1824,svg/pln_spklu-1824.svg
+pln_spklu-1826,SPKLU HVT ITC PERMATA HIJAU,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,4,pln_spklu-1826,svg/pln_spklu-1826.svg
+pln_spklu-1827,SPKLU Apartemen L'Avenue MC,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,6,pln_spklu-1827,svg/pln_spklu-1827.svg
+pln_spklu-1829,SPKLU Arthamas JRP,Kota Tangerang Selatan,Banten,CCS2 | AC Type 2,5,pln_spklu-1829,svg/pln_spklu-1829.svg
+pln_spklu-1830,SPKLU Arthamas BiiFest,Kota Tangerang Selatan,Banten,CCS2,2,pln_spklu-1830,svg/pln_spklu-1830.svg
+pln_spklu-1837,SPKLU Griya Inti Sentosa 2,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-1837,svg/pln_spklu-1837.svg
+pln_spklu-1848,SPKLU LAPAS KELAS 1 TANGERANG,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-1848,svg/pln_spklu-1848.svg
+pln_spklu-1850,SPKLU PLN UCI BENY SM GEELY CIBUBUR,Kab Bogor,Jawa Barat,CCS2,2,pln_spklu-1850,svg/pln_spklu-1850.svg
+pln_spklu-1856,SPKLU BTN CABANG CIBUBUR SALES CENTER,Kab Bogor,Jawa Barat,CCS2,2,pln_spklu-1856,svg/pln_spklu-1856.svg
+pln_spklu-1859,SPKLU Mahkamah Konstitusi,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-1859,svg/pln_spklu-1859.svg
+pln_spklu-1860,SPKLU CLUSTER ROME,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-1860,svg/pln_spklu-1860.svg
+pln_spklu-1862,SPKLU EVCITY KEMENTRIAN PERDAGANGAN,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2,6,pln_spklu-1862,svg/pln_spklu-1862.svg
+pln_spklu-1864,SPKLU EVCITY PLN UID BANTEN,Kota Tangerang,Banten,CCS2 | AC Type 2 | AC Type 2,6,pln_spklu-1864,svg/pln_spklu-1864.svg
+pln_spklu-1865,SPKLU CENTER HVT PLN UP3 BULUNGAN,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | CCS2 | CCS2 | AC Type 2 | CCS2,15,pln_spklu-1865,svg/pln_spklu-1865.svg
+pln_spklu-1866,SPKLU NISCALA PLN TANJUNG PRIOK,Kota ADM Jakarta Utara,DKI Jakarta,CCS2 | AC Type 2 | CCS2,19,pln_spklu-1866,svg/pln_spklu-1866.svg
+pln_spklu-1869,SPKLU DAYA+ PLN UP3 CEMPAKA PUTIH,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | CCS2 | AC Type 2 | CCS2,10,pln_spklu-1869,svg/pln_spklu-1869.svg
+pln_spklu-1870,SPKLU DAYA+ PLN UP3 KEBON JERUK,Kota Tangerang,Banten,CCS2 | AC Type 2 | CCS2,6,pln_spklu-1870,svg/pln_spklu-1870.svg
+pln_spklu-1871,SPKLU NISCALA PLN UP3 BANDENGAN,Kota ADM Jakarta Utara,DKI Jakarta,CCS2 | AC Type 2,5,pln_spklu-1871,svg/pln_spklu-1871.svg
+pln_spklu-1873,SPKLU EVCITY RS POLRI,Kota ADM Jakarta Timur,DKI Jakarta,CCS2,4,pln_spklu-1873,svg/pln_spklu-1873.svg
+pln_spklu-1874,SPKLU EVCITY Grand Waterfront Agung Sedayu,Kota ADM Jakarta Timur,DKI Jakarta,CCS2,2,pln_spklu-1874,svg/pln_spklu-1874.svg
+pln_spklu-1876,SPKLU Universitas Pelita Harapan,Kab Tangerang,Banten,CCS2,2,pln_spklu-1876,svg/pln_spklu-1876.svg
+pln_spklu-1877,SPKLU HOEGENG POSPOL GADOG,Kab Bogor,Jawa Barat,CCS2,4,pln_spklu-1877,svg/pln_spklu-1877.svg
+pln_spklu-1880,SPKLU NISCALA PLN UP3 PONDOK KOPI,Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | AC Type 2,3,pln_spklu-1880,svg/pln_spklu-1880.svg
+pln_spklu-1885,SPKLU (ARISTA POWER) BYD CIKOKOL,Kota Tangerang,Banten,CCS2,2,pln_spklu-1885,svg/pln_spklu-1885.svg
+pln_spklu-1890,SPKLU HVT Rest Area KM 6 Jakarta - Cikampek,Kota Bekasi,Jawa Barat,CCS2 | AC Type 2 | CCS2,6,pln_spklu-1890,svg/pln_spklu-1890.svg
+pln_spklu-1892,SPKLU APARTEMEN TAMAN RASUNA,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,4,pln_spklu-1892,svg/pln_spklu-1892.svg
+pln_spklu-1895,SPKLU UCI BENY CHERY TRIMEGAH BSD,Kota Tangerang Selatan,Banten,CCS2,4,pln_spklu-1895,svg/pln_spklu-1895.svg
+pln_spklu-1897,SPKLU CLUSTER VENICE,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-1897,svg/pln_spklu-1897.svg
+pln_spklu-1902,SPKLU DAYA+ UNIKA ATMAJAYA,Kab Tangerang,Banten,CCS2,2,pln_spklu-1902,svg/pln_spklu-1902.svg
+pln_spklu-1903,SPKLU BALAI PRAJURIT CILANDAK,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,4,pln_spklu-1903,svg/pln_spklu-1903.svg
+pln_spklu-1911,SPKLU PLN BBN,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1911,svg/pln_spklu-1911.svg
+pln_spklu-1914,SPKLU 3POINT CAFE & RESTO,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-1914,svg/pln_spklu-1914.svg
+pln_spklu-1915,SPKLU RSU FATMAWATI Parkir Masjid,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-1915,svg/pln_spklu-1915.svg
+pln_spklu-1919,SPKLU UCI BENY GARDENS SWG,Kota Depok,Jawa Barat,CCS2,4,pln_spklu-1919,svg/pln_spklu-1919.svg
+pln_spklu-1924,SPKLU UCI BENNY ASTON PUNCAK,Kab Cianjur,Jawa Barat,CCS2,4,pln_spklu-1924,svg/pln_spklu-1924.svg
+pln_spklu-1927,SPKLU APARTEMEN SENAYAN RESIDENCE,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2 | AC Type 2,5,pln_spklu-1927,svg/pln_spklu-1927.svg
+pln_spklu-1929,SPKLU VOKSEL TAMAN PANAS DINGIN CAFÉ CIBINONG,Kota Depok,Jawa Barat,CCS2,2,pln_spklu-1929,svg/pln_spklu-1929.svg
+pln_spklu-1935,SPKLU CLUSTER JOHAR GOLF,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-1935,svg/pln_spklu-1935.svg
+pln_spklu-1939,SPKLU KOTA BELANDA PIK 2,Kab Tangerang,Banten,CCS2 | AC Type 2,4,pln_spklu-1939,svg/pln_spklu-1939.svg
+pln_spklu-1947,SPKLU HVT CENTRE POINT PIK 2,Kab Tangerang,Banten,CCS2 | AC Type 2,6,pln_spklu-1947,svg/pln_spklu-1947.svg
+pln_spklu-1950,SPKLU HVT LAVELA,Kota Tangerang,Banten,CCS2,4,pln_spklu-1950,svg/pln_spklu-1950.svg
+pln_spklu-1951,SPKLU UJB BALAI SAMUDERA,Kota ADM Jakarta Utara,DKI Jakarta,CCS2 | CCS2,8,pln_spklu-1951,svg/pln_spklu-1951.svg
+pln_spklu-1960,SPKLU HVT PLN ULP CIKANDE,Kab Serang,Banten,CCS2,2,pln_spklu-1960,svg/pln_spklu-1960.svg
+pln_spklu-1966,Jasa Raharja Kanwil DKI Jakarta,Kota ADM Jakarta Timur,DKI Jakarta,CCS2,1,pln_spklu-1966,svg/pln_spklu-1966.svg
+pln_spklu-1970,SPKLU UCI WALIKOTA  JAKARTA  UTARA,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,2,pln_spklu-1970,svg/pln_spklu-1970.svg
+pln_spklu-1971,SPKLU ARTHAMAS LTC GLODOK,Kota ADM Jakarta Barat,DKI Jakarta,CCS2,2,pln_spklu-1971,svg/pln_spklu-1971.svg
+pln_spklu-1973,SPKLU PAKONS PRIME HOTEL,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-1973,svg/pln_spklu-1973.svg
+pln_spklu-1974,SPKLU EVCITY APARTEMEN PURI CASABLANCA,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | CCS2,6,pln_spklu-1974,svg/pln_spklu-1974.svg
+pln_spklu-1981,SPKLU DHAF COFFEE & CAR WASH,Kota Bekasi,Jawa Barat,CCS2 | CCS2,6,pln_spklu-1981,svg/pln_spklu-1981.svg
+pln_spklu-1988,SPKLU UCI BENY LEPAS MAS KLP GADING,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,2,pln_spklu-1988,svg/pln_spklu-1988.svg
+pln_spklu-1990,SPKLU NUSA ENERGI BSD,Kota Tangerang Selatan,Banten,CCS2,2,pln_spklu-1990,svg/pln_spklu-1990.svg
+pln_spklu-1993,SPKLU (ARISTA POWER) DAAN MOGOT,Kota ADM Jakarta Barat,DKI Jakarta,CCS2 | CCS2,4,pln_spklu-1993,svg/pln_spklu-1993.svg
+pln_spklu-1994,ZORA SPKLU SIGNATURE,Kab Tangerang,Banten,CCS2 | CCS2,20,pln_spklu-1994,svg/pln_spklu-1994.svg
+pln_spklu-2000,SPKLU DAYA+ PLN UP3 BINTARO,Kota Tangerang Selatan,Banten,CCS2 | AC Type 2,6,pln_spklu-2000,svg/pln_spklu-2000.svg
+pln_spklu-2001,SPKLU MOBILE LRT CITY CIRACAS,Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | CCS2,4,pln_spklu-2001,svg/pln_spklu-2001.svg
+pln_spklu-2002,SPKLU EV POWER Masjid Agung At-Tin,Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | AC Type 2,7,pln_spklu-2002,svg/pln_spklu-2002.svg
+pln_spklu-2003,SPKLU EVCITY PLN UP3 CIPUTAT,Kota Tangerang Selatan,Banten,CCS2 | AC Type 2,3,pln_spklu-2003,svg/pln_spklu-2003.svg
+pln_spklu-2004,SPKLU EVCITY PLN UP3 PONDOK GEDE,Kota Bekasi,Jawa Barat,CCS2 | AC Type 2 | CCS2 | CCS2,9,pln_spklu-2004,svg/pln_spklu-2004.svg
+pln_spklu-2005,SPKLU HVT Chery Avante Sholeh Iskandar,Kota Bogor,Jawa Barat,CCS2,4,pln_spklu-2005,svg/pln_spklu-2005.svg
+pln_spklu-2010,SPKLU EVCITY KANTOR PLN UP3 SERPONG,Kota Tangerang Selatan,Banten,CCS2 | AC Type 2 | AC Type 2,4,pln_spklu-2010,svg/pln_spklu-2010.svg
+pln_spklu-2023,SPKLU BYD ARISTA SENTUL,Kab Bogor,Jawa Barat,CCS2,4,pln_spklu-2023,svg/pln_spklu-2023.svg
+pln_spklu-2024,SPKLU PLN Posko Cugenang,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-2024,svg/pln_spklu-2024.svg
+pln_spklu-2025,SPKLU  PLN Posko Cikalong,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-2025,svg/pln_spklu-2025.svg
+pln_spklu-2030,SPKLU DAYA+ UNIKA ATMAJAYA,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,4,pln_spklu-2030,svg/pln_spklu-2030.svg
+pln_spklu-2033,SPKLU PT AMARTA MUSTIKA SAWANGAN,Kota Depok,Jawa Barat,CCS2,2,pln_spklu-2033,svg/pln_spklu-2033.svg
+pln_spklu-2034,SPKLU PLN DIKLAT RESERSE POLRI,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-2034,svg/pln_spklu-2034.svg
+pln_spklu-2035,SPKLU NAM HOTEL KEMAYORAN,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,2,pln_spklu-2035,svg/pln_spklu-2035.svg
+pln_spklu-2042,Hyundai Simprug (Khusus Kendaraan Hyundai),Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-2042,svg/pln_spklu-2042.svg
+pln_spklu-2043,Hyundai Cilandak (Khusus Kendaraan Hyundai),Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-2043,svg/pln_spklu-2043.svg
+pln_spklu-2044,Hyundai Ciputat (Khusus Kendaraan Hyundai),Kota Tangerang Selatan,Banten,CCS2 | AC Type 2,2,pln_spklu-2044,svg/pln_spklu-2044.svg
+pln_spklu-2045,Hyundai Kelapa Gading (Khusus Kendaraan Hyundai),Kota ADM Jakarta Utara,DKI Jakarta,CCS2 | AC Type 2,2,pln_spklu-2045,svg/pln_spklu-2045.svg
+pln_spklu-2046,Hyundai Sunter (Khusus Kendaraan Hyundai),Kota ADM Jakarta Utara,DKI Jakarta,CCS2 | AC Type 2,3,pln_spklu-2046,svg/pln_spklu-2046.svg
+pln_spklu-2047,Hyundai Cibubur (Khusus Kendaraan Hyundai),Kota Bekasi,Jawa Barat,CCS2 | AC Type 2,4,pln_spklu-2047,svg/pln_spklu-2047.svg
+pln_spklu-2048,Hyundai Kalimalang (Khusus Kendaraan Hyundai),Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-2048,svg/pln_spklu-2048.svg
+pln_spklu-2049,Hyundai Serpong (Khusus Kendaraan Hyundai),Kota Tangerang Selatan,Banten,CCS2 | AC Type 2,6,pln_spklu-2049,svg/pln_spklu-2049.svg
+pln_spklu-2061,Hyundai Pancoran (Khusus Kendaraan Hyundai),Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-2061,svg/pln_spklu-2061.svg
+pln_spklu-2062,Hyundai Sawah Besar (Khusus Kendaraan Hyundai),Kota ADM Jakarta Barat,DKI Jakarta,CCS2 | AC Type 2,2,pln_spklu-2062,svg/pln_spklu-2062.svg
+pln_spklu-2067,Hyundai Lippo Mall Puri (Khusus Kendaraan Hyundai),Kota ADM Jakarta Barat,DKI Jakarta,CCS2,1,pln_spklu-2067,svg/pln_spklu-2067.svg
+pln_spklu-2070,Hyundai Kebon Jeruk (Khusus Kendaraan Hyundai),Kota ADM Jakarta Barat,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-2070,svg/pln_spklu-2070.svg
+pln_spklu-2071,Hyundai Fatmawati (Khusus Kendaraan Hyundai),Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,2,pln_spklu-2071,svg/pln_spklu-2071.svg
+pln_spklu-2074,Hyundai Pluit (Khusus Kendaraan Hyundai),Kota ADM Jakarta Utara,DKI Jakarta,CCS2 | AC Type 2,2,pln_spklu-2074,svg/pln_spklu-2074.svg
+pln_spklu-2075,Hyundai Cimanggis (Khusus Kendaraan Hyundai),Kota Depok,Jawa Barat,CCS2 | AC Type 2,4,pln_spklu-2075,svg/pln_spklu-2075.svg
+pln_spklu-2078,Hyundai Margonda (Khusus Kendaraan Hyundai),Kota Depok,Jawa Barat,CCS2 | AC Type 2 | CCS2,4,pln_spklu-2078,svg/pln_spklu-2078.svg
+pln_spklu-2079,Hyundai Summarecon Bekasi (Khusus Kendaraan Hyundai),Kota Bekasi,Jawa Barat,CCS2 | AC Type 2,2,pln_spklu-2079,svg/pln_spklu-2079.svg
+pln_spklu-2080,Hyundai Tajur (Khusus Kendaraan Hyundai),Kota Bogor,Jawa Barat,CCS2 | AC Type 2,4,pln_spklu-2080,svg/pln_spklu-2080.svg
+pln_spklu-2083,Hyundai Bintaro (Khusus Kendaraan Hyundai),Kota Tangerang Selatan,Banten,CCS2 | AC Type 2,4,pln_spklu-2083,svg/pln_spklu-2083.svg
+pln_spklu-2085,Hyundai Joglo (Khusus Kendaraan Hyundai),Kota ADM Jakarta Barat,DKI Jakarta,CCS2 | AC Type 2,2,pln_spklu-2085,svg/pln_spklu-2085.svg
+pln_spklu-2087,Hyundai Summarecon Mall Serpong (Khusus Kendaraan Hyundai),Kota Tangerang,Banten,CCS2,2,pln_spklu-2087,svg/pln_spklu-2087.svg
+pln_spklu-2093,Hyundai Pegangsaan (Khusus Kendaraan Hyundai),Kota ADM Jakarta Utara,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-2093,svg/pln_spklu-2093.svg
+pln_spklu-2095,Hyundai Sholeh Iskandar (Khusus Kendaraan Hyundai),Kota Bogor,Jawa Barat,CCS2 | AC Type 2,2,pln_spklu-2095,svg/pln_spklu-2095.svg
+pln_spklu-2104,Hyundai Cikarang (Khusus Kendaraan Hyundai),Kab Bekasi,Jawa Barat,CCS2,2,pln_spklu-2104,svg/pln_spklu-2104.svg
+pln_spklu-2107,Hyundai Mampang (Khusus Kendaraan Hyundai),Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-2107,svg/pln_spklu-2107.svg
+pln_spklu-2109,Hyundai Cianjur (Khusus Kendaraan Hyundai),Kab Cianjur,Jawa Barat,CCS2,1,pln_spklu-2109,svg/pln_spklu-2109.svg
+pln_spklu-2123,Hyundai Pondok Gede (Khusus Kendaraan Hyundai),Kota Bekasi,Jawa Barat,CCS2 | AC Type 2,4,pln_spklu-2123,svg/pln_spklu-2123.svg
+pln_spklu-2124,Hyundai Narogong (Khusus Kendaraan Hyundai),Kota Bekasi,Jawa Barat,CCS2 | AC Type 2,4,pln_spklu-2124,svg/pln_spklu-2124.svg
+pln_spklu-2126,Hyundai DI Panjaitan (Khusus Kendaraan Hyundai),Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-2126,svg/pln_spklu-2126.svg
+pln_spklu-2127,Hyundai BSD City (Khusus Kendaraan Hyundai),Kab Tangerang,Banten,CCS2 | AC Type 2,4,pln_spklu-2127,svg/pln_spklu-2127.svg
+pln_spklu-2128,Hyundai Pramuka (Khusus Kendaraan Hyundai),Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-2128,svg/pln_spklu-2128.svg
+pln_spklu-2141,Hyundai Lippo Plaza Kramat Jati (Khusus Kendaraan Hyundai),Kota ADM Jakarta Timur,DKI Jakarta,CCS2 | AC Type 2 | AC Type 2,3,pln_spklu-2141,svg/pln_spklu-2141.svg
+pln_spklu-2143,Astrido Toyota Karawaci (Khusus Toyota & Lexus),Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2143,svg/pln_spklu-2143.svg
+pln_spklu-2144,AUTO2000 BSD City (Khusus Toyota & Lexus),Kab Tangerang,Banten,AC Type 2,1,pln_spklu-2144,svg/pln_spklu-2144.svg
+pln_spklu-2145,AUTO2000 Bintaro Jaya (Khusus Toyota & Lexus),Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-2145,svg/pln_spklu-2145.svg
+pln_spklu-2146,Plaza Toyota Serpong (Khusus Toyota & Lexus),Kab Tangerang,Banten,AC Type 2,1,pln_spklu-2146,svg/pln_spklu-2146.svg
+pln_spklu-2149,Astrido Toyota Kelapa Gading II (Khusus Toyota & Lexus),Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-2149,svg/pln_spklu-2149.svg
+pln_spklu-2150,AUTO2000 Wahid Hasyim / GSO (Khusus Toyota & Lexus),Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2150,svg/pln_spklu-2150.svg
+pln_spklu-2151,Daya Toyota Cakung (Khusus Toyota & Lexus),Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2151,svg/pln_spklu-2151.svg
+pln_spklu-2152,Tunas Toyota Dewi Sartika (Khusus Toyota & Lexus),Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-2152,svg/pln_spklu-2152.svg
+pln_spklu-2153,AUTO2000 Juanda (Khusus Toyota & Lexus),Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2153,svg/pln_spklu-2153.svg
+pln_spklu-2154,AUTO2000 Kapuk (Khusus Toyota & Lexus),Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-2154,svg/pln_spklu-2154.svg
+pln_spklu-2155,AUTO2000 P. Jayakarta (Khusus Toyota & Lexus),Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2155,svg/pln_spklu-2155.svg
+pln_spklu-2156,AUTO2000 Pramuka (Khusus Toyota & Lexus),Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-2156,svg/pln_spklu-2156.svg
+pln_spklu-2157,AUTO2000 Tebet Supomo (Khusus Toyota & Lexus),Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2157,svg/pln_spklu-2157.svg
+pln_spklu-2158,AUTO2000 Yos Sudarso (Khusus Toyota & Lexus),Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-2158,svg/pln_spklu-2158.svg
+pln_spklu-2159,Plaza Toyota Green Garden (Khusus Toyota & Lexus),Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2159,svg/pln_spklu-2159.svg
+pln_spklu-2160,Plaza Toyota Kyai Tapa (Khusus Toyota & Lexus),Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2160,svg/pln_spklu-2160.svg
+pln_spklu-2161,Plaza Toyota Pemuda (Khusus Toyota & Lexus),Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-2161,svg/pln_spklu-2161.svg
+pln_spklu-2162,Plaza Toyota Tendean (Khusus Toyota & Lexus),Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2162,svg/pln_spklu-2162.svg
+pln_spklu-2167,Astrido Toyota Bekasi (Khusus Toyota & Lexus),Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-2167,svg/pln_spklu-2167.svg
+pln_spklu-2168,Duta Cendana Mobilindo (Khusus Toyota & Lexus),Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-2168,svg/pln_spklu-2168.svg
+pln_spklu-2169,JD Toyota Jababeka Cikarang (Khusus Toyota & Lexus),Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2169,svg/pln_spklu-2169.svg
+pln_spklu-2170,Plaza Toyota Karanggan BP (Khusus Toyota & Lexus),Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-2170,svg/pln_spklu-2170.svg
+pln_spklu-2171,Setiajaya Toyota Depok (Khusus Toyota & Lexus),Kota Depok,Jawa Barat,AC Type 2,1,pln_spklu-2171,svg/pln_spklu-2171.svg
+pln_spklu-2173,Plaza Toyota Citeureup (Khusus Toyota & Lexus),Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-2173,svg/pln_spklu-2173.svg
+pln_spklu-2174,Setiajaya Toyota Pamulang (Khusus Toyota & Lexus),Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-2174,svg/pln_spklu-2174.svg
+pln_spklu-2175,Astrido Toyota Pondok Indah (Khusus Toyota & Lexus),Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2175,svg/pln_spklu-2175.svg
+pln_spklu-2177,Astrido Toyota Kebon Jeruk (Khusus Toyota & Lexus),Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2177,svg/pln_spklu-2177.svg
+pln_spklu-2178,AUTO2000 Cilandak (Khusus Toyota & Lexus),Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2178,svg/pln_spklu-2178.svg
+pln_spklu-2179,AUTO2000 Daan Mogot (Khusus Toyota & Lexus),Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2179,svg/pln_spklu-2179.svg
+pln_spklu-2180,AUTO2000 Grand Depok City (Khusus Toyota & Lexus),Kota Depok,Jawa Barat,AC Type 2,1,pln_spklu-2180,svg/pln_spklu-2180.svg
+pln_spklu-2181,AUTO2000 Kelapa Gading (Khusus Toyota & Lexus),Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-2181,svg/pln_spklu-2181.svg
+pln_spklu-2182,AUTO2000 Pluit (Khusus Toyota & Lexus),Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-2182,svg/pln_spklu-2182.svg
+pln_spklu-2183,Toyota Privilege Charging Spot - ASHTA District 8 (Basement LG) (Khusus Toyota & Lexus),Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-2183,svg/pln_spklu-2183.svg
+pln_spklu-2185,Lexus Mampang Gallery (Khusus Kendaraan Lexus),Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2185,svg/pln_spklu-2185.svg
+pln_spklu-2186,Lexus Pluit Gallery (Khusus Kendaraan Lexus),Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2 | CCS2,4,pln_spklu-2186,svg/pln_spklu-2186.svg
+pln_spklu-2187,Mall Kelapa Gading 3 (Lexus Parking Privilege) (Khusus Kendaraan Lexus),Kota ADM Jakarta Utara,DKI Jakarta,CCS2,2,pln_spklu-2187,svg/pln_spklu-2187.svg
+pln_spklu-2188,Mall Central Park (Lumina Lobby) (Khusus Kendaraan Lexus),Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2188,svg/pln_spklu-2188.svg
+pln_spklu-2189,Menara ASTRA (Basement 1) (Khusus Kendaraan Lexus),Kota ADM Jakarta Pusat,DKI Jakarta,CCS2,3,pln_spklu-2189,svg/pln_spklu-2189.svg
+pln_spklu-2190,Pantai Indah Kapuk (North Lobby - Valet area) (Khusus Kendaraan Lexus),Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-2190,svg/pln_spklu-2190.svg
+pln_spklu-2195,TAM LNTC Sunter (Khusus Kendaraan Lexus),Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-2195,svg/pln_spklu-2195.svg
+pln_spklu-2197,(VOLTRON) Suvarna Golf Club,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,3,pln_spklu-2197,svg/pln_spklu-2197.svg
+pln_spklu-2198,(VOLTRON) Shila Sawangan,Kota Depok,Jawa Barat,AC Type 2 | AC Type 2,2,pln_spklu-2198,svg/pln_spklu-2198.svg
+pln_spklu-2199,(VOLTRON) Jambuluwuk Thamrin Hotel,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2,4,pln_spklu-2199,svg/pln_spklu-2199.svg
+pln_spklu-2200,(VOLTRON) Artotel Suites Mangkuluhur,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2200,svg/pln_spklu-2200.svg
+pln_spklu-2201,(VOLTRON) Sequis Tower,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,4,pln_spklu-2201,svg/pln_spklu-2201.svg
+pln_spklu-2202,(VOLTRON) Bez Walk/ Paramount Serpong,Kab Tangerang,Banten,AC Type 2 | AC Type 2,2,pln_spklu-2202,svg/pln_spklu-2202.svg
+pln_spklu-2203,(VOLTRON) Fame Hotel/ Paramount Serpong,Kab Tangerang,Banten,AC Type 2 | AC Type 2,2,pln_spklu-2203,svg/pln_spklu-2203.svg
+pln_spklu-2204,(VOLTRON) Atria Hotel / Paramount Serpong,Kab Tangerang,Banten,AC Type 2 | AC Type 2,2,pln_spklu-2204,svg/pln_spklu-2204.svg
+pln_spklu-2205,(VOLTRON) Wisma BCA Foresta BSD,Kab Tangerang,Banten,AC Type 2 | AC Type 2,4,pln_spklu-2205,svg/pln_spklu-2205.svg
+pln_spklu-2206,(VOLTRON) Vivere - South 78,Kab Tangerang,Banten,AC Type 2 | AC Type 2 | CCS2 | CCS2,6,pln_spklu-2206,svg/pln_spklu-2206.svg
+pln_spklu-2209,(VOLTRON) FX Sudirman Mall,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2 | CCS2,4,pln_spklu-2209,svg/pln_spklu-2209.svg
+pln_spklu-2210,(VOLTRON) Bintaro Xchange Mall 2,Kota Tangerang Selatan,Banten,CCS2,2,pln_spklu-2210,svg/pln_spklu-2210.svg
+pln_spklu-2211,(VOLTRON) Plaza Bintaro,Kota Tangerang Selatan,Banten,AC Type 2 | AC Type 2 | CCS2,4,pln_spklu-2211,svg/pln_spklu-2211.svg
+pln_spklu-2212,(VOLTRON) Sari Pacific Hotel,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2212,svg/pln_spklu-2212.svg
+pln_spklu-2213,(VOLTRON) Commodity Square,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2 | AC Type 2 | CCS2,9,pln_spklu-2213,svg/pln_spklu-2213.svg
+pln_spklu-2214,(VOLTRON) The Bellezza Retail & Apartment,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2214,svg/pln_spklu-2214.svg
+pln_spklu-2215,(VOLTRON) Sumarecon Mall Bekasi,Kota Bekasi,Jawa Barat,AC Type 2 | AC Type 2 | CCS2,5,pln_spklu-2215,svg/pln_spklu-2215.svg
+pln_spklu-2218,(VOLTRON) Siloam Hospital Cikarang,Kab Bekasi,Jawa Barat,AC Type 2 | AC Type 2,2,pln_spklu-2218,svg/pln_spklu-2218.svg
+pln_spklu-2219,(VOLTRON) Siloam Hospital Karawaci,Kota Tangerang,Banten,AC Type 2 | AC Type 2,2,pln_spklu-2219,svg/pln_spklu-2219.svg
+pln_spklu-2220,(VOLTRON) Menara Era,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2220,svg/pln_spklu-2220.svg
+pln_spklu-2221,(VOLTRON) The Branz BSD,Kota Tangerang,Banten,AC Type 2 | AC Type 2,2,pln_spklu-2221,svg/pln_spklu-2221.svg
+pln_spklu-2223,(VOLTRON) Pakubuwono View,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2223,svg/pln_spklu-2223.svg
+pln_spklu-2226,(VOLTRON) Plaza Slipi Jaya,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2226,svg/pln_spklu-2226.svg
+pln_spklu-2228,(VOLTRON) Plaza Festival,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2 | CCS2,6,pln_spklu-2228,svg/pln_spklu-2228.svg
+pln_spklu-2229,(VOLTRON) Menara Dea,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2229,svg/pln_spklu-2229.svg
+pln_spklu-2230,(VOLTRON) Rajawali Place - St. Regis Kuningan,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,9,pln_spklu-2230,svg/pln_spklu-2230.svg
+pln_spklu-2231,(VOLTRON) SDC Scientia Park,Kab Tangerang,Banten,AC Type 2 | AC Type 2,2,pln_spklu-2231,svg/pln_spklu-2231.svg
+pln_spklu-2232,(VOLTRON) Plaza Bank Index,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2,4,pln_spklu-2232,svg/pln_spklu-2232.svg
+pln_spklu-2233,(VOLTRON) Menara Thamrin,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2,4,pln_spklu-2233,svg/pln_spklu-2233.svg
+pln_spklu-2234,(VOLTRON) Mall @ Bassurra,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2234,svg/pln_spklu-2234.svg
+pln_spklu-2235,(VOLTRON) Arkadia Green Park,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2235,svg/pln_spklu-2235.svg
+pln_spklu-2236,(VOLTRON) AIA Central,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2236,svg/pln_spklu-2236.svg
+pln_spklu-2237,(VOLTRON) Equity Tower,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2 | CCS2,5,pln_spklu-2237,svg/pln_spklu-2237.svg
+pln_spklu-2238,(VOLTRON) Prudential Tower,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,4,pln_spklu-2238,svg/pln_spklu-2238.svg
+pln_spklu-2239,(VOLTRON) Alamanda Tower,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-2239,svg/pln_spklu-2239.svg
+pln_spklu-2240,(VOLTRON) Lippo Park Serpong,Kota Tangerang,Banten,AC Type 2 | AC Type 2 | CCS2,3,pln_spklu-2240,svg/pln_spklu-2240.svg
+pln_spklu-2242,(VOLTRON) TKDN,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2242,svg/pln_spklu-2242.svg
+pln_spklu-2244,(VOLTRON) Senayan City Mall,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2244,svg/pln_spklu-2244.svg
+pln_spklu-2245,(VOLTRON) JW Marriott Hotel Jakarta,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2245,svg/pln_spklu-2245.svg
+pln_spklu-2246,(VOLTRON) The Ritz Carlton Mega Kuningan,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-2246,svg/pln_spklu-2246.svg
+pln_spklu-2247,(VOLTRON) South Hills,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2247,svg/pln_spklu-2247.svg
+pln_spklu-2248,(VOLTRON) McD Kelapa Gading,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2 | CCS2,5,pln_spklu-2248,svg/pln_spklu-2248.svg
+pln_spklu-2249,(VOLTRON) Verde 1 Apartment,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-2249,svg/pln_spklu-2249.svg
+pln_spklu-2250,(VOLTRON) Menara Karya,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-2250,svg/pln_spklu-2250.svg
+pln_spklu-2251,(VOLTRON) 57 Promenade Apartment,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2251,svg/pln_spklu-2251.svg
+pln_spklu-2252,(VOLTRON) Mall Metropolitan Bekasi,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2252,svg/pln_spklu-2252.svg
+pln_spklu-2253,(VOLTRON) Grand Metropolitan  Mall Bekasi,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2253,svg/pln_spklu-2253.svg
+pln_spklu-2254,(VOLTRON) Botanica Apartment,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2254,svg/pln_spklu-2254.svg
+pln_spklu-2260,(WULING) Arista Garuda,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2260,svg/pln_spklu-2260.svg
+pln_spklu-2263,(WULING) Arista Bekasi,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2263,svg/pln_spklu-2263.svg
+pln_spklu-2264,(WULING) Arista Depok,Kota Depok,Jawa Barat,AC Type 2,1,pln_spklu-2264,svg/pln_spklu-2264.svg
+pln_spklu-2265,(WULING) Arista Kalimalang,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-2265,svg/pln_spklu-2265.svg
+pln_spklu-2266,(WULING) Arista Jayakarta,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2266,svg/pln_spklu-2266.svg
+pln_spklu-2269,(WULING) Arista Serpong,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-2269,svg/pln_spklu-2269.svg
+pln_spklu-2270,(WULING) Arista Cianjur,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-2270,svg/pln_spklu-2270.svg
+pln_spklu-2274,(WULING) Arista Pluit,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-2274,svg/pln_spklu-2274.svg
+pln_spklu-2280,(WULING) Arista Cikarang,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2280,svg/pln_spklu-2280.svg
+pln_spklu-2281,(WULING) Arista Kelapa Gading,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-2281,svg/pln_spklu-2281.svg
+pln_spklu-2285,(WULING) Arista Cengkareng,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2285,svg/pln_spklu-2285.svg
+pln_spklu-2286,(WULING) Arista Cikokol,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2286,svg/pln_spklu-2286.svg
+pln_spklu-2290,(WULING) Arista Sukabumi,Kota Sukabumi,Jawa Barat,AC Type 2,1,pln_spklu-2290,svg/pln_spklu-2290.svg
+pln_spklu-2298,(WULING) Arista Cibinong,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-2298,svg/pln_spklu-2298.svg
+pln_spklu-2300,(WULING) Arista Tambun,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2300,svg/pln_spklu-2300.svg
+pln_spklu-2301,(WULING) Arista Ciledug,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2301,svg/pln_spklu-2301.svg
+pln_spklu-2302,(WULING) Arista Kramat Jati,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-2302,svg/pln_spklu-2302.svg
+pln_spklu-2338,(WULING) Kumala Lebakwangi,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-2338,svg/pln_spklu-2338.svg
+pln_spklu-2345,(WULING) Prima Fatmawati,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2345,svg/pln_spklu-2345.svg
+pln_spklu-2346,(WULING) Prima Cibubur,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-2346,svg/pln_spklu-2346.svg
+pln_spklu-2347,(WULING) Prima Daan Mogot,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2347,svg/pln_spklu-2347.svg
+pln_spklu-2348,(WULING) Prima Cikupa,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-2348,svg/pln_spklu-2348.svg
+pln_spklu-2350,(WULING) Prima Kebon Jeruk,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2350,svg/pln_spklu-2350.svg
+pln_spklu-2354,(WULING) Prima Harmoni,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2354,svg/pln_spklu-2354.svg
+pln_spklu-2358,(WULING) Maju Motor Pondok Gede,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-2358,svg/pln_spklu-2358.svg
+pln_spklu-2359,(WULING) Maju Motor Karawaci,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2359,svg/pln_spklu-2359.svg
+pln_spklu-2360,(WULING) Maju Motor Ciputat,Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-2360,svg/pln_spklu-2360.svg
+pln_spklu-2364,(WULING) Maju Motor Senayan,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2364,svg/pln_spklu-2364.svg
+pln_spklu-2368,(WULING) Maju Motor Cikarang Barat,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2368,svg/pln_spklu-2368.svg
+pln_spklu-2375,(WULING) Wuling Experience Center Pondok Indah,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2375,svg/pln_spklu-2375.svg
+pln_spklu-2376,(WULING) WAS Jagakarsa,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2376,svg/pln_spklu-2376.svg
+pln_spklu-2378,"SPKLU Utomo Charge+ Thamrin Nine - UoB Plaza, Jakarta",Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2 | AC Type 2,16,pln_spklu-2378,svg/pln_spklu-2378.svg
+pln_spklu-2385,Wisma SSK - Daan Mogot,Kota ADM Jakarta Barat,DKI Jakarta,CCS2,3,pln_spklu-2385,svg/pln_spklu-2385.svg
+pln_spklu-2390,Akastra Motor,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2390,svg/pln_spklu-2390.svg
+pln_spklu-2392,Astrido Toyota Cileungsi,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-2392,svg/pln_spklu-2392.svg
+pln_spklu-2393,Astrido Toyota Klender,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-2393,svg/pln_spklu-2393.svg
+pln_spklu-2394,Astrido Toyota Pondok Gede,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2394,svg/pln_spklu-2394.svg
+pln_spklu-2396,AUTO2000 Alam Sutera,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2396,svg/pln_spklu-2396.svg
+pln_spklu-2399,AUTO2000 Bekasi Timur,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2399,svg/pln_spklu-2399.svg
+pln_spklu-2400,AUTO2000 Cibinong,Kota Bogor,Jawa Barat,AC Type 2,1,pln_spklu-2400,svg/pln_spklu-2400.svg
+pln_spklu-2401,AUTO2000 Ciledug,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2401,svg/pln_spklu-2401.svg
+pln_spklu-2404,AUTO2000 Kalimalang,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-2404,svg/pln_spklu-2404.svg
+pln_spklu-2408,AUTO2000 Tangerang,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2408,svg/pln_spklu-2408.svg
+pln_spklu-2410,AUTO2000 Tebet Saharjo,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2 | CCS2,7,pln_spklu-2410,svg/pln_spklu-2410.svg
+pln_spklu-2429,Selamat Toyota Sukabumi,Kota Sukabumi,Jawa Barat,AC Type 2,1,pln_spklu-2429,svg/pln_spklu-2429.svg
+pln_spklu-2431,Tunas Toyota Balaraja,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-2431,svg/pln_spklu-2431.svg
+pln_spklu-2432,Tunas Toyota Bekasi,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2432,svg/pln_spklu-2432.svg
+pln_spklu-2433,Tunas Toyota Bintaro,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2433,svg/pln_spklu-2433.svg
+pln_spklu-2435,Tunas Toyota Cinere,Kota Depok,Jawa Barat,AC Type 2,1,pln_spklu-2435,svg/pln_spklu-2435.svg
+pln_spklu-2436,Tunas Toyota Cipondoh,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2436,svg/pln_spklu-2436.svg
+pln_spklu-2437,Tunas Toyota Ciputat,Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-2437,svg/pln_spklu-2437.svg
+pln_spklu-2438,Tunas Toyota Jatinegara,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-2438,svg/pln_spklu-2438.svg
+pln_spklu-2439,Tunas Toyota Jatiwaringin,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2439,svg/pln_spklu-2439.svg
+pln_spklu-2440,Tunas Toyota Kebayoran Lama,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2440,svg/pln_spklu-2440.svg
+pln_spklu-2441,Tunas Toyota Latumenten,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2441,svg/pln_spklu-2441.svg
+pln_spklu-2442,Tunas Toyota Mampang,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2442,svg/pln_spklu-2442.svg
+pln_spklu-2443,Tunas Toyota Pasar Minggu,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2443,svg/pln_spklu-2443.svg
+pln_spklu-2444,Tunas Toyota Pecenongan,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2444,svg/pln_spklu-2444.svg
+pln_spklu-2445,Tunas Toyota Radin Inten,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | CCS2,2,pln_spklu-2445,svg/pln_spklu-2445.svg
+pln_spklu-2448,Tunas Toyota Tangerang,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2448,svg/pln_spklu-2448.svg
+pln_spklu-2453,Gandaria City Mall (Basement 1 - pintu ACE Hardware / Khusus Toyota & Lexus),Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,4,pln_spklu-2453,svg/pln_spklu-2453.svg
+pln_spklu-2454,Grand Indonesia (Arjuna Lobby - West Mall),Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2454,svg/pln_spklu-2454.svg
+pln_spklu-2459,(INDOMOBIL) Nissan Puri Indah,Kota ADM Jakarta Barat,DKI Jakarta,CCS2,1,pln_spklu-2459,svg/pln_spklu-2459.svg
+pln_spklu-2460,(INDOMOBIL) Nissan TB Simatupang,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,1,pln_spklu-2460,svg/pln_spklu-2460.svg
+pln_spklu-2461,(INDOMOBIL) Nissan Roxy,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2,1,pln_spklu-2461,svg/pln_spklu-2461.svg
+pln_spklu-2463,(INDOMOBIL) KIA Pondok Indah,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,2,pln_spklu-2463,svg/pln_spklu-2463.svg
+pln_spklu-2464,(INDOMOBIL) KIA Bintaro,Kota Tangerang Selatan,Banten,CCS2,1,pln_spklu-2464,svg/pln_spklu-2464.svg
+pln_spklu-2466,(INDOMOBIL) KIA MT. Haryono,Kota ADM Jakarta Timur,DKI Jakarta,CCS2,1,pln_spklu-2466,svg/pln_spklu-2466.svg
+pln_spklu-2467,(INDOMOBIL) KIA Sedayu Klp Gading,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,1,pln_spklu-2467,svg/pln_spklu-2467.svg
+pln_spklu-2469,(INDOMOBIL) Citroen Halim,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-2469,svg/pln_spklu-2469.svg
+pln_spklu-2470,(INDOMOBIL) Citroen Pantai Indah Kapuk,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2 | CCS2,5,pln_spklu-2470,svg/pln_spklu-2470.svg
+pln_spklu-2471,(PARKING+) RUMANAMI hotel & restaurant,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2471,svg/pln_spklu-2471.svg
+pln_spklu-2472,(PARKING+) The Pakubuwono Residence,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,4,pln_spklu-2472,svg/pln_spklu-2472.svg
+pln_spklu-2473,(PARKING+) Kota Kasablanka,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2473,svg/pln_spklu-2473.svg
+pln_spklu-2474,(PARKING+) Kejaksaan Agung,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-2474,svg/pln_spklu-2474.svg
+pln_spklu-2476,(PARKING+) Kemang Village Residence,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-2476,svg/pln_spklu-2476.svg
+pln_spklu-2478,(PARKING+) Supermal Karawaci,Kab Tangerang,Banten,AC Type 2,2,pln_spklu-2478,svg/pln_spklu-2478.svg
+pln_spklu-2480,(Terra Charge) Apartemen Saveria BSD,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-2480,svg/pln_spklu-2480.svg
+pln_spklu-2481,(Terra Charge) Bogor Icon Apartment,Kota Bogor,Jawa Barat,AC Type 2,1,pln_spklu-2481,svg/pln_spklu-2481.svg
+pln_spklu-2482,(Terra Charge) Bintaro Icon Apartment,Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-2482,svg/pln_spklu-2482.svg
+pln_spklu-2483,(Terra Charge) Vega Hotel,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2483,svg/pln_spklu-2483.svg
+pln_spklu-2484,(Terra Charge) Apartemen Eksekutif Menteng,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2484,svg/pln_spklu-2484.svg
+pln_spklu-2485,(Terra Charge) Sky Garden Setiabudi,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2485,svg/pln_spklu-2485.svg
+pln_spklu-2486,(Terra Charge) Pondok Cabe Golf,Kota Tangerang Selatan,Banten,AC Type 2 | AC Type 2,2,pln_spklu-2486,svg/pln_spklu-2486.svg
+pln_spklu-2487,(Terra Charge) Fraser Residence Menteng,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2487,svg/pln_spklu-2487.svg
+pln_spklu-2488,(Terra Charge) Mega Plaza,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2488,svg/pln_spklu-2488.svg
+pln_spklu-2490,(Terra Charge) Ra Suites,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,3,pln_spklu-2490,svg/pln_spklu-2490.svg
+pln_spklu-2491,(Terra Charge) Cibis Park,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2491,svg/pln_spklu-2491.svg
+pln_spklu-2492,(Terra Charge) Mediterania Lagoon Residences,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2492,svg/pln_spklu-2492.svg
+pln_spklu-2493,(Terra Charge) Great Western Resort,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2493,svg/pln_spklu-2493.svg
+pln_spklu-2494,(Terra Charge) Mardhika Park Apartment,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2494,svg/pln_spklu-2494.svg
+pln_spklu-2495,(Terra Charge) Menara Kuningan (Taman Kantor E3.3),Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2495,svg/pln_spklu-2495.svg
+pln_spklu-2496,(VOLTRON) Paradise Mansion Apartment,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-2496,svg/pln_spklu-2496.svg
+pln_spklu-2497,(VOLTRON) Apartment Park View,Kota Depok,Jawa Barat,AC Type 2,2,pln_spklu-2497,svg/pln_spklu-2497.svg
+pln_spklu-2498,(VOLTRON) Aryaduta Lippo Village & Aryaduta Country Club,Kab Tangerang,Banten,AC Type 2,2,pln_spklu-2498,svg/pln_spklu-2498.svg
+pln_spklu-2499,(VOLTRON) Imperial Klub Golf,Kab Tangerang,Banten,AC Type 2,2,pln_spklu-2499,svg/pln_spklu-2499.svg
+pln_spklu-2500,(VOLTRON) Mall Boxies 123,Kota Bogor,Jawa Barat,AC Type 2,2,pln_spklu-2500,svg/pln_spklu-2500.svg
+pln_spklu-2501,(VOLTRON) Aryaduta Menteng,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2501,svg/pln_spklu-2501.svg
+pln_spklu-2502,(VOLTRON) Citragrand Cibubur CBD,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-2502,svg/pln_spklu-2502.svg
+pln_spklu-2503,(VOLTRON) Embarcadero Suites,Kota Tangerang Selatan,Banten,AC Type 2,2,pln_spklu-2503,svg/pln_spklu-2503.svg
+pln_spklu-2505,(VOLTRON) Fairview & Hillcrest,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-2505,svg/pln_spklu-2505.svg
+pln_spklu-2506,(VOLTRON) TOTO Wisma 81,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-2506,svg/pln_spklu-2506.svg
+pln_spklu-2507,(VOLTRON) Apartemen Holland Village,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2507,svg/pln_spklu-2507.svg
+pln_spklu-2508,(VOLTRON) McDonald's Gading Serpong,Kab Tangerang,Banten,AC Type 2,2,pln_spklu-2508,svg/pln_spklu-2508.svg
+pln_spklu-2509,(VOLTRON) McDonald's Alam Sutera,Kota Tangerang Selatan,Banten,AC Type 2,2,pln_spklu-2509,svg/pln_spklu-2509.svg
+pln_spklu-2510,(VOLTRON) Nine Residence,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2510,svg/pln_spklu-2510.svg
+pln_spklu-2511,(VOLTRON) Providence Park Apartment,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2511,svg/pln_spklu-2511.svg
+pln_spklu-2512,(VOLTRON) Seasons City Mall,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2,4,pln_spklu-2512,svg/pln_spklu-2512.svg
+pln_spklu-2513,(VOLTRON) Soho Pancoran,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2513,svg/pln_spklu-2513.svg
+pln_spklu-2514,(VOLTRON) Thamrin City,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2514,svg/pln_spklu-2514.svg
+pln_spklu-2515,(VOLTRON) The St. Moritz Apartment,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-2515,svg/pln_spklu-2515.svg
+pln_spklu-2516,(VOLTRON) Trinity Tower,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,4,pln_spklu-2516,svg/pln_spklu-2516.svg
+pln_spklu-2517,(VOLTRON) Verde Two Apartment,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,3,pln_spklu-2517,svg/pln_spklu-2517.svg
+pln_spklu-2518,(VOLTRON) Intiland Tower,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2 | AC Type 2,5,pln_spklu-2518,svg/pln_spklu-2518.svg
+pln_spklu-2519,(VOLTRON) South Quarter Office,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2519,svg/pln_spklu-2519.svg
+pln_spklu-2521,(VOLTRON) McDonald's Puri Indah Kembangan,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-2521,svg/pln_spklu-2521.svg
+pln_spklu-2522,(VOLTRON) ESDM,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2 | CCS2 | CCS2,9,pln_spklu-2522,svg/pln_spklu-2522.svg
+pln_spklu-2523,(VOLTRON) DPR RI,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | AC Type 2,2,pln_spklu-2523,svg/pln_spklu-2523.svg
+pln_spklu-2524,(VOLTRON) Jasamarga,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-2524,svg/pln_spklu-2524.svg
+pln_spklu-2526,(VOLTRON) LTC Glodok,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-2526,svg/pln_spklu-2526.svg
+pln_spklu-2527,(VOLTRON) Metropolitan Mall Cibubur,Kab Bogor,Jawa Barat,AC Type 2,2,pln_spklu-2527,svg/pln_spklu-2527.svg
+pln_spklu-2528,(VOLTRON) Starbucks Metland Cyber City,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-2528,svg/pln_spklu-2528.svg
+pln_spklu-2529,(VOLTRON) Menara Citicon,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-2529,svg/pln_spklu-2529.svg
+pln_spklu-2530,(VOLTRON) Baywalk Mall,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-2530,svg/pln_spklu-2530.svg
+pln_spklu-2531,(VOLTRON) Plaza Kenari Mas,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2531,svg/pln_spklu-2531.svg
+pln_spklu-2532,(VOLTRON) Graha BIP,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2532,svg/pln_spklu-2532.svg
+pln_spklu-2533,(VOLTRON) Harco Glodok,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-2533,svg/pln_spklu-2533.svg
+pln_spklu-2534,(VOLTRON) Pacific Place Residence,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2534,svg/pln_spklu-2534.svg
+pln_spklu-2536,(VOLTRON) Blok M Square,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2536,svg/pln_spklu-2536.svg
+pln_spklu-2537,(VOLTRON) One Belpark Mall,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,5,pln_spklu-2537,svg/pln_spklu-2537.svg
+pln_spklu-2538,(VOLTRON) Kondominium Menara Kelapa Gading,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-2538,svg/pln_spklu-2538.svg
+pln_spklu-2539,(VOLTRON) Apartemen Bona Vista,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2539,svg/pln_spklu-2539.svg
+pln_spklu-2540,(VOLTRON) Evenciio Apartment,Kota Depok,Jawa Barat,AC Type 2,2,pln_spklu-2540,svg/pln_spklu-2540.svg
+pln_spklu-2541,(VOLTRON) Hotel Neo+ @ Icon Kebayoran,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2541,svg/pln_spklu-2541.svg
+pln_spklu-2542,(VOLTRON) Springhill Royale Suites,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-2542,svg/pln_spklu-2542.svg
+pln_spklu-2543,(VOLTRON) Mall Matahari Daan Mogot,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-2543,svg/pln_spklu-2543.svg
+pln_spklu-2544,(VOLTRON) Pesona Square Mall,Kota Depok,Jawa Barat,AC Type 2,4,pln_spklu-2544,svg/pln_spklu-2544.svg
+pln_spklu-2545,(VOLTRON) McDonald's Ciputra International,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-2545,svg/pln_spklu-2545.svg
+pln_spklu-2546,(VOLTRON) Padina Soho Residences,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-2546,svg/pln_spklu-2546.svg
+pln_spklu-2547,(VOLTRON) Living World Alam Sutera,Kota Tangerang Selatan,Banten,AC Type 2 | AC Type 2 | CCS2 | CCS2,8,pln_spklu-2547,svg/pln_spklu-2547.svg
+pln_spklu-2548,(VOLTRON) The City Tower,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2548,svg/pln_spklu-2548.svg
+pln_spklu-2549,(VOLTRON) Brawijaya Hospital Saharjo,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2549,svg/pln_spklu-2549.svg
+pln_spklu-2550,(VOLTRON) Batavia PIK,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,6,pln_spklu-2550,svg/pln_spklu-2550.svg
+pln_spklu-2551,(VOLTRON) Regatta Marketing Office,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-2551,svg/pln_spklu-2551.svg
+pln_spklu-2553,(VOLTRON) HK Tower Cawang,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | CCS2,4,pln_spklu-2553,svg/pln_spklu-2553.svg
+pln_spklu-2554,(VOLTRON) Springhill Terrace Residences,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2554,svg/pln_spklu-2554.svg
+pln_spklu-2555,(VOLTRON) By The Sea Shopping District at Golf Island PIK,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-2555,svg/pln_spklu-2555.svg
+pln_spklu-2556,(VOLTRON) McDonald's Ampera,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-2556,svg/pln_spklu-2556.svg
+pln_spklu-2557,(VOLTRON) Plaza Mandiri,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2 | CCS2,5,pln_spklu-2557,svg/pln_spklu-2557.svg
+pln_spklu-2558,(VOLTRON) Apartemen Menara Marina Condominium,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2 | CCS2,4,pln_spklu-2558,svg/pln_spklu-2558.svg
+pln_spklu-2560,(VOLTRON) Lippo Thamrin,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2560,svg/pln_spklu-2560.svg
+pln_spklu-2561,(VOLTRON) Mandiri University Daan Mogot,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-2561,svg/pln_spklu-2561.svg
+pln_spklu-2569,(VOLTRON) The Elements,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2569,svg/pln_spklu-2569.svg
+pln_spklu-2570,(STARVO) Antam Office Building,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,4,pln_spklu-2570,svg/pln_spklu-2570.svg
+pln_spklu-2571,(STARVO) Apartemen Permata Senayan,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2571,svg/pln_spklu-2571.svg
+pln_spklu-2572,(STARVO) Asyana Kemayoran Jakarta,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2572,svg/pln_spklu-2572.svg
+pln_spklu-2573,(STARVO) Asyana Sentul Bogor,Kab Bogor,Jawa Barat,AC Type 2 | AC Type 2,2,pln_spklu-2573,svg/pln_spklu-2573.svg
+pln_spklu-2575,(STARVO) Avenzel Hotel and Convention Cibubur,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2575,svg/pln_spklu-2575.svg
+pln_spklu-2576,(STARVO) Cikarang Listrindo - EJIP Center,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2576,svg/pln_spklu-2576.svg
+pln_spklu-2577,(STARVO) Cikarang Listrindo - MM2100 OFFICE,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2577,svg/pln_spklu-2577.svg
+pln_spklu-2578,(STARVO) Cyber 2 Tower,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2 | AC Type 2,4,pln_spklu-2578,svg/pln_spklu-2578.svg
+pln_spklu-2580,(STARVO) DENSO Indonesia 1,Kab Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-2580,svg/pln_spklu-2580.svg
+pln_spklu-2582,(STARVO) Electronic City SCBD,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,3,pln_spklu-2582,svg/pln_spklu-2582.svg
+pln_spklu-2583,(STARVO) Erajaya Plaza,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-2583,svg/pln_spklu-2583.svg
+pln_spklu-2584,(STARVO) Fieris Hotel,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-2584,svg/pln_spklu-2584.svg
+pln_spklu-2585,(STARVO) FK UIN Syarif Hidayatullah Jakarta,Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-2585,svg/pln_spklu-2585.svg
+pln_spklu-2586,(STARVO) Gedung Artha Graha,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2586,svg/pln_spklu-2586.svg
+pln_spklu-2587,(STARVO) Gedung Wisma Mertha 2 - Balai Pustaka,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-2587,svg/pln_spklu-2587.svg
+pln_spklu-2588,(STARVO) Graha Indramas KS. Tubun,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2588,svg/pln_spklu-2588.svg
+pln_spklu-2589,(STARVO) Gran Melia Hotel Jakarta,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2589,svg/pln_spklu-2589.svg
+pln_spklu-2590,(STARVO) Grand Mercure Jakarta Harmoni,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2590,svg/pln_spklu-2590.svg
+pln_spklu-2591,(STARVO) Grand Mercure Kemayoran,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2591,svg/pln_spklu-2591.svg
+pln_spklu-2593,(STARVO) Jababeka Golf & Country Club,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2593,svg/pln_spklu-2593.svg
+pln_spklu-2597,(STARVO) LG Electronics Indonesia,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2597,svg/pln_spklu-2597.svg
+pln_spklu-2598,(STARVO) Lorin Sentul Hotel,Kab Bogor,Jawa Barat,AC Type 2 | AC Type 2,2,pln_spklu-2598,svg/pln_spklu-2598.svg
+pln_spklu-2601,(STARVO) M-Ten,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2601,svg/pln_spklu-2601.svg
+pln_spklu-2602,(STARVO) Mangga Dua Square,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2 | AC Type 2,5,pln_spklu-2602,svg/pln_spklu-2602.svg
+pln_spklu-2603,(STARVO) Manhattan Hotel Jakarta,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2 | AC Type 2,5,pln_spklu-2603,svg/pln_spklu-2603.svg
+pln_spklu-2606,(STARVO) Maybank Wisma Eka Jiwa Mg. Dua,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | AC Type 2,2,pln_spklu-2606,svg/pln_spklu-2606.svg
+pln_spklu-2607,(STARVO) Menara Mandiri Sudirman,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,3,pln_spklu-2607,svg/pln_spklu-2607.svg
+pln_spklu-2608,(STARVO) Menara Sun Life,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,3,pln_spklu-2608,svg/pln_spklu-2608.svg
+pln_spklu-2610,(STARVO) Morrissey Hotel,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2610,svg/pln_spklu-2610.svg
+pln_spklu-2612,(STARVO) Mulia Hotel Senayan Jakarta,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2612,svg/pln_spklu-2612.svg
+pln_spklu-2616,(STARVO) Novus Hotel Giri Puncak,Kab Cianjur,Jawa Barat,AC Type 2 | AC Type 2,2,pln_spklu-2616,svg/pln_spklu-2616.svg
+pln_spklu-2619,(STARVO) Omron Manufacturing Of Indonesia,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2619,svg/pln_spklu-2619.svg
+pln_spklu-2620,(STARVO) ON Space BSD,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-2620,svg/pln_spklu-2620.svg
+pln_spklu-2621,(STARVO) One Satrio,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2621,svg/pln_spklu-2621.svg
+pln_spklu-2622,(STARVO) Plaza Senayan,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,8,pln_spklu-2622,svg/pln_spklu-2622.svg
+pln_spklu-2623,(STARVO) PT JFE Steel Galvanizing Indonesia,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2623,svg/pln_spklu-2623.svg
+pln_spklu-2624,(STARVO) PT. Aisin Indonesia,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2624,svg/pln_spklu-2624.svg
+pln_spklu-2625,(STARVO) PT. KRAKATAU SARANA PROPERTI,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2 | AC Type 2,3,pln_spklu-2625,svg/pln_spklu-2625.svg
+pln_spklu-2626,(STARVO) Ra Mampang Tower,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2626,svg/pln_spklu-2626.svg
+pln_spklu-2629,(STARVO) Setiabudi One,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-2629,svg/pln_spklu-2629.svg
+pln_spklu-2630,(STARVO) Starbucks Elang Laut PIK,Kota ADM Jakarta Utara,DKI Jakarta,CCS2 | AC Type 2 | CCS2 | AC Type 2,10,pln_spklu-2630,svg/pln_spklu-2630.svg
+pln_spklu-2631,(STARVO) Starbucks Pacific Garden Alam Sutera,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-2631,svg/pln_spklu-2631.svg
+pln_spklu-2632,(STARVO) STO Telkom Gambir,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2632,svg/pln_spklu-2632.svg
+pln_spklu-2633,(STARVO) Sumitomo Electric Wintec Indonesia,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2633,svg/pln_spklu-2633.svg
+pln_spklu-2634,(STARVO) TE Setiabudi One,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,1,pln_spklu-2634,svg/pln_spklu-2634.svg
+pln_spklu-2635,(STARVO) Telkom Property,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2635,svg/pln_spklu-2635.svg
+pln_spklu-2636,(STARVO) THE 1O1 Jakarta Airport CBC,Kota Tangerang,Banten,AC Type 2 | AC Type 2,2,pln_spklu-2636,svg/pln_spklu-2636.svg
+pln_spklu-2638,(STARVO) The Manhattan Square,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,4,pln_spklu-2638,svg/pln_spklu-2638.svg
+pln_spklu-2639,(STARVO) The Stature Jakarta,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2639,svg/pln_spklu-2639.svg
+pln_spklu-2641,(STARVO) Wisma Barito Pacific I,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2 | CCS2,5,pln_spklu-2641,svg/pln_spklu-2641.svg
+pln_spklu-2642,(STARVO) Wisma Barito Pacific II,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,3,pln_spklu-2642,svg/pln_spklu-2642.svg
+pln_spklu-2643,(STARVO) WISMA KEIAI,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2643,svg/pln_spklu-2643.svg
+pln_spklu-2644,(STARVO) WTC Mangga Dua,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,3,pln_spklu-2644,svg/pln_spklu-2644.svg
+pln_spklu-2645,(Terra Charge) Sudirman Hill,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2645,svg/pln_spklu-2645.svg
+pln_spklu-2646,(Terra Charge) Apartemen Sayana Harapan Indah,Kab Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-2646,svg/pln_spklu-2646.svg
+pln_spklu-2647,(Terra Charge) Hotel Santika Premiere Kota Harapan Indah,Kab Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-2647,svg/pln_spklu-2647.svg
+pln_spklu-2653,(HVT) Mediterania Garden 1,Kota ADM Jakarta Barat,DKI Jakarta,CCS2,6,pln_spklu-2653,svg/pln_spklu-2653.svg
+pln_spklu-2654,(HVT) Mediterania Garden 2,Kota ADM Jakarta Barat,DKI Jakarta,CCS2,3,pln_spklu-2654,svg/pln_spklu-2654.svg
+pln_spklu-2656,(HVT) Apartment Sherwood,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,3,pln_spklu-2656,svg/pln_spklu-2656.svg
+pln_spklu-2657,(HVT) Graha Niaga,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-2657,svg/pln_spklu-2657.svg
+pln_spklu-2658,(BLUECHARGE) Rs Emc Tangerang,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2658,svg/pln_spklu-2658.svg
+pln_spklu-2659,(BLUECHARGE) Ventura Building Jakarta,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2659,svg/pln_spklu-2659.svg
+pln_spklu-2660,(BLUECHARGE) Kuningan City Jakarta,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-2660,svg/pln_spklu-2660.svg
+pln_spklu-2661,(BLUECHARGE) Soewarna Golf,Kota Tangerang,Banten,AC Type 2,2,pln_spklu-2661,svg/pln_spklu-2661.svg
+pln_spklu-2662,(BLUECHARGE) Pelindo Tower,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2662,svg/pln_spklu-2662.svg
+pln_spklu-2663,(BLUECHARGE) Smesco Tower,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2663,svg/pln_spklu-2663.svg
+pln_spklu-2664,(BLUECHARGE) Mall Artha Gading,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-2664,svg/pln_spklu-2664.svg
+pln_spklu-2665,(BLUECHARGE) Bintaro Avenue,Kota Tangerang Selatan,Banten,AC Type 2,2,pln_spklu-2665,svg/pln_spklu-2665.svg
+pln_spklu-2667,(BLUECHARGE) Central Park,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2667,svg/pln_spklu-2667.svg
+pln_spklu-2668,(BLUECHARGE) Mall Daan Mogot,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-2668,svg/pln_spklu-2668.svg
+pln_spklu-2669,(BLUECHARGE) BASURA CITY MALL,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-2669,svg/pln_spklu-2669.svg
+pln_spklu-2670,(BLUECHARGE) MOI APARTMENT-LYON GARDEN,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-2670,svg/pln_spklu-2670.svg
+pln_spklu-2671,(BLUECHARGE) Cibinong City Mall,Kab Bogor,Jawa Barat,AC Type 2,2,pln_spklu-2671,svg/pln_spklu-2671.svg
+pln_spklu-2672,(BLUECHARGE) Menara Sentraya,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2672,svg/pln_spklu-2672.svg
+pln_spklu-2674,(BLUECHARGE) MOI APARTMENT-EVIAN GARDEN,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-2674,svg/pln_spklu-2674.svg
+pln_spklu-2675,(BLUECHARGE) SUDIRMAN TOWER CONDOMINIUM,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2675,svg/pln_spklu-2675.svg
+pln_spklu-2676,(BLUECHARGE) GRAMEDIA MATRAMAN,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-2676,svg/pln_spklu-2676.svg
+pln_spklu-2683,(VOLTRON) Mungkuluhur Aartotel,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2683,svg/pln_spklu-2683.svg
+pln_spklu-2708,(VOLTRON) Charging Station,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2708,svg/pln_spklu-2708.svg
+pln_spklu-2713,(VOLTRON) Basurra City Tower F,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2713,svg/pln_spklu-2713.svg
+pln_spklu-2721,(VOLTRON) Charging Station,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,5,pln_spklu-2721,svg/pln_spklu-2721.svg
+pln_spklu-2729,(VOLTRON) Apartemen Marina Tower,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-2729,svg/pln_spklu-2729.svg
+pln_spklu-2730,(VOLTRON) Apartemen Airlangga,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2730,svg/pln_spklu-2730.svg
+pln_spklu-2732,(VOLTRON) Waskita Rajawali Tower,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,3,pln_spklu-2732,svg/pln_spklu-2732.svg
+pln_spklu-2734,(VOLTRON) MCD Alam Sutera,Kota Tangerang Selatan,Banten,AC Type 2,2,pln_spklu-2734,svg/pln_spklu-2734.svg
+pln_spklu-2735,(VOLTRON) Waskita IDSurvey Tower,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-2735,svg/pln_spklu-2735.svg
+pln_spklu-2737,(VOLTRON) Mcd Puri Kembangan,Kota Tangerang Selatan,Banten,AC Type 2 | AC Type 2,3,pln_spklu-2737,svg/pln_spklu-2737.svg
+pln_spklu-2738,(VOLTRON) McD Ciputra Internasional,Kota Tangerang Selatan,Banten,AC Type 2,2,pln_spklu-2738,svg/pln_spklu-2738.svg
+pln_spklu-2739,(VOLTRON) McD Puri Kembangan,Kota ADM Jakarta Barat,DKI Jakarta,CCS2 | CCS2,29,pln_spklu-2739,svg/pln_spklu-2739.svg
+pln_spklu-2740,(VOLTRON) McD Sunter Barat,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-2740,svg/pln_spklu-2740.svg
+pln_spklu-2741,(VOLTRON) McD Jatiasih,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-2741,svg/pln_spklu-2741.svg
+pln_spklu-2742,(VOLTRON) McD TB Simatupang,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-2742,svg/pln_spklu-2742.svg
+pln_spklu-2743,(VOLTRON) McD Grand Wisata,Kab Bekasi,Jawa Barat,CCS2,3,pln_spklu-2743,svg/pln_spklu-2743.svg
+pln_spklu-2744,(VOLTRON) MCD Bumi Serpong Damai,Kota Bekasi,Jawa Barat,CCS2,3,pln_spklu-2744,svg/pln_spklu-2744.svg
+pln_spklu-2746,(VOLTRON) McD Perdatam,Kab Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-2746,svg/pln_spklu-2746.svg
+pln_spklu-2748,(VOLTRON) MCD Salemba Raya,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2,6,pln_spklu-2748,svg/pln_spklu-2748.svg
+pln_spklu-2753,(VOLTRON) McD Otista Raya,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2753,svg/pln_spklu-2753.svg
+pln_spklu-2754,(VOLTRON) McD Cibitung,Kab Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-2754,svg/pln_spklu-2754.svg
+pln_spklu-2755,(VOLTRON) MCD Kota Harapan Indah,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-2755,svg/pln_spklu-2755.svg
+pln_spklu-2756,(VOLTRON) MCD Otista Raya,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,2,pln_spklu-2756,svg/pln_spklu-2756.svg
+pln_spklu-2757,(VOLTRON) McDonald's Bintaro Sektor 9,Kota Tangerang Selatan,Banten,CCS2,2,pln_spklu-2757,svg/pln_spklu-2757.svg
+pln_spklu-2772,(VOLTRON) Bintaro Jaya Xchange Mall 2,Kota Tangerang Selatan,Banten,CCS2 | AC Type 2,3,pln_spklu-2772,svg/pln_spklu-2772.svg
+pln_spklu-2773,(VOLTRON) Lippo Kuningan,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-2773,svg/pln_spklu-2773.svg
+pln_spklu-2775,(VOLTRON) ASG PIK 2 Central Market,Kota Tangerang,Banten,AC Type 2 | CCS2 | CCS2,7,pln_spklu-2775,svg/pln_spklu-2775.svg
+pln_spklu-2776,(VOLTRON) Food Centrum,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-2776,svg/pln_spklu-2776.svg
+pln_spklu-2777,(VOLTRON) Noble House,Kota Bekasi,Jawa Barat,AC Type 2 | CCS2,3,pln_spklu-2777,svg/pln_spklu-2777.svg
+pln_spklu-2778,(VOLTRON) MKG Kemayoran,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2,2,pln_spklu-2778,svg/pln_spklu-2778.svg
+pln_spklu-2779,(VOLTRON) Artotel Gelora Senayan Jakarta,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2,5,pln_spklu-2779,svg/pln_spklu-2779.svg
+pln_spklu-2780,(VOLTRON) Dipo Tower,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-2780,svg/pln_spklu-2780.svg
+pln_spklu-2781,(VOLTRON) Botani Square Mall Bogor,Kota Bogor,Jawa Barat,AC Type 2 | CCS2,3,pln_spklu-2781,svg/pln_spklu-2781.svg
+pln_spklu-2783,(VOLTRON) Equity Tower UFC,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | AC Type 2,3,pln_spklu-2783,svg/pln_spklu-2783.svg
+pln_spklu-2786,(STROOM PPI) Centennial Tower,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-2786,svg/pln_spklu-2786.svg
+pln_spklu-2788,(STROOM PPI) Essence Darmawangsa,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2 | AC Type 2,6,pln_spklu-2788,svg/pln_spklu-2788.svg
+pln_spklu-2789,(STROOM PPI) ICE BSD Hall 1,Kab Tangerang,Banten,AC Type 2 | CCS2,5,pln_spklu-2789,svg/pln_spklu-2789.svg
+pln_spklu-2790,(STROOM PPI) ICE BSD Hall 10,Kab Tangerang,Banten,AC Type 2 | CCS2,5,pln_spklu-2790,svg/pln_spklu-2790.svg
+pln_spklu-2792,(STROOM PPI) MSIG Sinarmas Sudirman,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,3,pln_spklu-2792,svg/pln_spklu-2792.svg
+pln_spklu-2793,(STROOM PPI) Nifarro Park,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,4,pln_spklu-2793,svg/pln_spklu-2793.svg
+pln_spklu-2795,(STROOM PPI) R Hotel Rancamaya,Kab Cianjur,Jawa Barat,AC Type 2 | CCS2,3,pln_spklu-2795,svg/pln_spklu-2795.svg
+pln_spklu-2796,(STROOM PPI) Rancamaya Marketing Gallery,Kota Bogor,Jawa Barat,AC Type 2 | CCS2,3,pln_spklu-2796,svg/pln_spklu-2796.svg
+pln_spklu-2797,(STROOM PPI) Royal Tulip Gunung Geulis Parking Area,Kota Bogor,Jawa Barat,AC Type 2,2,pln_spklu-2797,svg/pln_spklu-2797.svg
+pln_spklu-2799,(STROOM PPI) SCBD Park,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2 | AC Type 2,4,pln_spklu-2799,svg/pln_spklu-2799.svg
+pln_spklu-2800,(STROOM PPI) Navapark Country Club,Kab Tangerang,Banten,AC Type 2 | CCS2,3,pln_spklu-2800,svg/pln_spklu-2800.svg
+pln_spklu-2801,(STROOM PPI) Navapark North Point,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-2801,svg/pln_spklu-2801.svg
+pln_spklu-2802,(STROOM PPI) Navapark Marigold,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-2802,svg/pln_spklu-2802.svg
+pln_spklu-2803,(DayaGreen) 3 Multi Gudang Daan Mogot,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2803,svg/pln_spklu-2803.svg
+pln_spklu-2812,(DayaGreen) Hotel Alana Sentul City,Kota Bogor,Jawa Barat,AC Type 2,1,pln_spklu-2812,svg/pln_spklu-2812.svg
+pln_spklu-2813,(DayaGreen) Hotel Grand Aston Puncak,Kab Cianjur,Jawa Barat,AC Type 2,1,pln_spklu-2813,svg/pln_spklu-2813.svg
+pln_spklu-2817,(DayaGreen) Office 8 Senopati,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,4,pln_spklu-2817,svg/pln_spklu-2817.svg
+pln_spklu-2818,(DayaGreen) Apartemen Saumata Alam Sutera,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2818,svg/pln_spklu-2818.svg
+pln_spklu-2820,(DayaGreen) CBD Pluit,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2 | AC Type 2,5,pln_spklu-2820,svg/pln_spklu-2820.svg
+pln_spklu-2823,(DayaGreen) Harvest Senopati,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2823,svg/pln_spklu-2823.svg
+pln_spklu-2825,(DayaGreen) Black Owl PIK,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-2825,svg/pln_spklu-2825.svg
+pln_spklu-2826,(DayaGreen) Black Owl Kelapa Gading,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-2826,svg/pln_spklu-2826.svg
+pln_spklu-2829,(DayaGreen) Yuan Garden Pasar Baru,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2829,svg/pln_spklu-2829.svg
+pln_spklu-2830,(DayaGreen) Food Hall The Mansion Dukuh Atas Kemayoran,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2830,svg/pln_spklu-2830.svg
+pln_spklu-2831,(DayaGreen) Minikopi,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2831,svg/pln_spklu-2831.svg
+pln_spklu-2832,(DayaGreen) BMW Ultima,Kota Tangerang Selatan,Banten,AC Type 2,1,pln_spklu-2832,svg/pln_spklu-2832.svg
+pln_spklu-2833,(DayaGreen) PappaJack Kedoya,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-2833,svg/pln_spklu-2833.svg
+pln_spklu-2834,(DayaGreen) Hotel Cipta Pancoran,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2834,svg/pln_spklu-2834.svg
+pln_spklu-2837,(DayaGreen) PappaJack Elang Laut,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-2837,svg/pln_spklu-2837.svg
+pln_spklu-2838,(DayaGreen) The Mansion Jasmine Tower AB,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-2838,svg/pln_spklu-2838.svg
+pln_spklu-2839,(DayaGreen) Tis Square,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2839,svg/pln_spklu-2839.svg
+pln_spklu-2840,(DayaGreen) Multivision Tower,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2840,svg/pln_spklu-2840.svg
+pln_spklu-2841,(DayaGreen) Black Owl Gading Serpong,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-2841,svg/pln_spklu-2841.svg
+pln_spklu-2844,(DayaGreen) Gereja Salvator,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2844,svg/pln_spklu-2844.svg
+pln_spklu-2845,(DayaGreen) Lotus Residence,Kota Depok,Jawa Barat,AC Type 2,1,pln_spklu-2845,svg/pln_spklu-2845.svg
+pln_spklu-2846,(DayaGreen) Paragon Village,Kab Tangerang,Banten,AC Type 2,1,pln_spklu-2846,svg/pln_spklu-2846.svg
+pln_spklu-2847,(DayaGreen) Apartemen Semanan Indah,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2847,svg/pln_spklu-2847.svg
+pln_spklu-2848,(DayaGreen) Mall Taman Palem,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2848,svg/pln_spklu-2848.svg
+pln_spklu-2850,(DayaGreen) Mangga 2 Court,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2850,svg/pln_spklu-2850.svg
+pln_spklu-2852,(DayaGreen) The East,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2 | CCS2,9,pln_spklu-2852,svg/pln_spklu-2852.svg
+pln_spklu-2853,(DayaGreen) Puri Indah Auto Center,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2853,svg/pln_spklu-2853.svg
+pln_spklu-2854,(DayaGreen) Pluit Gading Hospital,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-2854,svg/pln_spklu-2854.svg
+pln_spklu-2855,(DayaGreen) Setiabudi Residences,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2855,svg/pln_spklu-2855.svg
+pln_spklu-2856,(TERRA CHARGE) Pluit Junction Mall,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-2856,svg/pln_spklu-2856.svg
+pln_spklu-2857,(TERRA CHARGE) Apartemen Tamansari Semanggi,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2857,svg/pln_spklu-2857.svg
+pln_spklu-2858,(TERRA CHARGE) Plaza Simatupang,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2858,svg/pln_spklu-2858.svg
+pln_spklu-2860,(TERRA CHARGE) Mitra Oasis Residence,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2860,svg/pln_spklu-2860.svg
+pln_spklu-2861,(TERRA CHARGE) Riverside (Apartemen Muara Indah),Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-2861,svg/pln_spklu-2861.svg
+pln_spklu-2862,(TERRA CHARGE) West Vista Shop House,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,3,pln_spklu-2862,svg/pln_spklu-2862.svg
+pln_spklu-2864,(TERRA CHARGE) World Trade Center DC,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | AC Type 2,10,pln_spklu-2864,svg/pln_spklu-2864.svg
+pln_spklu-2868,(TERRA CHARGE) Harmonie Exchange,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2868,svg/pln_spklu-2868.svg
+pln_spklu-2869,(TERRA CHARGE) Apartemen Grand Dhika City Jatiwarna,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2869,svg/pln_spklu-2869.svg
+pln_spklu-2870,(TERRA CHARGE) MTH Square Apartment,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-2870,svg/pln_spklu-2870.svg
+pln_spklu-2871,(TERRA CHARGE) Mediterania Palace Residences,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2871,svg/pln_spklu-2871.svg
+pln_spklu-2872,(TERRA CHARGE) Trembesi Tower,Kota Tangerang Selatan,Banten,AC Type 2,2,pln_spklu-2872,svg/pln_spklu-2872.svg
+pln_spklu-2873,(TERRA CHARGE) Green Central City,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-2873,svg/pln_spklu-2873.svg
+pln_spklu-2875,(TERRA CHARGE) Gedung Baja,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2875,svg/pln_spklu-2875.svg
+pln_spklu-2876,(TERRA CHARGE) Green Pramuka Square Mall,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2876,svg/pln_spklu-2876.svg
+pln_spklu-2877,(TERRA CHARGE) Kebayoran Apartment,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2877,svg/pln_spklu-2877.svg
+pln_spklu-2878,(TERRA CHARGE) Regent Residences Jakarta,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,4,pln_spklu-2878,svg/pln_spklu-2878.svg
+pln_spklu-2879,(TERRA CHARGE) Plaza Kalibata,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2879,svg/pln_spklu-2879.svg
+pln_spklu-2880,(TERRA CHARGE) Casablanca Mansion,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2880,svg/pln_spklu-2880.svg
+pln_spklu-2881,(TERRA CHARGE) MTH 27 Office Suites (B1),Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,4,pln_spklu-2881,svg/pln_spklu-2881.svg
+pln_spklu-2883,(TERRA CHARGE) Apartemen Elpis Residences,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2883,svg/pln_spklu-2883.svg
+pln_spklu-2886,(TERRA CHARGE) The Grand Mansion Menteng by The Crest Collection,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2886,svg/pln_spklu-2886.svg
+pln_spklu-2888,(TERRA CHARGE) Aloft South Jakarta,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2888,svg/pln_spklu-2888.svg
+pln_spklu-2889,(TERRA CHARGE) La Vie All Suites Apartment,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2889,svg/pln_spklu-2889.svg
+pln_spklu-2890,(TERRA CHARGE) Menara Duta,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2890,svg/pln_spklu-2890.svg
+pln_spklu-2892,(TERRA CHARGE) HDI Hive Menteng,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2892,svg/pln_spklu-2892.svg
+pln_spklu-2893,(TERRA CHARGE) Ra Premiere Simatupang,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2893,svg/pln_spklu-2893.svg
+pln_spklu-2895,(TERRA CHARGE) Ozone Hotel,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-2895,svg/pln_spklu-2895.svg
+pln_spklu-2896,(TERRA CHARGE) Gading Raya Golf Club,Kab Tangerang,Banten,AC Type 2,2,pln_spklu-2896,svg/pln_spklu-2896.svg
+pln_spklu-2897,(TERRA CHARGE) Novotel Bogor Golf Resort and Convention Center,Kab Bogor,Jawa Barat,AC Type 2,2,pln_spklu-2897,svg/pln_spklu-2897.svg
+pln_spklu-2898,(TERRA CHARGE) ibis Styles Bogor Raya,Kab Bogor,Jawa Barat,AC Type 2,1,pln_spklu-2898,svg/pln_spklu-2898.svg
+pln_spklu-2901,(TERRA CHARGE) Wisma Asia BCA,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-2901,svg/pln_spklu-2901.svg
+pln_spklu-2903,(VOLTRON) BYD Haka Auto Bintaro,Kota Tangerang Selatan,Banten,CCS2,2,pln_spklu-2903,svg/pln_spklu-2903.svg
+pln_spklu-2904,(VOLTRON) BYD Haka Auto Cibubur,Kota Bekasi,Jawa Barat,CCS2,2,pln_spklu-2904,svg/pln_spklu-2904.svg
+pln_spklu-2907,(VOLTRON) BYD Haka Auto Warung Buncit,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-2907,svg/pln_spklu-2907.svg
+pln_spklu-2909,(VOLTRON) Gedung Jaya,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2,2,pln_spklu-2909,svg/pln_spklu-2909.svg
+pln_spklu-2910,(VOLTRON) IDD - Indonesia Design District,Kab Tangerang,Banten,CCS2,4,pln_spklu-2910,svg/pln_spklu-2910.svg
+pln_spklu-2911,(VOLTRON) Living World Alam Sutera - West Lobby,Kota Tangerang Selatan,Banten,CCS2 | CCS2,6,pln_spklu-2911,svg/pln_spklu-2911.svg
+pln_spklu-2912,(VOLTRON) McDonald's BSD City,Kota Tangerang Selatan,Banten,CCS2 | AC Type 2,3,pln_spklu-2912,svg/pln_spklu-2912.svg
+pln_spklu-2913,(VOLTRON) McDonald's BSD Sunburst,Kota Tangerang Selatan,Banten,CCS2 | AC Type 2,3,pln_spklu-2913,svg/pln_spklu-2913.svg
+pln_spklu-2919,(VOLTRON) PNM Tower,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-2919,svg/pln_spklu-2919.svg
+pln_spklu-2922,(VOLTRON) Satrio Tower,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-2922,svg/pln_spklu-2922.svg
+pln_spklu-2923,(VOLTRON) Sudirman Mansion,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2 | CCS2,10,pln_spklu-2923,svg/pln_spklu-2923.svg
+pln_spklu-2924,(VOLTRON) The St. Moritz Apartment (Presidential Tower),Kota ADM Jakarta Barat,DKI Jakarta,CCS2,2,pln_spklu-2924,svg/pln_spklu-2924.svg
+pln_spklu-2925,(TERRA CHARGE) Denza Pluit Sales Center,Kota ADM Jakarta Utara,DKI Jakarta,CCS2 | AC Type 2,4,pln_spklu-2925,svg/pln_spklu-2925.svg
+pln_spklu-2926,(TERRA CHARGE) Citra Landmark Ciracas,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-2926,svg/pln_spklu-2926.svg
+pln_spklu-2927,(TERRA CHARGE) Delta Spa Gatot Subroto,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2927,svg/pln_spklu-2927.svg
+pln_spklu-2929,(TERRA CHARGE) Vilo Gelato Menteng,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,1,pln_spklu-2929,svg/pln_spklu-2929.svg
+pln_spklu-2930,SPKLU Utomo Charge+ The Energy Building Medco Power,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | CCS2,4,pln_spklu-2930,svg/pln_spklu-2930.svg
+pln_spklu-2932,SPKLU Utomo Charge+ Arandra Residence,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | CCS2 | AC Type 2,5,pln_spklu-2932,svg/pln_spklu-2932.svg
+pln_spklu-2933,SPKLU Utomo Charge+ Kompas Gramedia Palmerah Barat,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | CCS2 | AC Type 2 | AC Type 2,8,pln_spklu-2933,svg/pln_spklu-2933.svg
+pln_spklu-2934,SPKLU Utomo Charge+ Arena Pekan Raya Jakarta,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,2,pln_spklu-2934,svg/pln_spklu-2934.svg
+pln_spklu-2935,SPKLU Utomo Charge+ Wisma BCA Pondok Indah,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-2935,svg/pln_spklu-2935.svg
+pln_spklu-2936,SPKLU Utomo Charge+ Aeon Mall Deltamas,Kota Bekasi,Jawa Barat,CCS2 | CCS2 | AC Type 2,12,pln_spklu-2936,svg/pln_spklu-2936.svg
+pln_spklu-2937,SPKLU Utomo Charge+ Binus University at Bekasi,Kota Bekasi,Jawa Barat,AC Type 2 | CCS2 | AC Type 2 | AC Type 2 | AC Type 2,8,pln_spklu-2937,svg/pln_spklu-2937.svg
+pln_spklu-2939,SPKLU Utomo Charge+ Depo Bangunan Serpong,Kota Tangerang Selatan,Banten,CCS2 | CCS2 | AC Type 2,8,pln_spklu-2939,svg/pln_spklu-2939.svg
+pln_spklu-2944,(TERRA CHARGE) Sky Terrace Lagoon Condo,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2944,svg/pln_spklu-2944.svg
+pln_spklu-2945,(TERRA CHARGE) Apartemen Palm Mansion,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2945,svg/pln_spklu-2945.svg
+pln_spklu-2946,(TERRA CHARGE) Metropolitan Tower,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2946,svg/pln_spklu-2946.svg
+pln_spklu-2953,SPKLU Utomo Charge+ CGK Hub,Kota Tangerang,Banten,CCS2,8,pln_spklu-2953,svg/pln_spklu-2953.svg
+pln_spklu-2954,SPKLU Utomo Charge+ Oakwood Premier Cozmo Jakarta,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2 | CCS2,4,pln_spklu-2954,svg/pln_spklu-2954.svg
+pln_spklu-2957,(HVT) ISTIQLAL GLOBAL FUND,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2,2,pln_spklu-2957,svg/pln_spklu-2957.svg
+pln_spklu-2958,(HVT) WYNDHAM CASABLANCA JAKARTA,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,3,pln_spklu-2958,svg/pln_spklu-2958.svg
+pln_spklu-2959,(HVT) APARTMENT THAMRIN EXECUTIVE,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2,3,pln_spklu-2959,svg/pln_spklu-2959.svg
+pln_spklu-2960,(HVT) GRAHA EL NUSA,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | CCS2 | AC Type 2,5,pln_spklu-2960,svg/pln_spklu-2960.svg
+pln_spklu-2961,(HVT) MADISON PARK,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2,2,pln_spklu-2961,svg/pln_spklu-2961.svg
+pln_spklu-2962,(HVT) GRAND MADISON,Kota ADM Jakarta Barat,DKI Jakarta,CCS2,3,pln_spklu-2962,svg/pln_spklu-2962.svg
+pln_spklu-2964,(HVT) SEASON CITY,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2,2,pln_spklu-2964,svg/pln_spklu-2964.svg
+pln_spklu-2965,(HVT) WISMA KORINDO,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | CCS2 | AC Type 2,4,pln_spklu-2965,svg/pln_spklu-2965.svg
+pln_spklu-2966,(HVT) KALIBATA CITY,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-2966,svg/pln_spklu-2966.svg
+pln_spklu-2967,(HVT) SUDIRMAN PARK,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2,2,pln_spklu-2967,svg/pln_spklu-2967.svg
+pln_spklu-2968,(HVT) GADING MEDITERANIA,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,3,pln_spklu-2968,svg/pln_spklu-2968.svg
+pln_spklu-2970,(Terra Charge) Branz Mega Kuningan,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2970,svg/pln_spklu-2970.svg
+pln_spklu-2971,(Terra Charge) SGC Mall,Kab Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2971,svg/pln_spklu-2971.svg
+pln_spklu-2974,(Terra Charge) City Park,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,1,pln_spklu-2974,svg/pln_spklu-2974.svg
+pln_spklu-2975,(Terra Charge) Green Terrace,Kota ADM Jakarta Timur,DKI Jakarta,AC Type 2,1,pln_spklu-2975,svg/pln_spklu-2975.svg
+pln_spklu-2977,(Terra Charge) Hive Harapan Indah,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-2977,svg/pln_spklu-2977.svg
+pln_spklu-2978,(Terra Charge) Bellezza Permata Hijau,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,3,pln_spklu-2978,svg/pln_spklu-2978.svg
+pln_spklu-2979,(Terra Charge) Batavia Apartment Tower 1,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2979,svg/pln_spklu-2979.svg
+pln_spklu-2981,(Terra Charge) KEM Tower,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2981,svg/pln_spklu-2981.svg
+pln_spklu-2982,(Terra Charge) The Mansion Bougenville,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,2,pln_spklu-2982,svg/pln_spklu-2982.svg
+pln_spklu-2987,(Terra Charge) JBA Cabang Jakarta - Raya,Kota Tangerang,Banten,AC Type 2,1,pln_spklu-2987,svg/pln_spklu-2987.svg
+pln_spklu-2990,(Terra Charge) Hamptons Park Apartment,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,2,pln_spklu-2990,svg/pln_spklu-2990.svg
+pln_spklu-2993,(Terra Charge) DoubleTree by Hilton Jakarta Diponegoro,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-2993,svg/pln_spklu-2993.svg
+pln_spklu-2995,(Terra Charge) Apartemen Grand Dhika City Bekasi,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-2995,svg/pln_spklu-2995.svg
+pln_spklu-2996,(Terra Charge) Eaton Muara Karang,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-2996,svg/pln_spklu-2996.svg
+pln_spklu-2998,(Terra Charge) Mall Ciputra Cibubur,Kota Bekasi,Jawa Barat,AC Type 2,2,pln_spklu-2998,svg/pln_spklu-2998.svg
+pln_spklu-2999,(Terra Charge) Multika Building,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2,1,pln_spklu-2999,svg/pln_spklu-2999.svg
+pln_spklu-3001,(Terra Charge) Lagoon Avenue Mall Bekasi,Kota Bekasi,Jawa Barat,AC Type 2,1,pln_spklu-3001,svg/pln_spklu-3001.svg
+pln_spklu-3002,(Terra Charge) Roxy Square,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-3002,svg/pln_spklu-3002.svg
+pln_spklu-3003,(Terra Charge) Ayam Taliwang Asad,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,2,pln_spklu-3003,svg/pln_spklu-3003.svg
+pln_spklu-3004,(Terra Charge) Fresh Fields,Kota ADM Jakarta Barat,DKI Jakarta,AC Type 2,2,pln_spklu-3004,svg/pln_spklu-3004.svg
+pln_spklu-3008,(VOLTRON) Aletra Kemang,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-3008,svg/pln_spklu-3008.svg
+pln_spklu-3009,(VOLTRON) Aletra Pluit,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,2,pln_spklu-3009,svg/pln_spklu-3009.svg
+pln_spklu-3010,(VOLTRON) BYD Haka Auto Kebon Jeruk,Kota ADM Jakarta Barat,DKI Jakarta,CCS2,2,pln_spklu-3010,svg/pln_spklu-3010.svg
+pln_spklu-3011,(VOLTRON) Indosat Ooredoo KPPTI Jakarta Pusat,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2 | AC Type 2,3,pln_spklu-3011,svg/pln_spklu-3011.svg
+pln_spklu-3012,(VOLTRON) LTI Rental Mobil - Head Office,Kota Tangerang,Banten,CCS2 | CCS2,4,pln_spklu-3012,svg/pln_spklu-3012.svg
+pln_spklu-3013,(VOLTRON) Menara Mandiri Wijaya Kusuma,Kota ADM Jakarta Barat,DKI Jakarta,CCS2,2,pln_spklu-3013,svg/pln_spklu-3013.svg
+pln_spklu-3014,(VOLTRON) Pizza Hut Ristorante Gatot Subroto,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-3014,svg/pln_spklu-3014.svg
+pln_spklu-3015,(VOLTRON) SPBU COCO Cikini 31.103.03 Pertamina,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2,2,pln_spklu-3015,svg/pln_spklu-3015.svg
+pln_spklu-3018,SPKLU Utomo Charge+ Pearl Garden Appartmen,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | AC Type 2,3,pln_spklu-3018,svg/pln_spklu-3018.svg
+pln_spklu-3021,SPKLU Utomo Charge+ Pekan Raya Jakarta,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,2,pln_spklu-3021,svg/pln_spklu-3021.svg
+pln_spklu-3024,SPKLU Utomo Charge+ Binus JWC,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-3024,svg/pln_spklu-3024.svg
+pln_spklu-3025,SPKLU Utomo Charge+ Kompas Tower,Kota ADM Jakarta Pusat,DKI Jakarta,AC Type 2,2,pln_spklu-3025,svg/pln_spklu-3025.svg
+pln_spklu-3026,SPKLU Utomo Charge+ Denza Gatot Subroto,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-3026,svg/pln_spklu-3026.svg
+pln_spklu-3027,SPKLU Utomo Charge+ Beltway,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,2,pln_spklu-3027,svg/pln_spklu-3027.svg
+pln_spklu-3039,SPKLU Utomo Charge+ BIPO Cimone Tangerang,Kota Tangerang,Banten,CCS2,2,pln_spklu-3039,svg/pln_spklu-3039.svg
+pln_spklu-3041,SPKLU Utomo Charge+ BIPO BYD Serpong,Kota Tangerang Selatan,Banten,CCS2,2,pln_spklu-3041,svg/pln_spklu-3041.svg
+pln_spklu-3042,SPKLU Utomo Charge+ Mobility Hub MT Haryono,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2 | CCS2,15,pln_spklu-3042,svg/pln_spklu-3042.svg
+pln_spklu-3047,SPKLU Utomo Charge+ Menara Kadin,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,6,pln_spklu-3047,svg/pln_spklu-3047.svg
+pln_spklu-3048,SPKLU Utomo Charge+ Graha Irama,Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2,15,pln_spklu-3048,svg/pln_spklu-3048.svg
+pln_spklu-3049,SPKLU Utomo Charge+ Simprug Indah (360),Kota ADM Jakarta Selatan,DKI Jakarta,AC Type 2 | CCS2 | CCS2,15,pln_spklu-3049,svg/pln_spklu-3049.svg
+pln_spklu-3050,SPKLU Utomo Charge+ Paladian,Kota ADM Jakarta Utara,DKI Jakarta,CCS2,2,pln_spklu-3050,svg/pln_spklu-3050.svg
+pln_spklu-3051,SPKLU Utomo Charge+ Urban Hub,Kota ADM Jakarta Pusat,DKI Jakarta,CCS2,12,pln_spklu-3051,svg/pln_spklu-3051.svg
+pln_spklu-3056,SPKLU El Hotel Jakarta RheCharge,Kota ADM Jakarta Utara,DKI Jakarta,AC Type 2,1,pln_spklu-3056,svg/pln_spklu-3056.svg
+pln_spklu-3057,(iGreen+) 107 Soekarno-Hatta,Kota Tangerang,Banten,CCS2,16,pln_spklu-3057,svg/pln_spklu-3057.svg
+pln_spklu-3059,(iGreen+) The Landmark Center,Kota ADM Jakarta Selatan,DKI Jakarta,CCS2,8,pln_spklu-3059,svg/pln_spklu-3059.svg

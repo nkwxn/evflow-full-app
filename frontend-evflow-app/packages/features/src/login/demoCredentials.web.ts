@@ -8,4 +8,4 @@
 // code clean and the value swappable, not hidden.
 const viteEnv = (import.meta as unknown as { env?: Record<string, string | undefined> }).env;
 
-export const DEMO_PASSWORD = viteEnv?.VITE_DEMO_PASSWORD ?? '';
+export const DEMO_PASSWORD = viteEnv?.VITE_DEMO_PASSWORD ?? 'evflow-demo-2026';
