@@ -1,0 +1,2077 @@
+{
+  "backend-ev-flow/alembic/env.py": {
+    "mtime": 1784958961.6617923,
+    "ast_hash": "8a1ad09378d2a6bdf6e423534fc04555",
+    "semantic_hash": "8a1ad09378d2a6bdf6e423534fc04555"
+  },
+  "backend-ev-flow/alembic/versions/0001_stations.py": {
+    "mtime": 1781150635.7875202,
+    "ast_hash": "d71038325b35a7c2cf3291142387b6f8",
+    "semantic_hash": "d71038325b35a7c2cf3291142387b6f8"
+  },
+  "backend-ev-flow/alembic/versions/0002_wallet_topups.py": {
+    "mtime": 1781150635.7876685,
+    "ast_hash": "837920b66d7a64377c586fa64cb328c7",
+    "semantic_hash": "837920b66d7a64377c586fa64cb328c7"
+  },
+  "backend-ev-flow/alembic/versions/0003_station_connectors.py": {
+    "mtime": 1781150635.7878246,
+    "ast_hash": "48ee029363615e1f7efd915364bf1f2a",
+    "semantic_hash": "48ee029363615e1f7efd915364bf1f2a"
+  },
+  "backend-ev-flow/alembic/versions/0004_users.py": {
+    "mtime": 1781150635.7879727,
+    "ast_hash": "ee3011368f654ed53e62643e875f10b3",
+    "semantic_hash": "ee3011368f654ed53e62643e875f10b3"
+  },
+  "backend-ev-flow/alembic/versions/0005_charging_sessions.py": {
+    "mtime": 1781342497.9727104,
+    "ast_hash": "099fc6cf86239b1bd386ad2b5cadf284",
+    "semantic_hash": "099fc6cf86239b1bd386ad2b5cadf284"
+  },
+  "backend-ev-flow/alembic/versions/0006_user_scoped_wallet.py": {
+    "mtime": 1784385362.19244,
+    "ast_hash": "8bcd340b47e27932fdc1e2bd5cfeef08",
+    "semantic_hash": "8bcd340b47e27932fdc1e2bd5cfeef08"
+  },
+  "backend-ev-flow/alembic/versions/0007_password_reset_tokens.py": {
+    "mtime": 1784385362.1927605,
+    "ast_hash": "3592428fc6b1e39e09dc0726345bb4d8",
+    "semantic_hash": "3592428fc6b1e39e09dc0726345bb4d8"
+  },
+  "backend-ev-flow/alembic/versions/0008_user_password_changed_at.py": {
+    "mtime": 1784385362.1930559,
+    "ast_hash": "5e9b9392e96de58abc215af1642c24cd",
+    "semantic_hash": "5e9b9392e96de58abc215af1642c24cd"
+  },
+  "backend-ev-flow/alembic/versions/0009_connectors_table.py": {
+    "mtime": 1784958961.6622264,
+    "ast_hash": "c167eb24b9decde4b94a14ee5014f1e8",
+    "semantic_hash": "c167eb24b9decde4b94a14ee5014f1e8"
+  },
+  "backend-ev-flow/alembic/versions/0010_add_brand_and_ev_models.py": {
+    "mtime": 1786365676.199011,
+    "ast_hash": "6658ff9a9b36bf77b2cbdac3b4f72c86",
+    "semantic_hash": "6658ff9a9b36bf77b2cbdac3b4f72c86"
+  },
+  "backend-ev-flow/alembic/versions/0011_enrich_ev_models.py": {
+    "mtime": 1786365676.2000117,
+    "ast_hash": "a58aa6d26406b5e36514b35e906d2af7",
+    "semantic_hash": "a58aa6d26406b5e36514b35e906d2af7"
+  },
+  "backend-ev-flow/alembic/versions/0012_charging_time_minutes.py": {
+    "mtime": 1786365676.2008374,
+    "ast_hash": "34acd058b40b0ac185d067bfe08a7e58",
+    "semantic_hash": "34acd058b40b0ac185d067bfe08a7e58"
+  },
+  "backend-ev-flow/alembic/versions/0013_backfill_max_dc_charge_kw.py": {
+    "mtime": 1785137553.9817033,
+    "ast_hash": "f3908e32346f589058dd1587b9d1474b",
+    "semantic_hash": "f3908e32346f589058dd1587b9d1474b"
+  },
+  "backend-ev-flow/alembic/versions/0014_dataset_tables.py": {
+    "mtime": 1785424037.6109939,
+    "ast_hash": "a04c10ce75400d2174db04df5464be2c",
+    "semantic_hash": "a04c10ce75400d2174db04df5464be2c"
+  },
+  "backend-ev-flow/alembic/versions/0015_charging_sessions_conn_ix.py": {
+    "mtime": 1785424037.6112785,
+    "ast_hash": "17137c776cc019192251d0d34ed7ef3a",
+    "semantic_hash": "17137c776cc019192251d0d34ed7ef3a"
+  },
+  "backend-ev-flow/api/__init__.py": {
+    "mtime": 1781150635.7882042,
+    "ast_hash": "33aca75da872bf70847dff21f8661707",
+    "semantic_hash": "33aca75da872bf70847dff21f8661707"
+  },
+  "backend-ev-flow/api/charging_repo.py": {
+    "mtime": 1784958961.6633756,
+    "ast_hash": "3ff2f90ca194d2a9facaea6eb8f600fe",
+    "semantic_hash": "3ff2f90ca194d2a9facaea6eb8f600fe"
+  },
+  "backend-ev-flow/api/connectors.py": {
+    "mtime": 1785203414.7803292,
+    "ast_hash": "3d180bb88a34c36abe0164c0236d6436",
+    "semantic_hash": "3d180bb88a34c36abe0164c0236d6436"
+  },
+  "backend-ev-flow/api/connectors_repo.py": {
+    "mtime": 1785564081.6394036,
+    "ast_hash": "ff88ae9762cccf782bb0a53421c52670",
+    "semantic_hash": "ff88ae9762cccf782bb0a53421c52670"
+  },
+  "backend-ev-flow/api/data.py": {
+    "mtime": 1781150635.7888749,
+    "ast_hash": "b5f2bcb26facb4f5a31ef3bc840d92c4",
+    "semantic_hash": "b5f2bcb26facb4f5a31ef3bc840d92c4"
+  },
+  "backend-ev-flow/api/db.py": {
+    "mtime": 1784958961.6646507,
+    "ast_hash": "ee47b67620330692b3bbe211bd3fe6a9",
+    "semantic_hash": "ee47b67620330692b3bbe211bd3fe6a9"
+  },
+  "backend-ev-flow/api/dedup.py": {
+    "mtime": 1785203414.7813044,
+    "ast_hash": "3a5698131d1cf0730b9f57206d5386d3",
+    "semantic_hash": "3a5698131d1cf0730b9f57206d5386d3"
+  },
+  "backend-ev-flow/api/evmodels.py": {
+    "mtime": 1785424037.613198,
+    "ast_hash": "4f6183984370551165ea8b330a2a2fdd",
+    "semantic_hash": "4f6183984370551165ea8b330a2a2fdd"
+  },
+  "backend-ev-flow/api/export_openapi.py": {
+    "mtime": 1781150635.7898169,
+    "ast_hash": "808816a8d5c5f3e629b839c17d9b98ba",
+    "semantic_hash": "808816a8d5c5f3e629b839c17d9b98ba"
+  },
+  "backend-ev-flow/api/google_oauth.py": {
+    "mtime": 1781150635.7899542,
+    "ast_hash": "e7b093158fca7c6c59899513867e7b71",
+    "semantic_hash": "e7b093158fca7c6c59899513867e7b71"
+  },
+  "backend-ev-flow/api/listing_identity.py": {
+    "mtime": 1785203414.7823348,
+    "ast_hash": "168d96ded0477661ee92800bd65e662b",
+    "semantic_hash": "168d96ded0477661ee92800bd65e662b"
+  },
+  "backend-ev-flow/api/log_privacy.py": {
+    "mtime": 1785137553.982954,
+    "ast_hash": "772d56ab237bba18b2bf62deb57b6b30",
+    "semantic_hash": "772d56ab237bba18b2bf62deb57b6b30"
+  },
+  "backend-ev-flow/api/mailer.py": {
+    "mtime": 1786365676.2022438,
+    "ast_hash": "d017594fa60f0de533a649c130b4197b",
+    "semantic_hash": "d017594fa60f0de533a649c130b4197b"
+  },
+  "backend-ev-flow/api/main.py": {
+    "mtime": 1786365676.20317,
+    "ast_hash": "acfb74b87a38ad14b151cc486a97f453",
+    "semantic_hash": "acfb74b87a38ad14b151cc486a97f453"
+  },
+  "backend-ev-flow/api/models.py": {
+    "mtime": 1786365676.204164,
+    "ast_hash": "2d68662a9e6a1d2674bb63fc075589b0",
+    "semantic_hash": "2d68662a9e6a1d2674bb63fc075589b0"
+  },
+  "backend-ev-flow/api/password_reset_repo.py": {
+    "mtime": 1784385362.1959693,
+    "ast_hash": "4eb93b4b911166648430b17075ad6c89",
+    "semantic_hash": "4eb93b4b911166648430b17075ad6c89"
+  },
+  "backend-ev-flow/api/pricing.py": {
+    "mtime": 1784958961.666756,
+    "ast_hash": "104b39d66b08f5d08c940f1a1f04fe03",
+    "semantic_hash": "104b39d66b08f5d08c940f1a1f04fe03"
+  },
+  "backend-ev-flow/api/rate_limit.py": {
+    "mtime": 1786365676.2049806,
+    "ast_hash": "52d0ba3e2e7a7903d0c09b7d391b104d",
+    "semantic_hash": "52d0ba3e2e7a7903d0c09b7d391b104d"
+  },
+  "backend-ev-flow/api/routing.py": {
+    "mtime": 1785143517.0450752,
+    "ast_hash": "6e70320520daff9750f2201366b0c50d",
+    "semantic_hash": "6e70320520daff9750f2201366b0c50d"
+  },
+  "backend-ev-flow/api/security.py": {
+    "mtime": 1786365676.2059546,
+    "ast_hash": "c0f2222e7a1b34b5f6fe8225f3a906ed",
+    "semantic_hash": "c0f2222e7a1b34b5f6fe8225f3a906ed"
+  },
+  "backend-ev-flow/api/services/connector_compat.py": {
+    "mtime": 1785137553.9860122,
+    "ast_hash": "6c57aa6f26d226b6a6c9cd88334ac8b5",
+    "semantic_hash": "6c57aa6f26d226b6a6c9cd88334ac8b5"
+  },
+  "backend-ev-flow/api/services/energy_estimator.py": {
+    "mtime": 1785164491.9145272,
+    "ast_hash": "68c8a931d2084f861b7b923803dbde59",
+    "semantic_hash": "68c8a931d2084f861b7b923803dbde59"
+  },
+  "backend-ev-flow/api/services/geocoding_service.py": {
+    "mtime": 1785137553.9874718,
+    "ast_hash": "ca5b0052d0f665d8cb14873e9f81c1b0",
+    "semantic_hash": "ca5b0052d0f665d8cb14873e9f81c1b0"
+  },
+  "backend-ev-flow/api/services/routing_service.py": {
+    "mtime": 1786365676.2072601,
+    "ast_hash": "c3c07041ba7f123524fbc630cb2cd44b",
+    "semantic_hash": "c3c07041ba7f123524fbc630cb2cd44b"
+  },
+  "backend-ev-flow/api/services/service_area.py": {
+    "mtime": 1786365676.2082806,
+    "ast_hash": "6ff895cefea218ab7e453bf9478c7e15",
+    "semantic_hash": "6ff895cefea218ab7e453bf9478c7e15"
+  },
+  "backend-ev-flow/api/services/station_availability.py": {
+    "mtime": 1785137553.9895525,
+    "ast_hash": "bd757bdce5042668066d0d280aebf5ab",
+    "semantic_hash": "bd757bdce5042668066d0d280aebf5ab"
+  },
+  "backend-ev-flow/api/services/stop_ranker.py": {
+    "mtime": 1785137553.9900978,
+    "ast_hash": "8be6d4f7db7efdc235152ccf23443182",
+    "semantic_hash": "8be6d4f7db7efdc235152ccf23443182"
+  },
+  "backend-ev-flow/api/sources.py": {
+    "mtime": 1785424037.615454,
+    "ast_hash": "c4c5a11098a48f4b53c287de9eab688f",
+    "semantic_hash": "c4c5a11098a48f4b53c287de9eab688f"
+  },
+  "backend-ev-flow/api/stations_repo.py": {
+    "mtime": 1786365676.2090015,
+    "ast_hash": "2829ed6732ab38f91445338bb912c410",
+    "semantic_hash": "2829ed6732ab38f91445338bb912c410"
+  },
+  "backend-ev-flow/api/users_repo.py": {
+    "mtime": 1785203414.792312,
+    "ast_hash": "034b1f3e8a90dd07bcdc635eaa00a65e",
+    "semantic_hash": "034b1f3e8a90dd07bcdc635eaa00a65e"
+  },
+  "backend-ev-flow/api/wallet_repo.py": {
+    "mtime": 1784385362.1997473,
+    "ast_hash": "a0ee1b737b05f2cb35c4888bc98255fb",
+    "semantic_hash": "a0ee1b737b05f2cb35c4888bc98255fb"
+  },
+  "backend-ev-flow/api/xendit.py": {
+    "mtime": 1781150635.7924023,
+    "ast_hash": "8a075d6c584866a9f82f3978f1a79eb7",
+    "semantic_hash": "8a075d6c584866a9f82f3978f1a79eb7"
+  },
+  "backend-ev-flow/data/processed/ev_models_enriched.json": {
+    "mtime": 1784989144.8286204,
+    "ast_hash": "50d65e095c99d167d16dc87cbe437352",
+    "semantic_hash": "50d65e095c99d167d16dc87cbe437352"
+  },
+  "backend-ev-flow/data/raw/_petaspklu_all.json": {
+    "mtime": 1784736139.0221243,
+    "ast_hash": "4acaf316d104e821b8c49e05af5802be",
+    "semantic_hash": "4acaf316d104e821b8c49e05af5802be"
+  },
+  "backend-ev-flow/data/raw/ocm_jakarta.json": {
+    "mtime": 1784736139.0310109,
+    "ast_hash": "74bef3a438ec2020ce9d53b91e29996b",
+    "semantic_hash": "74bef3a438ec2020ce9d53b91e29996b"
+  },
+  "backend-ev-flow/data/raw/osm_charging_jakarta.json": {
+    "mtime": 1784736139.0324945,
+    "ast_hash": "85370cb2971f8e76e275da82a952c9c3",
+    "semantic_hash": "85370cb2971f8e76e275da82a952c9c3"
+  },
+  "backend-ev-flow/data/raw/other_charging.json": {
+    "mtime": 1784736139.0516393,
+    "ast_hash": "a28cbcf59f8a14e9b0e689836ef2edab",
+    "semantic_hash": "a28cbcf59f8a14e9b0e689836ef2edab"
+  },
+  "backend-ev-flow/js_chunk-4GWYCJGF.js": {
+    "mtime": 1781150635.7984393,
+    "ast_hash": "bfebf739a6fe6190f273e7ea89b4bcb7",
+    "semantic_hash": "bfebf739a6fe6190f273e7ea89b4bcb7"
+  },
+  "backend-ev-flow/js_chunk-65W3YJKS.js": {
+    "mtime": 1781150635.7987125,
+    "ast_hash": "c50acb5714d7120d5c6f97fe4ff05c41",
+    "semantic_hash": "c50acb5714d7120d5c6f97fe4ff05c41"
+  },
+  "backend-ev-flow/js_chunk-CIKMPLB5.js": {
+    "mtime": 1781150635.8073225,
+    "ast_hash": "52bfe0bc5ba6c234042580aa316251ae",
+    "semantic_hash": "52bfe0bc5ba6c234042580aa316251ae"
+  },
+  "backend-ev-flow/js_chunk-DSEC6U57.js": {
+    "mtime": 1781150635.8104057,
+    "ast_hash": "e54e47895ba0b0d26b27639649357d18",
+    "semantic_hash": "e54e47895ba0b0d26b27639649357d18"
+  },
+  "backend-ev-flow/js_chunk-DVEICXNX.js": {
+    "mtime": 1781150635.8108804,
+    "ast_hash": "c8eaa9ee2c5328a3df1b6e3198a94fd4",
+    "semantic_hash": "c8eaa9ee2c5328a3df1b6e3198a94fd4"
+  },
+  "backend-ev-flow/js_chunk-HTKMR2T7.js": {
+    "mtime": 1781150635.8110883,
+    "ast_hash": "3860d97ffd6353539fb9f4f5058346e5",
+    "semantic_hash": "3860d97ffd6353539fb9f4f5058346e5"
+  },
+  "backend-ev-flow/js_chunk-KDCPNIPY.js": {
+    "mtime": 1781150635.8113298,
+    "ast_hash": "df84d1746953afc3a530079f68357585",
+    "semantic_hash": "df84d1746953afc3a530079f68357585"
+  },
+  "backend-ev-flow/js_chunk-LJWPKC7B.js": {
+    "mtime": 1781150635.8117695,
+    "ast_hash": "5657e15e828d7de4cc88b677275376fd",
+    "semantic_hash": "5657e15e828d7de4cc88b677275376fd"
+  },
+  "backend-ev-flow/js_chunk-LMWYHRFT.js": {
+    "mtime": 1781150635.812207,
+    "ast_hash": "ee43779849f0ec30a9e5c465b070cb17",
+    "semantic_hash": "ee43779849f0ec30a9e5c465b070cb17"
+  },
+  "backend-ev-flow/js_chunk-POMQ5MYC.js": {
+    "mtime": 1781150635.8124392,
+    "ast_hash": "bb29c9363f7e506b99096f99e997550e",
+    "semantic_hash": "bb29c9363f7e506b99096f99e997550e"
+  },
+  "backend-ev-flow/js_main-NC7VSAV4.js": {
+    "mtime": 1781150635.8127356,
+    "ast_hash": "e06c03637c3c67a19ebb80f17e35b066",
+    "semantic_hash": "e06c03637c3c67a19ebb80f17e35b066"
+  },
+  "backend-ev-flow/openapi.json": {
+    "mtime": 1781150635.8141742,
+    "ast_hash": "2afe7b062dc01fdcd622fe8fd5c2204f",
+    "semantic_hash": "2afe7b062dc01fdcd622fe8fd5c2204f"
+  },
+  "backend-ev-flow/scripts/0010_enrich_ev_models.sql": {
+    "mtime": 1784971584.1366718,
+    "ast_hash": "85791ba44bb4f0d3ee16f05f27c91655",
+    "semantic_hash": "85791ba44bb4f0d3ee16f05f27c91655"
+  },
+  "backend-ev-flow/scripts/__init__.py": {
+    "mtime": 1781150635.8164377,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "backend-ev-flow/scripts/build_road_graph.py": {
+    "mtime": 1786365676.2111802,
+    "ast_hash": "62092b78f1bdd2592dc0286cc7a10295",
+    "semantic_hash": "62092b78f1bdd2592dc0286cc7a10295"
+  },
+  "backend-ev-flow/scripts/ev_union.py": {
+    "mtime": 1785424037.6166189,
+    "ast_hash": "7767623ba3efc2a5b916ff5e5b41ada9",
+    "semantic_hash": "7767623ba3efc2a5b916ff5e5b41ada9"
+  },
+  "backend-ev-flow/scripts/import_api_data.py": {
+    "mtime": 1785564081.642606,
+    "ast_hash": "704c99ac4eee326be9c0217a655d570a",
+    "semantic_hash": "704c99ac4eee326be9c0217a655d570a"
+  },
+  "backend-ev-flow/scripts/import_ev_models.py": {
+    "mtime": 1786365676.2122462,
+    "ast_hash": "91f27521612b5ef951e77589d790c221",
+    "semantic_hash": "91f27521612b5ef951e77589d790c221"
+  },
+  "backend-ev-flow/scripts/ingest_raw.py": {
+    "mtime": 1785424037.617932,
+    "ast_hash": "e4c825a14a45b87002183eba3bfb59d1",
+    "semantic_hash": "e4c825a14a45b87002183eba3bfb59d1"
+  },
+  "backend-ev-flow/scripts/seed_db.py": {
+    "mtime": 1785424037.618826,
+    "ast_hash": "b5c56589b7d8cf8146418c18ac272d5f",
+    "semantic_hash": "b5c56589b7d8cf8146418c18ac272d5f"
+  },
+  "backend-ev-flow/scripts/smoke_test.sh": {
+    "mtime": 1781150635.8173559,
+    "ast_hash": "07cbfd37a53f7cd7b2afb6d4276229fc",
+    "semantic_hash": "07cbfd37a53f7cd7b2afb6d4276229fc"
+  },
+  "backend-ev-flow/scripts/verify_tls.sh": {
+    "mtime": 1786365676.2132308,
+    "ast_hash": "7cbef7318b0a66a7fc18e3e4780ab4bb",
+    "semantic_hash": "7cbef7318b0a66a7fc18e3e4780ab4bb"
+  },
+  "backend-ev-flow/scripts/wrangle_ev_dataset.py": {
+    "mtime": 1786365676.2140677,
+    "ast_hash": "b1e45680a8eb72015b6e8ab78580ae4a",
+    "semantic_hash": "b1e45680a8eb72015b6e8ab78580ae4a"
+  },
+  "backend-ev-flow/tests/conftest.py": {
+    "mtime": 1786365676.21455,
+    "ast_hash": "9b7442d289d14a2563dd0ca9ec93ff5b",
+    "semantic_hash": "9b7442d289d14a2563dd0ca9ec93ff5b"
+  },
+  "backend-ev-flow/tests/test_api_surface_coverage.py": {
+    "mtime": 1786365676.2153115,
+    "ast_hash": "600fe6f86cf3f94a9b45eaaaac00ac4d",
+    "semantic_hash": "600fe6f86cf3f94a9b45eaaaac00ac4d"
+  },
+  "backend-ev-flow/tests/test_auth_db.py": {
+    "mtime": 1784958961.669521,
+    "ast_hash": "dd915619cb0e5a1eacdaf9b396efa339",
+    "semantic_hash": "dd915619cb0e5a1eacdaf9b396efa339"
+  },
+  "backend-ev-flow/tests/test_auth_security_coverage.py": {
+    "mtime": 1786365676.216023,
+    "ast_hash": "610371374506449a32ecd952202dbb10",
+    "semantic_hash": "610371374506449a32ecd952202dbb10"
+  },
+  "backend-ev-flow/tests/test_charging_db.py": {
+    "mtime": 1784958961.6704295,
+    "ast_hash": "11852b914e29cbb623e2fd7a116a172e",
+    "semantic_hash": "11852b914e29cbb623e2fd7a116a172e"
+  },
+  "backend-ev-flow/tests/test_connector_compat.py": {
+    "mtime": 1785137553.9926138,
+    "ast_hash": "d26d09bf2080cfaf9c0fdc9577651c26",
+    "semantic_hash": "d26d09bf2080cfaf9c0fdc9577651c26"
+  },
+  "backend-ev-flow/tests/test_connectors.py": {
+    "mtime": 1785203414.797031,
+    "ast_hash": "edd1f05bc79b650335801ea700c7cc94",
+    "semantic_hash": "edd1f05bc79b650335801ea700c7cc94"
+  },
+  "backend-ev-flow/tests/test_connectors_db.py": {
+    "mtime": 1784958961.6709976,
+    "ast_hash": "f722fd5228e1b95b8f2946ccf5e68e64",
+    "semantic_hash": "f722fd5228e1b95b8f2946ccf5e68e64"
+  },
+  "backend-ev-flow/tests/test_data_pipeline_coverage.py": {
+    "mtime": 1785424037.6211786,
+    "ast_hash": "0c4b6f4dff789807791516f637280adc",
+    "semantic_hash": "0c4b6f4dff789807791516f637280adc"
+  },
+  "backend-ev-flow/tests/test_db.py": {
+    "mtime": 1781150635.8191564,
+    "ast_hash": "8220e9b4be3ec45970853b437d8d1a8d",
+    "semantic_hash": "8220e9b4be3ec45970853b437d8d1a8d"
+  },
+  "backend-ev-flow/tests/test_dedup.py": {
+    "mtime": 1785203414.7991865,
+    "ast_hash": "35ce1d392d351800ae4079ba9048003c",
+    "semantic_hash": "35ce1d392d351800ae4079ba9048003c"
+  },
+  "backend-ev-flow/tests/test_energy_estimator.py": {
+    "mtime": 1785164943.5573263,
+    "ast_hash": "a3affa1d986be29c1a5081011dead160",
+    "semantic_hash": "a3affa1d986be29c1a5081011dead160"
+  },
+  "backend-ev-flow/tests/test_ev_importer.py": {
+    "mtime": 1784971584.1480083,
+    "ast_hash": "eb5e6911ac3c42fdb28b964d06f4aa93",
+    "semantic_hash": "eb5e6911ac3c42fdb28b964d06f4aa93"
+  },
+  "backend-ev-flow/tests/test_ev_union.py": {
+    "mtime": 1785424037.621568,
+    "ast_hash": "f9e8b114eb83b18059ebabac69b969f6",
+    "semantic_hash": "f9e8b114eb83b18059ebabac69b969f6"
+  },
+  "backend-ev-flow/tests/test_evmodels.py": {
+    "mtime": 1785424037.6228335,
+    "ast_hash": "46514be043e7f2b302ab5307b6b1f55f",
+    "semantic_hash": "46514be043e7f2b302ab5307b6b1f55f"
+  },
+  "backend-ev-flow/tests/test_geocoding.py": {
+    "mtime": 1786365676.2171764,
+    "ast_hash": "ef345528dd8ada7269f4623536363f22",
+    "semantic_hash": "ef345528dd8ada7269f4623536363f22"
+  },
+  "backend-ev-flow/tests/test_google_oauth.py": {
+    "mtime": 1781150635.8198903,
+    "ast_hash": "9161b20748662b0d0af2ead5edef8dc1",
+    "semantic_hash": "9161b20748662b0d0af2ead5edef8dc1"
+  },
+  "backend-ev-flow/tests/test_listing_identity.py": {
+    "mtime": 1785203414.8001187,
+    "ast_hash": "3788cbedc11ee5c0f20e610d5edf2def",
+    "semantic_hash": "3788cbedc11ee5c0f20e610d5edf2def"
+  },
+  "backend-ev-flow/tests/test_money_path_coverage.py": {
+    "mtime": 1785203414.8010793,
+    "ast_hash": "df39674f4f421fb0581c2ba5d2d30d6c",
+    "semantic_hash": "df39674f4f421fb0581c2ba5d2d30d6c"
+  },
+  "backend-ev-flow/tests/test_pricing.py": {
+    "mtime": 1781342497.9780974,
+    "ast_hash": "0741a99ba003b3e32bbe9bb9ecf1b5ac",
+    "semantic_hash": "0741a99ba003b3e32bbe9bb9ecf1b5ac"
+  },
+  "backend-ev-flow/tests/test_route_acceptance_gaps.py": {
+    "mtime": 1785203414.8022408,
+    "ast_hash": "2b71b7578f383c67d8787c31d345aa6e",
+    "semantic_hash": "2b71b7578f383c67d8787c31d345aa6e"
+  },
+  "backend-ev-flow/tests/test_route_endpoint.py": {
+    "mtime": 1785424037.6233969,
+    "ast_hash": "20d6e344f2052a7e68168bd13f016a08",
+    "semantic_hash": "20d6e344f2052a7e68168bd13f016a08"
+  },
+  "backend-ev-flow/tests/test_route_plans.py": {
+    "mtime": 1785164944.160972,
+    "ast_hash": "00deaab7036ed8bf7ab2d652a89119c6",
+    "semantic_hash": "00deaab7036ed8bf7ab2d652a89119c6"
+  },
+  "backend-ev-flow/tests/test_routing.py": {
+    "mtime": 1781150635.8203306,
+    "ast_hash": "0c3efd6ae4f55a7b0b38f18c051b4734",
+    "semantic_hash": "0c3efd6ae4f55a7b0b38f18c051b4734"
+  },
+  "backend-ev-flow/tests/test_routing_internals_coverage.py": {
+    "mtime": 1785203414.8043098,
+    "ast_hash": "52c6c9b93c2528031459923a267c3d44",
+    "semantic_hash": "52c6c9b93c2528031459923a267c3d44"
+  },
+  "backend-ev-flow/tests/test_routing_time_budget.py": {
+    "mtime": 1785203414.8051848,
+    "ast_hash": "6ee82c88e974d936f4e35216d2e3b3bb",
+    "semantic_hash": "6ee82c88e974d936f4e35216d2e3b3bb"
+  },
+  "backend-ev-flow/tests/test_security.py": {
+    "mtime": 1784958961.671337,
+    "ast_hash": "3311f6037b4de50504720dbad45d66cf",
+    "semantic_hash": "3311f6037b4de50504720dbad45d66cf"
+  },
+  "backend-ev-flow/tests/test_seed_build.py": {
+    "mtime": 1781150635.8207114,
+    "ast_hash": "8a81db84f1f2f16826de0da927b0b195",
+    "semantic_hash": "8a81db84f1f2f16826de0da927b0b195"
+  },
+  "backend-ev-flow/tests/test_seed_demo_db.py": {
+    "mtime": 1785137553.996618,
+    "ast_hash": "3dbd217b561d1f40f6d808a537d65310",
+    "semantic_hash": "3dbd217b561d1f40f6d808a537d65310"
+  },
+  "backend-ev-flow/tests/test_sources.py": {
+    "mtime": 1781150635.8209226,
+    "ast_hash": "dc4bfa1b0bd66adab7cf8a2e26aac124",
+    "semantic_hash": "dc4bfa1b0bd66adab7cf8a2e26aac124"
+  },
+  "backend-ev-flow/tests/test_station_availability_db.py": {
+    "mtime": 1785137553.9969807,
+    "ast_hash": "394fdf8b7102be4f92d088b3be5f932b",
+    "semantic_hash": "394fdf8b7102be4f92d088b3be5f932b"
+  },
+  "backend-ev-flow/tests/test_station_corridor_db.py": {
+    "mtime": 1785137553.9973407,
+    "ast_hash": "1a00277477ac4677b12ae8c9168eac78",
+    "semantic_hash": "1a00277477ac4677b12ae8c9168eac78"
+  },
+  "backend-ev-flow/tests/test_stations_db.py": {
+    "mtime": 1781150635.8211942,
+    "ast_hash": "1ab719c5fecd4e36b6f3d1ffdbf99754",
+    "semantic_hash": "1ab719c5fecd4e36b6f3d1ffdbf99754"
+  },
+  "backend-ev-flow/tests/test_stop_ranker.py": {
+    "mtime": 1785137553.997739,
+    "ast_hash": "39807fd6049434f7e9877217cce8a74f",
+    "semantic_hash": "39807fd6049434f7e9877217cce8a74f"
+  },
+  "backend-ev-flow/tests/test_wallet_db.py": {
+    "mtime": 1784958961.6722462,
+    "ast_hash": "bc1e37e21a5f52185c64f981cfc05313",
+    "semantic_hash": "bc1e37e21a5f52185c64f981cfc05313"
+  },
+  "backend-ev-flow/tests/test_xendit.py": {
+    "mtime": 1781150635.8222647,
+    "ast_hash": "00ff6892ea3e247ca43ac92a3abaa9e8",
+    "semantic_hash": "00ff6892ea3e247ca43ac92a3abaa9e8"
+  },
+  "frontend-evflow-app/apps/mobile/App.tsx": {
+    "mtime": 1781150635.8241043,
+    "ast_hash": "aff1ee55ef8ad67b5cf2dfb35e6af937",
+    "semantic_hash": "aff1ee55ef8ad67b5cf2dfb35e6af937"
+  },
+  "frontend-evflow-app/apps/mobile/app.json": {
+    "mtime": 1781150635.824391,
+    "ast_hash": "a814f76c2d70dee93081359b0479f5c6",
+    "semantic_hash": "a814f76c2d70dee93081359b0479f5c6"
+  },
+  "frontend-evflow-app/apps/mobile/index.js": {
+    "mtime": 1781150635.8246667,
+    "ast_hash": "829d47c34c79ad0512d9efb8602e9b2e",
+    "semantic_hash": "829d47c34c79ad0512d9efb8602e9b2e"
+  },
+  "frontend-evflow-app/apps/mobile/metro.config.js": {
+    "mtime": 1781150635.8248973,
+    "ast_hash": "9f75820a0169fc6cc3c122a88c3ff744",
+    "semantic_hash": "9f75820a0169fc6cc3c122a88c3ff744"
+  },
+  "frontend-evflow-app/apps/mobile/package.json": {
+    "mtime": 1781150635.8251224,
+    "ast_hash": "e1ce45e7ab4c50a692d7a399256a0ce8",
+    "semantic_hash": "e1ce45e7ab4c50a692d7a399256a0ce8"
+  },
+  "frontend-evflow-app/apps/mobile/tsconfig.json": {
+    "mtime": 1781150635.825353,
+    "ast_hash": "87db407a8786542b48317fd9e8064aa9",
+    "semantic_hash": "87db407a8786542b48317fd9e8064aa9"
+  },
+  "frontend-evflow-app/apps/web/package.json": {
+    "mtime": 1781150635.8260767,
+    "ast_hash": "8d0c9efa120a14def71e02d3382f2cbf",
+    "semantic_hash": "8d0c9efa120a14def71e02d3382f2cbf"
+  },
+  "frontend-evflow-app/apps/web/src/main.tsx": {
+    "mtime": 1781150635.8264756,
+    "ast_hash": "938d9e8b931444a84d597c090fd67b7d",
+    "semantic_hash": "938d9e8b931444a84d597c090fd67b7d"
+  },
+  "frontend-evflow-app/apps/web/src/vite-env.d.ts": {
+    "mtime": 1781150635.8269608,
+    "ast_hash": "0352474ba2918efe13895edbc3780d94",
+    "semantic_hash": "0352474ba2918efe13895edbc3780d94"
+  },
+  "frontend-evflow-app/apps/web/tsconfig.json": {
+    "mtime": 1781150635.8271985,
+    "ast_hash": "502974461bf388cd2a66c1381477da94",
+    "semantic_hash": "502974461bf388cd2a66c1381477da94"
+  },
+  "frontend-evflow-app/apps/web/vite.config.ts": {
+    "mtime": 1781150635.8274438,
+    "ast_hash": "3c954fd764f246656f2559f56919a45a",
+    "semantic_hash": "3c954fd764f246656f2559f56919a45a"
+  },
+  "frontend-evflow-app/package.json": {
+    "mtime": 1784958961.6780064,
+    "ast_hash": "fd07e7003faf02b7e7f85cefb3716651",
+    "semantic_hash": "fd07e7003faf02b7e7f85cefb3716651"
+  },
+  "frontend-evflow-app/packages/features/package.json": {
+    "mtime": 1781150635.830404,
+    "ast_hash": "d50eafe4fbacae8d71f044592f18f8c9",
+    "semantic_hash": "d50eafe4fbacae8d71f044592f18f8c9"
+  },
+  "frontend-evflow-app/packages/features/scratch/generate_components.js": {
+    "mtime": 1781150635.8307276,
+    "ast_hash": "5d3e1609cbddfaa61199a6d66360da79",
+    "semantic_hash": "5d3e1609cbddfaa61199a6d66360da79"
+  },
+  "frontend-evflow-app/packages/features/scratch/generate_icons.js": {
+    "mtime": 1781150635.8309453,
+    "ast_hash": "ca2b860e13fd1d264bdd8d9d52e5ac55",
+    "semantic_hash": "ca2b860e13fd1d264bdd8d9d52e5ac55"
+  },
+  "frontend-evflow-app/packages/features/src/business/BusinessDashboardScreen.tsx": {
+    "mtime": 1784736139.056956,
+    "ast_hash": "01618a5d876b82deadebc0dd0373a26e",
+    "semantic_hash": "01618a5d876b82deadebc0dd0373a26e"
+  },
+  "frontend-evflow-app/packages/features/src/business/businessDashboardIcons.ts": {
+    "mtime": 1784736139.0580852,
+    "ast_hash": "053a76999125cae96a7cc4678c78d5af",
+    "semantic_hash": "053a76999125cae96a7cc4678c78d5af"
+  },
+  "frontend-evflow-app/packages/features/src/charging_flow/ChargingStatusScreen.tsx": {
+    "mtime": 1781342497.9821825,
+    "ast_hash": "b7ddca8400b40d5f238d293a53fa55cd",
+    "semantic_hash": "b7ddca8400b40d5f238d293a53fa55cd"
+  },
+  "frontend-evflow-app/packages/features/src/charging_flow/ChargingSuccessfulScreen.tsx": {
+    "mtime": 1784958961.679013,
+    "ast_hash": "08825800332cf31604e717bd142d25b7",
+    "semantic_hash": "08825800332cf31604e717bd142d25b7"
+  },
+  "frontend-evflow-app/packages/features/src/charging_flow/InitializeChargingScreen.tsx": {
+    "mtime": 1784958961.6795545,
+    "ast_hash": "61ce21665004a8045b3b2d20ee6bfa20",
+    "semantic_hash": "61ce21665004a8045b3b2d20ee6bfa20"
+  },
+  "frontend-evflow-app/packages/features/src/charging_flow/ScanSpkluScreen.native.tsx": {
+    "mtime": 1784385362.2022765,
+    "ast_hash": "e34defc830c9f7434024dd9ceccdc518",
+    "semantic_hash": "e34defc830c9f7434024dd9ceccdc518"
+  },
+  "frontend-evflow-app/packages/features/src/charging_flow/ScanSpkluScreen.tsx": {
+    "mtime": 1784385362.203023,
+    "ast_hash": "bf2829230fc62f32b18422dbce3c18cd",
+    "semantic_hash": "bf2829230fc62f32b18422dbce3c18cd"
+  },
+  "frontend-evflow-app/packages/features/src/charging_flow/TransactionSuccessScreen.tsx": {
+    "mtime": 1781342497.9841335,
+    "ast_hash": "e3c95e32d536551c8c8ddd10f2eefb63",
+    "semantic_hash": "e3c95e32d536551c8c8ddd10f2eefb63"
+  },
+  "frontend-evflow-app/packages/features/src/charging_flow/components/ChargingFlowHeader.tsx": {
+    "mtime": 1781150635.8455405,
+    "ast_hash": "ee3114565138c2f817882387c87e0cb5",
+    "semantic_hash": "ee3114565138c2f817882387c87e0cb5"
+  },
+  "frontend-evflow-app/packages/features/src/charging_flow/components/ChargingFlowIcon.native.tsx": {
+    "mtime": 1781150635.8459466,
+    "ast_hash": "663f07d3e50cc2abe2d47255eaf090dd",
+    "semantic_hash": "663f07d3e50cc2abe2d47255eaf090dd"
+  },
+  "frontend-evflow-app/packages/features/src/charging_flow/components/ChargingFlowIcon.tsx": {
+    "mtime": 1781150635.846341,
+    "ast_hash": "e7d064d00b766e275713361c7f1a44b9",
+    "semantic_hash": "e7d064d00b766e275713361c7f1a44b9"
+  },
+  "frontend-evflow-app/packages/features/src/charging_flow/components/ProgressRing.native.tsx": {
+    "mtime": 1784958961.680273,
+    "ast_hash": "f7f02921e71ccb2502c9d75d56f19bcb",
+    "semantic_hash": "f7f02921e71ccb2502c9d75d56f19bcb"
+  },
+  "frontend-evflow-app/packages/features/src/charging_flow/components/ProgressRing.tsx": {
+    "mtime": 1781150635.8468544,
+    "ast_hash": "34bbeaa65f0525672ad1307d6256b1e2",
+    "semantic_hash": "34bbeaa65f0525672ad1307d6256b1e2"
+  },
+  "frontend-evflow-app/packages/features/src/charging_flow/index.ts": {
+    "mtime": 1781150635.8470993,
+    "ast_hash": "ecb317f83bf69bcec69a11e978a4c1e6",
+    "semantic_hash": "ecb317f83bf69bcec69a11e978a4c1e6"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/DriverMapScreen.tsx": {
+    "mtime": 1786365676.2206135,
+    "ast_hash": "e2da0fde2b8da6bf92d456a287eb362f",
+    "semantic_hash": "e2da0fde2b8da6bf92d456a287eb362f"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/EVDriverContainer.tsx": {
+    "mtime": 1785424037.6256723,
+    "ast_hash": "997b8544cbec462a7dcd31d378bdbba6",
+    "semantic_hash": "997b8544cbec462a7dcd31d378bdbba6"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/MockDriverScreen.tsx": {
+    "mtime": 1781150635.8485732,
+    "ast_hash": "2c37e4c27d1ae5125d8b2ccc2ee3e7dc",
+    "semantic_hash": "2c37e4c27d1ae5125d8b2ccc2ee3e7dc"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/ProfileScreen.tsx": {
+    "mtime": 1786365676.2212553,
+    "ast_hash": "fd5e7c5bfda9c87a56a451f7df837a36",
+    "semantic_hash": "fd5e7c5bfda9c87a56a451f7df837a36"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/TopUpWalletScreen.tsx": {
+    "mtime": 1786365676.2217827,
+    "ast_hash": "74834e7f829e639ad36b01eb3b532ac3",
+    "semantic_hash": "74834e7f829e639ad36b01eb3b532ac3"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/WalletScreen.tsx": {
+    "mtime": 1784385362.2063756,
+    "ast_hash": "bf7757dd016771639720858a2e768e38",
+    "semantic_hash": "bf7757dd016771639720858a2e768e38"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/components/ConnectorAvailabilityRow.tsx": {
+    "mtime": 1786365676.222186,
+    "ast_hash": "af5f0f28e6a85f4ca8f83f250f3b23d8",
+    "semantic_hash": "af5f0f28e6a85f4ca8f83f250f3b23d8"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/components/DriverAssetIcon.native.tsx": {
+    "mtime": 1781150635.8500173,
+    "ast_hash": "0298439a39aa8754ab196d2298fe6b00",
+    "semantic_hash": "0298439a39aa8754ab196d2298fe6b00"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/components/DriverAssetIcon.tsx": {
+    "mtime": 1781150635.8505995,
+    "ast_hash": "4336fa2d27d4e13cc1e8dc3f82e92d67",
+    "semantic_hash": "4336fa2d27d4e13cc1e8dc3f82e92d67"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/components/FilterCategory.native.tsx": {
+    "mtime": 1781150635.8507957,
+    "ast_hash": "a074e838ce6db3d7f9da7df7e0f44028",
+    "semantic_hash": "a074e838ce6db3d7f9da7df7e0f44028"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/components/FilterCategory.tsx": {
+    "mtime": 1781150635.8510404,
+    "ast_hash": "a074e838ce6db3d7f9da7df7e0f44028",
+    "semantic_hash": "a074e838ce6db3d7f9da7df7e0f44028"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/components/PeakHoursChart.tsx": {
+    "mtime": 1786365676.222904,
+    "ast_hash": "790786aab044c0c43cdff96820a0ff97",
+    "semantic_hash": "790786aab044c0c43cdff96820a0ff97"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/components/StationAvailabilitySummary.tsx": {
+    "mtime": 1786365676.22325,
+    "ast_hash": "fbc2e0b1c197e6acd6656d87047711b6",
+    "semantic_hash": "fbc2e0b1c197e6acd6656d87047711b6"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/components/StationDetailActions.tsx": {
+    "mtime": 1785424037.627774,
+    "ast_hash": "3efe6587f1352ddadfafd75f95d952ff",
+    "semantic_hash": "3efe6587f1352ddadfafd75f95d952ff"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/components/driverMapIcons.native.ts": {
+    "mtime": 1781150635.851321,
+    "ast_hash": "1eab9e952a193a4c483cfc249a66115a",
+    "semantic_hash": "1eab9e952a193a4c483cfc249a66115a"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/components/driverMapIcons.ts": {
+    "mtime": 1781150635.8514946,
+    "ast_hash": "1eab9e952a193a4c483cfc249a66115a",
+    "semantic_hash": "1eab9e952a193a4c483cfc249a66115a"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/components/spkluMarkerSvg.ts": {
+    "mtime": 1786365676.2241032,
+    "ast_hash": "1fb9408e2dd0f266fd6b5d2e306203e2",
+    "semantic_hash": "1fb9408e2dd0f266fd6b5d2e306203e2"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/ActiveNavigationScreen.tsx": {
+    "mtime": 1786365676.2245362,
+    "ast_hash": "bc878d7c571c4a8737773a795a0f9461",
+    "semantic_hash": "bc878d7c571c4a8737773a795a0f9461"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/BatteryLevelInput.tsx": {
+    "mtime": 1786365676.2258286,
+    "ast_hash": "0ab20298e4e01103829a0f028191527e",
+    "semantic_hash": "0ab20298e4e01103829a0f028191527e"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/ChargingStopCard.tsx": {
+    "mtime": 1786365676.226675,
+    "ast_hash": "d91777d45d8d5d75908ab657a1c1a241",
+    "semantic_hash": "d91777d45d8d5d75908ab657a1c1a241"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/DestinationSearchModal.tsx": {
+    "mtime": 1786365676.2273011,
+    "ast_hash": "5122646d1660c3f974f6ca98de652f8f",
+    "semantic_hash": "5122646d1660c3f974f6ca98de652f8f"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/PlanRouteScreen.tsx": {
+    "mtime": 1786365676.2277384,
+    "ast_hash": "5b2b460a6dce39f0e8e6c8f8ae343a28",
+    "semantic_hash": "5b2b460a6dce39f0e8e6c8f8ae343a28"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/TripInputScreen.tsx": {
+    "mtime": 1786365676.2286954,
+    "ast_hash": "dbdc503c1e09358c8f55cb9fa612f38f",
+    "semantic_hash": "dbdc503c1e09358c8f55cb9fa612f38f"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/TripSimulationScreen.tsx": {
+    "mtime": 1785510523.4145956,
+    "ast_hash": "367d413cb9faee4dcd7ed97179c0943a",
+    "semantic_hash": "367d413cb9faee4dcd7ed97179c0943a"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/components/RouteBottomSheet.tsx": {
+    "mtime": 1785508622.5232303,
+    "ast_hash": "bf2f08b32f1d10a54241b0a287d5b703",
+    "semantic_hash": "bf2f08b32f1d10a54241b0a287d5b703"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/components/RouteDialog.tsx": {
+    "mtime": 1785507997.4967785,
+    "ast_hash": "185e8225b4f76caba94d0d2e68fed8ca",
+    "semantic_hash": "185e8225b4f76caba94d0d2e68fed8ca"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/components/RouteFieldError.tsx": {
+    "mtime": 1785506897.9630482,
+    "ast_hash": "381e62a2ddc9d71ce293433ea7d359d1",
+    "semantic_hash": "381e62a2ddc9d71ce293433ea7d359d1"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/components/RouteMetricsGrid.tsx": {
+    "mtime": 1786365676.2292857,
+    "ast_hash": "f586f49186cd1f2a5cf23591ec1facec",
+    "semantic_hash": "f586f49186cd1f2a5cf23591ec1facec"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/components/RouteStatusCard.tsx": {
+    "mtime": 1785506790.0911167,
+    "ast_hash": "5228c865487604c71ac7ebd875fa8e00",
+    "semantic_hash": "5228c865487604c71ac7ebd875fa8e00"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/navigationFlow.integration.test.ts": {
+    "mtime": 1785507781.801586,
+    "ast_hash": "de57eb4c19a2480f612b9e410f9f348d",
+    "semantic_hash": "de57eb4c19a2480f612b9e410f9f348d"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/navigationProgress.test.ts": {
+    "mtime": 1785164609.6465554,
+    "ast_hash": "076e699faa4b38298ff1dd28c7162691",
+    "semantic_hash": "076e699faa4b38298ff1dd28c7162691"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/navigationProgress.ts": {
+    "mtime": 1785164609.033261,
+    "ast_hash": "0b7917d5df28893ab00a03e62fbf6c4b",
+    "semantic_hash": "0b7917d5df28893ab00a03e62fbf6c4b"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/navigationSession.test.ts": {
+    "mtime": 1785508732.0486705,
+    "ast_hash": "205accd4ccd4b3f80f6bf5509935bafa",
+    "semantic_hash": "205accd4ccd4b3f80f6bf5509935bafa"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/navigationSession.ts": {
+    "mtime": 1785508730.829375,
+    "ast_hash": "d31d1ccde012e855ec56ee8396a186fd",
+    "semantic_hash": "d31d1ccde012e855ec56ee8396a186fd"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/planRouteTypes.ts": {
+    "mtime": 1786365676.2303371,
+    "ast_hash": "e14cba8c52d4a9ba56ba662373c4b5c3",
+    "semantic_hash": "e14cba8c52d4a9ba56ba662373c4b5c3"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/planRouteUtils.ts": {
+    "mtime": 1784971584.1710954,
+    "ast_hash": "c0b1c5840b7296c250bd4925fee4b4ac",
+    "semantic_hash": "c0b1c5840b7296c250bd4925fee4b4ac"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/requestLifecycle.test.ts": {
+    "mtime": 1785507282.4907537,
+    "ast_hash": "032c80da2926526c32a2419b81d32ce3",
+    "semantic_hash": "032c80da2926526c32a2419b81d32ce3"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/requestLifecycle.ts": {
+    "mtime": 1785507282.490427,
+    "ast_hash": "bbe8e8d8cf9063d12a9062e4b8846803",
+    "semantic_hash": "bbe8e8d8cf9063d12a9062e4b8846803"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/routePlanningLogic.test.ts": {
+    "mtime": 1785507816.803489,
+    "ast_hash": "d08f6f5d63cbc092371179641f43da59",
+    "semantic_hash": "d08f6f5d63cbc092371179641f43da59"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/routePlanningLogic.ts": {
+    "mtime": 1785507811.8049781,
+    "ast_hash": "bae977903f74a0c92fb529ffd7388813",
+    "semantic_hash": "bae977903f74a0c92fb529ffd7388813"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/routeTheme.ts": {
+    "mtime": 1785507997.4959035,
+    "ast_hash": "9386b775ab45321c515a448ba4a3e5ba",
+    "semantic_hash": "9386b775ab45321c515a448ba4a3e5ba"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/routeViewState.test.ts": {
+    "mtime": 1785507269.818297,
+    "ast_hash": "59e883d2878fe73e372ed48cb63388bf",
+    "semantic_hash": "59e883d2878fe73e372ed48cb63388bf"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/routeViewState.ts": {
+    "mtime": 1785506807.2055805,
+    "ast_hash": "b9cd7f23beba43f2b2ae96491ca1ec9e",
+    "semantic_hash": "b9cd7f23beba43f2b2ae96491ca1ec9e"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-status/aggregateConnectorStatuses.test.ts": {
+    "mtime": 1785424037.62843,
+    "ast_hash": "8f25f1e95d7493ea9c25f69f7ad91016",
+    "semantic_hash": "8f25f1e95d7493ea9c25f69f7ad91016"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-status/aggregateConnectorStatuses.ts": {
+    "mtime": 1785424037.6293092,
+    "ast_hash": "2a84fd52dfeb5bba95349ff404213967",
+    "semantic_hash": "2a84fd52dfeb5bba95349ff404213967"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-status/apiStationStatus.test.ts": {
+    "mtime": 1785564081.6476233,
+    "ast_hash": "5b9702a3fc982e681e55613f023314e6",
+    "semantic_hash": "5b9702a3fc982e681e55613f023314e6"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-status/apiStationStatus.ts": {
+    "mtime": 1785564081.648383,
+    "ast_hash": "431399803208a94523df9c0d31311e05",
+    "semantic_hash": "431399803208a94523df9c0d31311e05"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-status/mockStationStatus.test.ts": {
+    "mtime": 1785424037.6296964,
+    "ast_hash": "9c0403029bd64172f74f23f5d16d1cee",
+    "semantic_hash": "9c0403029bd64172f74f23f5d16d1cee"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-status/mockStationStatus.ts": {
+    "mtime": 1785564081.6491458,
+    "ast_hash": "4bf3f94e63a2fe9c52ea92969a34d47a",
+    "semantic_hash": "4bf3f94e63a2fe9c52ea92969a34d47a"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-status/peakHoursLogic.test.ts": {
+    "mtime": 1786365676.232888,
+    "ast_hash": "2a35727184fb2bbbbfbded1677dac5ac",
+    "semantic_hash": "2a35727184fb2bbbbfbded1677dac5ac"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-status/peakHoursLogic.ts": {
+    "mtime": 1786365676.233185,
+    "ast_hash": "315447d7f9c275f5cf959c75e6b60aad",
+    "semantic_hash": "315447d7f9c275f5cf959c75e6b60aad"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-status/stationDetailState.test.ts": {
+    "mtime": 1785508148.8890803,
+    "ast_hash": "057e982b10ce8c73649e62265ee46622",
+    "semantic_hash": "057e982b10ce8c73649e62265ee46622"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-status/stationDetailState.ts": {
+    "mtime": 1785508148.8897486,
+    "ast_hash": "29bf15df5267c5967ba4dba7bb20e9ae",
+    "semantic_hash": "29bf15df5267c5967ba4dba7bb20e9ae"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-status/types.ts": {
+    "mtime": 1785564081.6503687,
+    "ast_hash": "de428503c65e215e5ce423c51d9f5637",
+    "semantic_hash": "de428503c65e215e5ce423c51d9f5637"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/types.ts": {
+    "mtime": 1781150635.8523505,
+    "ast_hash": "a1bb58b24d7b6247ef61b2f7ddff0bc5",
+    "semantic_hash": "a1bb58b24d7b6247ef61b2f7ddff0bc5"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/utils/location.ts": {
+    "mtime": 1785507485.7268414,
+    "ast_hash": "5b43f1670ee2f73e2e15e8df9155c60a",
+    "semantic_hash": "5b43f1670ee2f73e2e15e8df9155c60a"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/utils/location.web.ts": {
+    "mtime": 1786365676.2346432,
+    "ast_hash": "80fc1f0bede36eee2e2c510a06177830",
+    "semantic_hash": "80fc1f0bede36eee2e2c510a06177830"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/walletTransactions.ts": {
+    "mtime": 1784385362.207173,
+    "ast_hash": "b6bbf6cd061a6834f539f31507104056",
+    "semantic_hash": "b6bbf6cd061a6834f539f31507104056"
+  },
+  "frontend-evflow-app/packages/features/src/home/HomeScreen.tsx": {
+    "mtime": 1781150635.8536932,
+    "ast_hash": "e0c7674999bbff8624c694eba2f3c4e5",
+    "semantic_hash": "e0c7674999bbff8624c694eba2f3c4e5"
+  },
+  "frontend-evflow-app/packages/features/src/index.ts": {
+    "mtime": 1784971584.172239,
+    "ast_hash": "90c1ef5f755706b64d1487c7be02d3e3",
+    "semantic_hash": "90c1ef5f755706b64d1487c7be02d3e3"
+  },
+  "frontend-evflow-app/packages/features/src/login/LoginScreen.tsx": {
+    "mtime": 1784958961.6815298,
+    "ast_hash": "2d6638d81a2283f8adff3051f526fac5",
+    "semantic_hash": "2d6638d81a2283f8adff3051f526fac5"
+  },
+  "frontend-evflow-app/packages/features/src/login/QuickLoginScreen.tsx": {
+    "mtime": 1786365676.2352004,
+    "ast_hash": "54e36402b57fbb116edf4c6c9036189e",
+    "semantic_hash": "54e36402b57fbb116edf4c6c9036189e"
+  },
+  "frontend-evflow-app/packages/features/src/login/ResetPasswordScreen.tsx": {
+    "mtime": 1784385362.2081819,
+    "ast_hash": "61eb0ba1af3fcf42e8ac10a73d76ce0a",
+    "semantic_hash": "61eb0ba1af3fcf42e8ac10a73d76ce0a"
+  },
+  "frontend-evflow-app/packages/features/src/login/demoCredentials.ts": {
+    "mtime": 1785203414.9022772,
+    "ast_hash": "418423e308be9387fdb563a54712e5a9",
+    "semantic_hash": "418423e308be9387fdb563a54712e5a9"
+  },
+  "frontend-evflow-app/packages/features/src/login/demoCredentials.web.ts": {
+    "mtime": 1785203414.903157,
+    "ast_hash": "e553e9f1e6b8297176de26ad829b2267",
+    "semantic_hash": "e553e9f1e6b8297176de26ad829b2267"
+  },
+  "frontend-evflow-app/packages/features/src/login/demoPersonas.ts": {
+    "mtime": 1786365676.2356906,
+    "ast_hash": "63932ffbfe005cd2a96945c75d75a11b",
+    "semantic_hash": "63932ffbfe005cd2a96945c75d75a11b"
+  },
+  "frontend-evflow-app/packages/features/src/onboarding/ConnectorSelectScreen.tsx": {
+    "mtime": 1784736139.0678413,
+    "ast_hash": "728854213043343ae91681ef0a34e3fe",
+    "semantic_hash": "728854213043343ae91681ef0a34e3fe"
+  },
+  "frontend-evflow-app/packages/features/src/onboarding/VehicleSelectScreen.tsx": {
+    "mtime": 1784736139.0695345,
+    "ast_hash": "23e8f506c18f558e3972780c61917f76",
+    "semantic_hash": "23e8f506c18f558e3972780c61917f76"
+  },
+  "frontend-evflow-app/packages/features/src/profile_selection/ProfileSelectionScreen.tsx": {
+    "mtime": 1781150635.8546803,
+    "ast_hash": "a5103738a2c68a502e9ac1be80ca7a4d",
+    "semantic_hash": "a5103738a2c68a502e9ac1be80ca7a4d"
+  },
+  "frontend-evflow-app/packages/features/src/profile_selection/components/RoleAssetIcon.native.tsx": {
+    "mtime": 1781150635.8550828,
+    "ast_hash": "9d64db127902a279a6ba351fb4cec9aa",
+    "semantic_hash": "9d64db127902a279a6ba351fb4cec9aa"
+  },
+  "frontend-evflow-app/packages/features/src/profile_selection/components/RoleAssetIcon.tsx": {
+    "mtime": 1781150635.85546,
+    "ast_hash": "f51e4e2bfdc51f3cc9faadc661343cb0",
+    "semantic_hash": "f51e4e2bfdc51f3cc9faadc661343cb0"
+  },
+  "frontend-evflow-app/packages/features/src/profile_selection/components/profileSelectionIcons.native.ts": {
+    "mtime": 1781150635.855661,
+    "ast_hash": "f67e13c9d97e2a2138cca1445aaa83ec",
+    "semantic_hash": "f67e13c9d97e2a2138cca1445aaa83ec"
+  },
+  "frontend-evflow-app/packages/features/src/profile_selection/components/profileSelectionIcons.ts": {
+    "mtime": 1781150635.8558574,
+    "ast_hash": "f67e13c9d97e2a2138cca1445aaa83ec",
+    "semantic_hash": "f67e13c9d97e2a2138cca1445aaa83ec"
+  },
+  "frontend-evflow-app/packages/features/src/profile_selection/types.ts": {
+    "mtime": 1781150635.856064,
+    "ast_hash": "986088215faaf62f8ab8f9fe0a3ff082",
+    "semantic_hash": "986088215faaf62f8ab8f9fe0a3ff082"
+  },
+  "frontend-evflow-app/packages/features/src/registration/RegistrationScreen.tsx": {
+    "mtime": 1784385362.2089908,
+    "ast_hash": "ae66bb70aae58b0d9534e307e7e03b63",
+    "semantic_hash": "ae66bb70aae58b0d9534e307e7e03b63"
+  },
+  "frontend-evflow-app/packages/features/src/registration/components/ModelPicker.tsx": {
+    "mtime": 1781150635.8571334,
+    "ast_hash": "ab056ed333fefcb1518b54c5d6695cc3",
+    "semantic_hash": "ab056ed333fefcb1518b54c5d6695cc3"
+  },
+  "frontend-evflow-app/packages/features/src/registration/components/ModelPicker.web.tsx": {
+    "mtime": 1781150635.857327,
+    "ast_hash": "4957ab0eebfd8bfddf73bb21c1b92206",
+    "semantic_hash": "4957ab0eebfd8bfddf73bb21c1b92206"
+  },
+  "frontend-evflow-app/packages/features/src/routing/AppRouter.native.tsx": {
+    "mtime": 1781150635.8576097,
+    "ast_hash": "913934a5e4e8ce4f62b1230da427abc9",
+    "semantic_hash": "913934a5e4e8ce4f62b1230da427abc9"
+  },
+  "frontend-evflow-app/packages/features/src/routing/AppRouter.tsx": {
+    "mtime": 1781150635.8578389,
+    "ast_hash": "3b182248f72ffad35c9ba8cfa754834d",
+    "semantic_hash": "3b182248f72ffad35c9ba8cfa754834d"
+  },
+  "frontend-evflow-app/packages/features/src/routing/AppRoutes.tsx": {
+    "mtime": 1784736139.0714436,
+    "ast_hash": "299aef36af15d064692c8aa0e41617bb",
+    "semantic_hash": "299aef36af15d064692c8aa0e41617bb"
+  },
+  "frontend-evflow-app/packages/features/src/shared/PlatformSlider.tsx": {
+    "mtime": 1781150635.8584223,
+    "ast_hash": "3f7eb3d662cac29086f9c154bebef30a",
+    "semantic_hash": "3f7eb3d662cac29086f9c154bebef30a"
+  },
+  "frontend-evflow-app/packages/features/src/shared/PlatformSlider.web.tsx": {
+    "mtime": 1781150635.8586476,
+    "ast_hash": "b679a56cec6624905989dea3a4dc846b",
+    "semantic_hash": "b679a56cec6624905989dea3a4dc846b"
+  },
+  "frontend-evflow-app/packages/features/src/shared/ReceiptPdfViewer.tsx": {
+    "mtime": 1781150635.8588743,
+    "ast_hash": "b0d35e68978274ca08516083c615b209",
+    "semantic_hash": "b0d35e68978274ca08516083c615b209"
+  },
+  "frontend-evflow-app/packages/features/src/shared/SvgAssetIcon.native.tsx": {
+    "mtime": 1784736139.074142,
+    "ast_hash": "234e338ab22062696e5fa6680c2185a3",
+    "semantic_hash": "234e338ab22062696e5fa6680c2185a3"
+  },
+  "frontend-evflow-app/packages/features/src/shared/SvgAssetIcon.tsx": {
+    "mtime": 1781150635.8605053,
+    "ast_hash": "65fe36b93133b00aa89cb395fd1fa3ce",
+    "semantic_hash": "65fe36b93133b00aa89cb395fd1fa3ce"
+  },
+  "frontend-evflow-app/packages/features/src/shared/downloadReceipt.ts": {
+    "mtime": 1784385362.2103431,
+    "ast_hash": "e9feffccf39f00251c017e6fc8b05e31",
+    "semantic_hash": "e9feffccf39f00251c017e6fc8b05e31"
+  },
+  "frontend-evflow-app/packages/features/src/shared/downloadReceipt.web.ts": {
+    "mtime": 1784958961.6838174,
+    "ast_hash": "345ba96c54cb3a6c09309b59fae150bd",
+    "semantic_hash": "345ba96c54cb3a6c09309b59fae150bd"
+  },
+  "frontend-evflow-app/packages/features/src/shared/generateReceiptHtml.ts": {
+    "mtime": 1784958961.6848783,
+    "ast_hash": "1bcd6a644d9524a96643ff54971e6756",
+    "semantic_hash": "1bcd6a644d9524a96643ff54971e6756"
+  },
+  "frontend-evflow-app/packages/features/src/shared/useAppSafeAreaInsets.native.ts": {
+    "mtime": 1781150635.8623593,
+    "ast_hash": "01700fce3b938c9571f63b4d4a854abf",
+    "semantic_hash": "01700fce3b938c9571f63b4d4a854abf"
+  },
+  "frontend-evflow-app/packages/features/src/shared/useAppSafeAreaInsets.ts": {
+    "mtime": 1781150635.8625767,
+    "ast_hash": "cc61763eb1be8d630c2bee72810e532b",
+    "semantic_hash": "cc61763eb1be8d630c2bee72810e532b"
+  },
+  "frontend-evflow-app/packages/features/src/vite-env.d.ts": {
+    "mtime": 1781150635.8628147,
+    "ast_hash": "7420736f63ad132ee7f3dbfbe3470e2a",
+    "semantic_hash": "7420736f63ad132ee7f3dbfbe3470e2a"
+  },
+  "frontend-evflow-app/packages/features/tsconfig.json": {
+    "mtime": 1781150635.8630652,
+    "ast_hash": "c00d5ba2962675ec77dc845bddf2beda",
+    "semantic_hash": "c00d5ba2962675ec77dc845bddf2beda"
+  },
+  "frontend-evflow-app/packages/maps/package.json": {
+    "mtime": 1781150635.8634715,
+    "ast_hash": "6f52bf444d5aa89ab0bd67d8beee078f",
+    "semantic_hash": "6f52bf444d5aa89ab0bd67d8beee078f"
+  },
+  "frontend-evflow-app/packages/maps/src/MapView.native.tsx": {
+    "mtime": 1781150635.8638334,
+    "ast_hash": "7b5ce09415f6d669ac0c50c321278af9",
+    "semantic_hash": "7b5ce09415f6d669ac0c50c321278af9"
+  },
+  "frontend-evflow-app/packages/maps/src/MapView.tsx": {
+    "mtime": 1781150635.8640788,
+    "ast_hash": "8d78dc0a54a7fe64d873bafe814fc86c",
+    "semantic_hash": "8d78dc0a54a7fe64d873bafe814fc86c"
+  },
+  "frontend-evflow-app/packages/maps/src/MapView.web.tsx": {
+    "mtime": 1781150635.8643136,
+    "ast_hash": "c1ca84fdcbb3416a9a74a2c7ce7a6b97",
+    "semantic_hash": "c1ca84fdcbb3416a9a74a2c7ce7a6b97"
+  },
+  "frontend-evflow-app/packages/maps/src/index.ts": {
+    "mtime": 1781150635.864531,
+    "ast_hash": "76617e1f8da9d5a0d309e5bdd35bff09",
+    "semantic_hash": "76617e1f8da9d5a0d309e5bdd35bff09"
+  },
+  "frontend-evflow-app/packages/maps/src/types.ts": {
+    "mtime": 1781150635.864762,
+    "ast_hash": "1386716e9efc756735149ba8b754bd67",
+    "semantic_hash": "1386716e9efc756735149ba8b754bd67"
+  },
+  "frontend-evflow-app/packages/maps/tsconfig.json": {
+    "mtime": 1781150635.8649683,
+    "ast_hash": "c00d5ba2962675ec77dc845bddf2beda",
+    "semantic_hash": "c00d5ba2962675ec77dc845bddf2beda"
+  },
+  "frontend-evflow-app/packages/shared/package.json": {
+    "mtime": 1781150635.8653345,
+    "ast_hash": "a0d6b6dbcef22b0ce6736db89b94c4c2",
+    "semantic_hash": "a0d6b6dbcef22b0ce6736db89b94c4c2"
+  },
+  "frontend-evflow-app/packages/shared/src/api/baseUrl.shared.ts": {
+    "mtime": 1785507867.5953815,
+    "ast_hash": "0e9f5410505e1390d730db650ba9d96c",
+    "semantic_hash": "0e9f5410505e1390d730db650ba9d96c"
+  },
+  "frontend-evflow-app/packages/shared/src/api/baseUrl.test.ts": {
+    "mtime": 1785507242.0988233,
+    "ast_hash": "be1684b5380a62e22fd6a17d0a638288",
+    "semantic_hash": "be1684b5380a62e22fd6a17d0a638288"
+  },
+  "frontend-evflow-app/packages/shared/src/api/baseUrl.ts": {
+    "mtime": 1785507242.0982533,
+    "ast_hash": "3b342cd261d101f4d6f97684f9e33018",
+    "semantic_hash": "3b342cd261d101f4d6f97684f9e33018"
+  },
+  "frontend-evflow-app/packages/shared/src/api/baseUrl.web.ts": {
+    "mtime": 1785507242.0974052,
+    "ast_hash": "a43ace2f6c536549458905cb7e84180d",
+    "semantic_hash": "a43ace2f6c536549458905cb7e84180d"
+  },
+  "frontend-evflow-app/packages/shared/src/api/client.test.ts": {
+    "mtime": 1784958961.6859546,
+    "ast_hash": "1e44c99f981155fb7ae23b00d1a113b0",
+    "semantic_hash": "1e44c99f981155fb7ae23b00d1a113b0"
+  },
+  "frontend-evflow-app/packages/shared/src/api/client.ts": {
+    "mtime": 1781150635.8665583,
+    "ast_hash": "53809a6938fec4f23dfea65ebca31af3",
+    "semantic_hash": "53809a6938fec4f23dfea65ebca31af3"
+  },
+  "frontend-evflow-app/packages/shared/src/auth/api.ts": {
+    "mtime": 1784385362.2120464,
+    "ast_hash": "ab66496fc6e03e09dca4dc82c5affaec",
+    "semantic_hash": "ab66496fc6e03e09dca4dc82c5affaec"
+  },
+  "frontend-evflow-app/packages/shared/src/auth/session.ts": {
+    "mtime": 1784385362.212568,
+    "ast_hash": "3ae5ae9105edc3215f36c70e24e53977",
+    "semantic_hash": "3ae5ae9105edc3215f36c70e24e53977"
+  },
+  "frontend-evflow-app/packages/shared/src/chargers/filterChargers.ts": {
+    "mtime": 1781150635.8675432,
+    "ast_hash": "c70372a5b9f6081fc53d528e58b4f304",
+    "semantic_hash": "c70372a5b9f6081fc53d528e58b4f304"
+  },
+  "frontend-evflow-app/packages/shared/src/charging/api.test.ts": {
+    "mtime": 1784958961.6864107,
+    "ast_hash": "a4aecfce8e04f21399f8e84e9362127f",
+    "semantic_hash": "a4aecfce8e04f21399f8e84e9362127f"
+  },
+  "frontend-evflow-app/packages/shared/src/charging/api.ts": {
+    "mtime": 1784958961.68719,
+    "ast_hash": "a43c92d67c86de4a6471c6a431db8549",
+    "semantic_hash": "a43c92d67c86de4a6471c6a431db8549"
+  },
+  "frontend-evflow-app/packages/shared/src/ev_models/api.ts": {
+    "mtime": 1781150635.8678842,
+    "ast_hash": "e797e9818c51930c88dfe446f7d74e04",
+    "semantic_hash": "e797e9818c51930c88dfe446f7d74e04"
+  },
+  "frontend-evflow-app/packages/shared/src/html/escapeHtml.test.ts": {
+    "mtime": 1784958961.687725,
+    "ast_hash": "f88cb09dbc4fc7430456ecb97f58cb3f",
+    "semantic_hash": "f88cb09dbc4fc7430456ecb97f58cb3f"
+  },
+  "frontend-evflow-app/packages/shared/src/html/escapeHtml.ts": {
+    "mtime": 1784958961.6879961,
+    "ast_hash": "13b4d2919e81880e0bea5a6e12661256",
+    "semantic_hash": "13b4d2919e81880e0bea5a6e12661256"
+  },
+  "frontend-evflow-app/packages/shared/src/index.ts": {
+    "mtime": 1784971584.183955,
+    "ast_hash": "9f32ed2574eeb2c05d1c188a3aa543ee",
+    "semantic_hash": "9f32ed2574eeb2c05d1c188a3aa543ee"
+  },
+  "frontend-evflow-app/packages/shared/src/routes/buildRoutePlanRequest.ts": {
+    "mtime": 1785160808.634341,
+    "ast_hash": "a3d437060e3c0078ecdec91c2ab9a1c2",
+    "semantic_hash": "a3d437060e3c0078ecdec91c2ab9a1c2"
+  },
+  "frontend-evflow-app/packages/shared/src/routes/routeApi.test.ts": {
+    "mtime": 1785507527.8367996,
+    "ast_hash": "5e14d38b22438ab11952bc22c3c02a07",
+    "semantic_hash": "5e14d38b22438ab11952bc22c3c02a07"
+  },
+  "frontend-evflow-app/packages/shared/src/routes/routeApi.ts": {
+    "mtime": 1785507630.531652,
+    "ast_hash": "2298c2bc5feaa3c03ada7c12068b2b14",
+    "semantic_hash": "2298c2bc5feaa3c03ada7c12068b2b14"
+  },
+  "frontend-evflow-app/packages/shared/src/routes/routeApiError.ts": {
+    "mtime": 1785507527.8363478,
+    "ast_hash": "3dd73b572d01a8bf3c16090ac962ff25",
+    "semantic_hash": "3dd73b572d01a8bf3c16090ac962ff25"
+  },
+  "frontend-evflow-app/packages/shared/src/routes/routeTypes.ts": {
+    "mtime": 1785165067.007142,
+    "ast_hash": "7d467da37b21f7766eb5ec199c6e4429",
+    "semantic_hash": "7d467da37b21f7766eb5ec199c6e4429"
+  },
+  "frontend-evflow-app/packages/shared/src/stations/api.test.ts": {
+    "mtime": 1785508148.8902957,
+    "ast_hash": "44a922f750ecc5347e1f8ba45c26e06c",
+    "semantic_hash": "44a922f750ecc5347e1f8ba45c26e06c"
+  },
+  "frontend-evflow-app/packages/shared/src/stations/api.ts": {
+    "mtime": 1786365676.2379613,
+    "ast_hash": "69802f587c9a8d253b0186ded7ff395b",
+    "semantic_hash": "69802f587c9a8d253b0186ded7ff395b"
+  },
+  "frontend-evflow-app/packages/shared/src/transformers/chargerTransformer.ts": {
+    "mtime": 1781150635.8697395,
+    "ast_hash": "65d8234ab7e478bcfd1cb529bb4f4bd3",
+    "semantic_hash": "65d8234ab7e478bcfd1cb529bb4f4bd3"
+  },
+  "frontend-evflow-app/packages/shared/src/types.ts": {
+    "mtime": 1785160786.9618247,
+    "ast_hash": "f456148104fb2e81eac19ec9c4eee362",
+    "semantic_hash": "f456148104fb2e81eac19ec9c4eee362"
+  },
+  "frontend-evflow-app/packages/shared/src/validation.test.ts": {
+    "mtime": 1784958961.6889505,
+    "ast_hash": "0ebef095a181ce95b9df4807b2a09ffa",
+    "semantic_hash": "0ebef095a181ce95b9df4807b2a09ffa"
+  },
+  "frontend-evflow-app/packages/shared/src/validation.ts": {
+    "mtime": 1784958961.6896358,
+    "ast_hash": "c727bedc2911b6f9e97ddd00f85c6f90",
+    "semantic_hash": "c727bedc2911b6f9e97ddd00f85c6f90"
+  },
+  "frontend-evflow-app/packages/shared/src/wallet/api.test.ts": {
+    "mtime": 1784958961.6901672,
+    "ast_hash": "60136fb5443e3e409fd9b8d8c624125e",
+    "semantic_hash": "60136fb5443e3e409fd9b8d8c624125e"
+  },
+  "frontend-evflow-app/packages/shared/src/wallet/api.ts": {
+    "mtime": 1784385362.2156315,
+    "ast_hash": "4c4871fb9710748eb1eb7ff473380fb5",
+    "semantic_hash": "4c4871fb9710748eb1eb7ff473380fb5"
+  },
+  "frontend-evflow-app/packages/shared/tsconfig.json": {
+    "mtime": 1781150635.8706107,
+    "ast_hash": "3e63c53dd678c89102a3efda146d4c2b",
+    "semantic_hash": "3e63c53dd678c89102a3efda146d4c2b"
+  },
+  "frontend-evflow-app/packages/ui/package.json": {
+    "mtime": 1784958961.6906674,
+    "ast_hash": "3dae1bd76e3313e4369b5b20c9198612",
+    "semantic_hash": "3dae1bd76e3313e4369b5b20c9198612"
+  },
+  "frontend-evflow-app/packages/ui/src/components/BottomNavigation.tsx": {
+    "mtime": 1784958961.6912339,
+    "ast_hash": "bcb4aee3aa8dcd0ddb394adb5284875e",
+    "semantic_hash": "bcb4aee3aa8dcd0ddb394adb5284875e"
+  },
+  "frontend-evflow-app/packages/ui/src/components/Button.tsx": {
+    "mtime": 1781150635.8720043,
+    "ast_hash": "5e817940f1e0d3cdb9f0442448671050",
+    "semantic_hash": "5e817940f1e0d3cdb9f0442448671050"
+  },
+  "frontend-evflow-app/packages/ui/src/components/Card.tsx": {
+    "mtime": 1781150635.8723164,
+    "ast_hash": "284eef3a83cdd250c1410c3d13dd94e6",
+    "semantic_hash": "284eef3a83cdd250c1410c3d13dd94e6"
+  },
+  "frontend-evflow-app/packages/ui/src/components/FilterPill.tsx": {
+    "mtime": 1781150635.8725288,
+    "ast_hash": "26412de259a935c3fa06bee98f26e138",
+    "semantic_hash": "26412de259a935c3fa06bee98f26e138"
+  },
+  "frontend-evflow-app/packages/ui/src/components/LeafletMap.tsx": {
+    "mtime": 1786365676.2389278,
+    "ast_hash": "c6b43849391703e6c7f629e82a7f13be",
+    "semantic_hash": "c6b43849391703e6c7f629e82a7f13be"
+  },
+  "frontend-evflow-app/packages/ui/src/components/LeafletMap.web.tsx": {
+    "mtime": 1786365676.2395732,
+    "ast_hash": "5fd43a4095437c92b143ca390563e2b3",
+    "semantic_hash": "5fd43a4095437c92b143ca390563e2b3"
+  },
+  "frontend-evflow-app/packages/ui/src/components/Screen.tsx": {
+    "mtime": 1781150635.8741345,
+    "ast_hash": "1ae1b459876992f039d021f086416bc4",
+    "semantic_hash": "1ae1b459876992f039d021f086416bc4"
+  },
+  "frontend-evflow-app/packages/ui/src/components/SideMenu.tsx": {
+    "mtime": 1781150635.8743277,
+    "ast_hash": "a59a381f6a4e1fd400417ddd380496ed",
+    "semantic_hash": "a59a381f6a4e1fd400417ddd380496ed"
+  },
+  "frontend-evflow-app/packages/ui/src/index.ts": {
+    "mtime": 1781150635.8745499,
+    "ast_hash": "9945d6c16b3767c80d62d87a2014c2a5",
+    "semantic_hash": "9945d6c16b3767c80d62d87a2014c2a5"
+  },
+  "frontend-evflow-app/packages/ui/src/styles/chargingFlowStyles.ts": {
+    "mtime": 1784385362.2168045,
+    "ast_hash": "5d27ee472732fb36fb36e2d09aba2e30",
+    "semantic_hash": "5d27ee472732fb36fb36e2d09aba2e30"
+  },
+  "frontend-evflow-app/packages/ui/src/styles/styles.ts": {
+    "mtime": 1786365676.2403853,
+    "ast_hash": "9c90577910a4800a0b7575f51d9692d4",
+    "semantic_hash": "9c90577910a4800a0b7575f51d9692d4"
+  },
+  "frontend-evflow-app/packages/ui/src/theme/colors.ts": {
+    "mtime": 1781150635.8758793,
+    "ast_hash": "ae2a74b5ff8e285a4bc62fb00f68d30c",
+    "semantic_hash": "ae2a74b5ff8e285a4bc62fb00f68d30c"
+  },
+  "frontend-evflow-app/packages/ui/tsconfig.json": {
+    "mtime": 1781150635.8760695,
+    "ast_hash": "c00d5ba2962675ec77dc845bddf2beda",
+    "semantic_hash": "c00d5ba2962675ec77dc845bddf2beda"
+  },
+  "frontend-evflow-app/tsconfig.base.json": {
+    "mtime": 1781150635.8762858,
+    "ast_hash": "80d9ba0c8f2e25f8ca2a3c0ba112a6b9",
+    "semantic_hash": "80d9ba0c8f2e25f8ca2a3c0ba112a6b9"
+  },
+  "frontend-evflow-app/tsconfig.json": {
+    "mtime": 1781150635.8765423,
+    "ast_hash": "b6546e6b1fa3b6da0ec15fce9279a4cf",
+    "semantic_hash": "b6546e6b1fa3b6da0ec15fce9279a4cf"
+  },
+  "frontend-evflow-app/vitest.config.ts": {
+    "mtime": 1786365676.241116,
+    "ast_hash": "c91a3ec5e84b2907f95b2691096d2cf7",
+    "semantic_hash": "c91a3ec5e84b2907f95b2691096d2cf7"
+  },
+  "package.json": {
+    "mtime": 1784385362.2188897,
+    "ast_hash": "fef59575dee3563f666eb2dce9a77127",
+    "semantic_hash": "fef59575dee3563f666eb2dce9a77127"
+  },
+  "sonarqube/scan.sh": {
+    "mtime": 1781327526.1486819,
+    "ast_hash": "ef31893a786f8489ff87b5a59ba6b6ba",
+    "semantic_hash": "ef31893a786f8489ff87b5a59ba6b6ba"
+  },
+  ".github/workflows/sonarqube.yml": {
+    "mtime": 1786365676.196856,
+    "ast_hash": "9bd507d60d25a2f91c4f8998a7cb3214",
+    "semantic_hash": "9bd507d60d25a2f91c4f8998a7cb3214"
+  },
+  "AGENTS.md": {
+    "mtime": 1785552040.6746082,
+    "ast_hash": "6a47d64fcc136324ca395065a707ef76",
+    "semantic_hash": "6a47d64fcc136324ca395065a707ef76"
+  },
+  "README.md": {
+    "mtime": 1784971583.9135683,
+    "ast_hash": "45df72d2e9549e7ee9cdf05352ae678e",
+    "semantic_hash": "45df72d2e9549e7ee9cdf05352ae678e"
+  },
+  "backend-ev-flow/API_README.md": {
+    "mtime": 1784971584.110377,
+    "ast_hash": "0964bcf26bfbc4657f95f1836cd50dfe",
+    "semantic_hash": "0964bcf26bfbc4657f95f1836cd50dfe"
+  },
+  "backend-ev-flow/DEPLOY.md": {
+    "mtime": 1785424037.6103542,
+    "ast_hash": "d7a16ca15ec46f4ec9dac87a6f536f87",
+    "semantic_hash": "d7a16ca15ec46f4ec9dac87a6f536f87"
+  },
+  "backend-ev-flow/FRONTEND_API.md": {
+    "mtime": 1785137553.980683,
+    "ast_hash": "39d01340a281157b053bd0e9a8cd9b7b",
+    "semantic_hash": "39d01340a281157b053bd0e9a8cd9b7b"
+  },
+  "backend-ev-flow/README.md": {
+    "mtime": 1784971583.9219716,
+    "ast_hash": "0494885e6361cf201ee39a21fb4a634e",
+    "semantic_hash": "0494885e6361cf201ee39a21fb4a634e"
+  },
+  "backend-ev-flow/ROUTE_PLANNING_API.md": {
+    "mtime": 1785564081.6372142,
+    "ast_hash": "133b392b691941865f9c9c48614fd860",
+    "semantic_hash": "133b392b691941865f9c9c48614fd860"
+  },
+  "backend-ev-flow/docs/EPIC2_TLS_VERIFICATION.md": {
+    "mtime": 1786365676.2094445,
+    "ast_hash": "acddb66d61a8d007bd3bdbfa74c490fa",
+    "semantic_hash": "acddb66d61a8d007bd3bdbfa74c490fa"
+  },
+  "backend-ev-flow/docs/deployment-evidence/2026-07-27-tls.txt": {
+    "mtime": 1785165329.57541,
+    "ast_hash": "cc9d1581de918261390dc8fc92822998",
+    "semantic_hash": "cc9d1581de918261390dc8fc92822998"
+  },
+  "backend-ev-flow/docs/superpowers/plans/2026-06-01-database-stations.md": {
+    "mtime": 1781150635.792951,
+    "ast_hash": "a55a17382ac9c8a28f0bceb27a953f52",
+    "semantic_hash": "a55a17382ac9c8a28f0bceb27a953f52"
+  },
+  "backend-ev-flow/docs/superpowers/plans/2026-06-03-xendit-wallet-topup.md": {
+    "mtime": 1781150635.7931771,
+    "ast_hash": "2c67015a496ce88c8b936662028982b6",
+    "semantic_hash": "2c67015a496ce88c8b936662028982b6"
+  },
+  "backend-ev-flow/docs/superpowers/plans/2026-06-07-connector-enrichment.md": {
+    "mtime": 1781150635.7934191,
+    "ast_hash": "11ca42579f6ec4f20e0e333c7732ea20",
+    "semantic_hash": "11ca42579f6ec4f20e0e333c7732ea20"
+  },
+  "backend-ev-flow/docs/superpowers/plans/2026-06-08-auth.md": {
+    "mtime": 1781150635.7936654,
+    "ast_hash": "ae0899e8b4339fbc76e776c4e6a376d5",
+    "semantic_hash": "ae0899e8b4339fbc76e776c4e6a376d5"
+  },
+  "backend-ev-flow/docs/superpowers/specs/2026-06-01-database-stations-design.md": {
+    "mtime": 1781150635.7942874,
+    "ast_hash": "71a3f0a63c5800ffe829a9360bac4087",
+    "semantic_hash": "71a3f0a63c5800ffe829a9360bac4087"
+  },
+  "backend-ev-flow/docs/superpowers/specs/2026-06-03-xendit-wallet-topup-design.md": {
+    "mtime": 1781150635.7947977,
+    "ast_hash": "569f67f56804a2065cdf90b8487482bb",
+    "semantic_hash": "569f67f56804a2065cdf90b8487482bb"
+  },
+  "backend-ev-flow/docs/superpowers/specs/2026-06-07-connector-enrichment-design.md": {
+    "mtime": 1781150635.7953055,
+    "ast_hash": "c216563a7f3817d1621e8981aa210e86",
+    "semantic_hash": "c216563a7f3817d1621e8981aa210e86"
+  },
+  "backend-ev-flow/docs/superpowers/specs/2026-06-08-auth-design.md": {
+    "mtime": 1781150635.795811,
+    "ast_hash": "1d256fe774f968b227492c6df69e0747",
+    "semantic_hash": "1d256fe774f968b227492c6df69e0747"
+  },
+  "backend-ev-flow/document.yaml": {
+    "mtime": 1781150635.7961683,
+    "ast_hash": "de2754fbc4b7b469b9c6555f6757009f",
+    "semantic_hash": "de2754fbc4b7b469b9c6555f6757009f"
+  },
+  "backend-ev-flow/ocm_api_docs.html": {
+    "mtime": 1781150635.8128202,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "backend-ev-flow/ocm_index.html": {
+    "mtime": 1781150635.813555,
+    "ast_hash": "071fdf862329a1c7391d2f4852acded8",
+    "semantic_hash": "071fdf862329a1c7391d2f4852acded8"
+  },
+  "backend-ev-flow/openapi.yaml": {
+    "mtime": 1781150635.8147674,
+    "ast_hash": "ecef1e010c9ed49e41ce357ae9c51105",
+    "semantic_hash": "ecef1e010c9ed49e41ce357ae9c51105"
+  },
+  "backend-ev-flow/podman-compose.yml": {
+    "mtime": 1786365676.2102487,
+    "ast_hash": "a03329392fd92491059a8b474b89705e",
+    "semantic_hash": "a03329392fd92491059a8b474b89705e"
+  },
+  "backend-ev-flow/requirements-api.txt": {
+    "mtime": 1781150635.815863,
+    "ast_hash": "940540409a568f8358ccbdf7810ace99",
+    "semantic_hash": "940540409a568f8358ccbdf7810ace99"
+  },
+  "backend-ev-flow/requirements.txt": {
+    "mtime": 1784958961.6681933,
+    "ast_hash": "77b5dd7247e7a027ca918cb0d57faef0",
+    "semantic_hash": "77b5dd7247e7a027ca918cb0d57faef0"
+  },
+  "compose.yaml": {
+    "mtime": 1786365676.2191606,
+    "ast_hash": "5048c1f20540d47c9a24b0673a5bf751",
+    "semantic_hash": "5048c1f20540d47c9a24b0673a5bf751"
+  },
+  "docs/API.md": {
+    "mtime": 1784971583.936967,
+    "ast_hash": "d8bbc58348beddf18624f031301db55a",
+    "semantic_hash": "d8bbc58348beddf18624f031301db55a"
+  },
+  "docs/ARCHITECTURE.md": {
+    "mtime": 1784971583.9379323,
+    "ast_hash": "aeeef8bb276f4cccbe33ecb8d25d76fd",
+    "semantic_hash": "aeeef8bb276f4cccbe33ecb8d25d76fd"
+  },
+  "docs/CONFIGURATION.md": {
+    "mtime": 1784971583.9399545,
+    "ast_hash": "116e85959d294da13f93496a072161f1",
+    "semantic_hash": "116e85959d294da13f93496a072161f1"
+  },
+  "docs/DEVELOPMENT.md": {
+    "mtime": 1784971583.941013,
+    "ast_hash": "61f7df40b13aaa361627f1956ef0e6a1",
+    "semantic_hash": "61f7df40b13aaa361627f1956ef0e6a1"
+  },
+  "docs/INTERVIEW_PREP.md": {
+    "mtime": 1781342497.979516,
+    "ast_hash": "28c91f7be53e7dc8998c96df2e107fe9",
+    "semantic_hash": "28c91f7be53e7dc8998c96df2e107fe9"
+  },
+  "docs/OPERATIONS.md": {
+    "mtime": 1784971583.9427278,
+    "ast_hash": "d4c25ca79ac6f8f7a3100a3e5593aa4b",
+    "semantic_hash": "d4c25ca79ac6f8f7a3100a3e5593aa4b"
+  },
+  "docs/PROJECT_STATUS.md": {
+    "mtime": 1784971583.9437418,
+    "ast_hash": "91692dfcae83ae054ddec69133e620e7",
+    "semantic_hash": "91692dfcae83ae054ddec69133e620e7"
+  },
+  "docs/README.md": {
+    "mtime": 1784971583.945048,
+    "ast_hash": "2c35b14c7f01c44ce3fe592e1d97b4f6",
+    "semantic_hash": "2c35b14c7f01c44ce3fe592e1d97b4f6"
+  },
+  "docs/SITEMAP.md": {
+    "mtime": 1784971584.1515133,
+    "ast_hash": "edd22b93693781535180288e4350ddf6",
+    "semantic_hash": "edd22b93693781535180288e4350ddf6"
+  },
+  "docs/USER_FLOW_DIAGRAMS.md": {
+    "mtime": 1784971584.152742,
+    "ast_hash": "36c442e140709de2caaa217ed1667a42",
+    "semantic_hash": "36c442e140709de2caaa217ed1667a42"
+  },
+  "frontend-evflow-app/README.md": {
+    "mtime": 1784736139.0551155,
+    "ast_hash": "f6d97ccad8f654d45f4fe5181987b069",
+    "semantic_hash": "f6d97ccad8f654d45f4fe5181987b069"
+  },
+  "frontend-evflow-app/apps/web/index.html": {
+    "mtime": 1781150635.8257866,
+    "ast_hash": "c6a29139eb651b6b6c7da80f372b85c6",
+    "semantic_hash": "c6a29139eb651b6b6c7da80f372b85c6"
+  },
+  "sonarqube/compose.yaml": {
+    "mtime": 1784958961.6966736,
+    "ast_hash": "ec2584b083fb8f101516ad017fc09d72",
+    "semantic_hash": "ec2584b083fb8f101516ad017fc09d72"
+  },
+  "backend-ev-flow/EV-FLOW_Data_Management_Plan.pdf": {
+    "mtime": 1781150635.7857366,
+    "ast_hash": "4a29fc3296354669c3402292072571e7",
+    "semantic_hash": "4a29fc3296354669c3402292072571e7"
+  },
+  "output/pdf/evflow-data-cleaning-and-merging-methodology.pdf": {
+    "mtime": 1784971584.0342433,
+    "ast_hash": "5009448b8aa6e3a8198bfca390631af8",
+    "semantic_hash": "5009448b8aa6e3a8198bfca390631af8"
+  },
+  "output/pdf/evflow-data-cleaning-wrangling-and-analytics-report.pdf": {
+    "mtime": 1784971584.0380495,
+    "ast_hash": "3622283461c81b43be01016c2095107f",
+    "semantic_hash": "3622283461c81b43be01016c2095107f"
+  },
+  "backend-ev-flow/data/processed/ev_fleet_analysis.png": {
+    "mtime": 1784987328.844824,
+    "ast_hash": "242cef802102562103a967192093fb1e",
+    "semantic_hash": "242cef802102562103a967192093fb1e"
+  },
+  "docs/assets/evflow-data-architecture.png": {
+    "mtime": 1784971583.9608793,
+    "ast_hash": "c892a0d5fafc8e1a9e0cc415e730a187",
+    "semantic_hash": "c892a0d5fafc8e1a9e0cc415e730a187"
+  },
+  "docs/assets/evflow-data-protection-recovery.png": {
+    "mtime": 1784971583.9823465,
+    "ast_hash": "259d10a7437e10b46ee36c0fd719c539",
+    "semantic_hash": "259d10a7437e10b46ee36c0fd719c539"
+  },
+  "docs/assets/evflow-logical-data-architecture.png": {
+    "mtime": 1784971584.011217,
+    "ast_hash": "9597c61b58c3a7ef6cf900e688cafe58",
+    "semantic_hash": "9597c61b58c3a7ef6cf900e688cafe58"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/bank-topup.svg": {
+    "mtime": 1781150635.8315423,
+    "ast_hash": "f94aa0474957a0e2137b69b8972502c6",
+    "semantic_hash": "f94aa0474957a0e2137b69b8972502c6"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/business-planner-graph.svg": {
+    "mtime": 1781150635.831825,
+    "ast_hash": "950efeefe0e86028df8eee2b1474be02",
+    "semantic_hash": "950efeefe0e86028df8eee2b1474be02"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/camera-flashlight.svg": {
+    "mtime": 1781150635.8320873,
+    "ast_hash": "cab09e447c8976a956c12de1bfc86968",
+    "semantic_hash": "cab09e447c8976a956c12de1bfc86968"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/car-plug-in.png": {
+    "mtime": 1781150635.8325973,
+    "ast_hash": "812e42026189e0038e62fa5e9b93c8f9",
+    "semantic_hash": "812e42026189e0038e62fa5e9b93c8f9"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/charging-complete-tick.png": {
+    "mtime": 1781150635.8330126,
+    "ast_hash": "a35218a3e20ec7e5751e6c8d45954fee",
+    "semantic_hash": "a35218a3e20ec7e5751e6c8d45954fee"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/charging-history.svg": {
+    "mtime": 1781150635.833278,
+    "ast_hash": "e05cb6495e843068647f79c7d14e192a",
+    "semantic_hash": "e05cb6495e843068647f79c7d14e192a"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/charging-session-failure.svg": {
+    "mtime": 1781150635.8335164,
+    "ast_hash": "006da15251c6a0326577caf5142ee111",
+    "semantic_hash": "006da15251c6a0326577caf5142ee111"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/close-button-icon.svg": {
+    "mtime": 1781150635.8337653,
+    "ast_hash": "499fb33ae982c0475ec588fdf6ff1874",
+    "semantic_hash": "499fb33ae982c0475ec588fdf6ff1874"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/connector.svg": {
+    "mtime": 1781150635.834022,
+    "ast_hash": "3f004a750dadcfcd388133798441c5f6",
+    "semantic_hash": "3f004a750dadcfcd388133798441c5f6"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/copy-button.svg": {
+    "mtime": 1781150635.834279,
+    "ast_hash": "29a73f2db4e7ca7bc89fd87272c7660b",
+    "semantic_hash": "29a73f2db4e7ca7bc89fd87272c7660b"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/download.svg": {
+    "mtime": 1781150635.834544,
+    "ast_hash": "4ec0bb280c3043afe735ec5d6fa44a20",
+    "semantic_hash": "4ec0bb280c3043afe735ec5d6fa44a20"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/electric-car.svg": {
+    "mtime": 1781150635.8347967,
+    "ast_hash": "effc1ed25c821f2c98c3385ef2c0f173",
+    "semantic_hash": "effc1ed25c821f2c98c3385ef2c0f173"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/ev-car-driver.svg": {
+    "mtime": 1781150635.8351078,
+    "ast_hash": "e763de256105e4d65c64c377a24535f6",
+    "semantic_hash": "e763de256105e4d65c64c377a24535f6"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/evflow-icon.png": {
+    "mtime": 1781150635.835324,
+    "ast_hash": "3173c96b06cf20d44c938d8371a67bc9",
+    "semantic_hash": "3173c96b06cf20d44c938d8371a67bc9"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/filter-setting.svg": {
+    "mtime": 1781150635.8354936,
+    "ast_hash": "220819d07357e9073222400fbcbeaf8c",
+    "semantic_hash": "220819d07357e9073222400fbcbeaf8c"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/left-arrow.svg": {
+    "mtime": 1781150635.835678,
+    "ast_hash": "ec857f2d82636e9bfb462531d7feb688",
+    "semantic_hash": "ec857f2d82636e9bfb462531d7feb688"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/left-chevron.svg": {
+    "mtime": 1781150635.835883,
+    "ast_hash": "088e88286d7d63f898574582e230d315",
+    "semantic_hash": "088e88286d7d63f898574582e230d315"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/lightning-icon.svg": {
+    "mtime": 1781150635.8360386,
+    "ast_hash": "d94a98ae9ded7d9e533ce20669976acf",
+    "semantic_hash": "d94a98ae9ded7d9e533ce20669976acf"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/location-info.svg": {
+    "mtime": 1781150635.8361871,
+    "ast_hash": "f3ad6f0ad5e7a229384aa64dbf122e2e",
+    "semantic_hash": "f3ad6f0ad5e7a229384aa64dbf122e2e"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/location-pin-solid.svg": {
+    "mtime": 1781150635.8363953,
+    "ast_hash": "325efaaed03e32867ae4b741d65ee56c",
+    "semantic_hash": "325efaaed03e32867ae4b741d65ee56c"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/map.svg": {
+    "mtime": 1781150635.83654,
+    "ast_hash": "bf9e6bb43b6850796fe141fa98e8134e",
+    "semantic_hash": "bf9e6bb43b6850796fe141fa98e8134e"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/payment-complete.png": {
+    "mtime": 1781150635.836755,
+    "ast_hash": "a57fd8bb35528bdd7f4b8874ad8e8ef1",
+    "semantic_hash": "a57fd8bb35528bdd7f4b8874ad8e8ef1"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/piggy-bank.svg": {
+    "mtime": 1781150635.837019,
+    "ast_hash": "88d8346aa8bfdb520e5773a6c3d65818",
+    "semantic_hash": "88d8346aa8bfdb520e5773a6c3d65818"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/profile.svg": {
+    "mtime": 1781150635.8372009,
+    "ast_hash": "4fcb85d26d559935427898413f99f47f",
+    "semantic_hash": "4fcb85d26d559935427898413f99f47f"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/qr-scan.svg": {
+    "mtime": 1781150635.8374388,
+    "ast_hash": "0f2ed98c8ad890cf0e6ee51ac114b1b8",
+    "semantic_hash": "0f2ed98c8ad890cf0e6ee51ac114b1b8"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/query-in-circle.svg": {
+    "mtime": 1781150635.8376906,
+    "ast_hash": "7c40f4ce195f0c81d97fb7957bb0c017",
+    "semantic_hash": "7c40f4ce195f0c81d97fb7957bb0c017"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/receipt.svg": {
+    "mtime": 1781150635.8378541,
+    "ast_hash": "8e542690d053d477c5830c732690bd23",
+    "semantic_hash": "8e542690d053d477c5830c732690bd23"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/right-arrow-pointed.svg": {
+    "mtime": 1781150635.8380828,
+    "ast_hash": "c5cab25620d4edb5e75127666cc4d6fa",
+    "semantic_hash": "c5cab25620d4edb5e75127666cc4d6fa"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/route.svg": {
+    "mtime": 1781150635.8382595,
+    "ast_hash": "7f4ce982dd46a4898b5cad05adc3366e",
+    "semantic_hash": "7f4ce982dd46a4898b5cad05adc3366e"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/search-icon.svg": {
+    "mtime": 1781150635.838449,
+    "ast_hash": "dd6065318430095d3918b53fd3105aba",
+    "semantic_hash": "dd6065318430095d3918b53fd3105aba"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/shield.svg": {
+    "mtime": 1781150635.838608,
+    "ast_hash": "0818f40bf931ada54ad03a91cbf614cd",
+    "semantic_hash": "0818f40bf931ada54ad03a91cbf614cd"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/sort-button.svg": {
+    "mtime": 1781150635.8387456,
+    "ast_hash": "6a76b80e92b5ba342373731e1a4043aa",
+    "semantic_hash": "6a76b80e92b5ba342373731e1a4043aa"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/stop-in-circle.svg": {
+    "mtime": 1781150635.8389282,
+    "ast_hash": "1e9742ef6c84edef7a82c161afb736b8",
+    "semantic_hash": "1e9742ef6c84edef7a82c161afb736b8"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/tick-with-icon.svg": {
+    "mtime": 1781150635.8391478,
+    "ast_hash": "560b49521fa79e44fa5b7c92aff14ff8",
+    "semantic_hash": "560b49521fa79e44fa5b7c92aff14ff8"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/timer.svg": {
+    "mtime": 1781150635.8393998,
+    "ast_hash": "a5cff8a352802128e9d95523a1c8eaac",
+    "semantic_hash": "a5cff8a352802128e9d95523a1c8eaac"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/wallet-with-bg.svg": {
+    "mtime": 1781150635.8396373,
+    "ast_hash": "1824d3b4ef5f39e99c235435ed484187",
+    "semantic_hash": "1824d3b4ef5f39e99c235435ed484187"
+  },
+  "frontend-evflow-app/packages/features/src/assets/images/wallet.svg": {
+    "mtime": 1781150635.8399124,
+    "ast_hash": "a4da5cc45088490b218f53cba18aae22",
+    "semantic_hash": "a4da5cc45088490b218f53cba18aae22"
+  },
+  "backend-ev-flow/alembic/versions/0016_station_hourly_occupancy.py": {
+    "mtime": 1785564081.637881,
+    "ast_hash": "fdb1d2ecf6aff96b30f03e115051a37d",
+    "semantic_hash": "fdb1d2ecf6aff96b30f03e115051a37d"
+  },
+  "backend-ev-flow/alembic/versions/0017_occupancy_sum_per_window.py": {
+    "mtime": 1786365676.201142,
+    "ast_hash": "a53e0732380b4e2db8e00b717c9ed1eb",
+    "semantic_hash": "a53e0732380b4e2db8e00b717c9ed1eb"
+  },
+  "backend-ev-flow/api/cors_policy.py": {
+    "mtime": 1786365676.2015917,
+    "ast_hash": "ea81f6db25b62dbccb7a19ae05b619dc",
+    "semantic_hash": "ea81f6db25b62dbccb7a19ae05b619dc"
+  },
+  "backend-ev-flow/scripts/simulation_tick.sh": {
+    "mtime": 1786365676.2124662,
+    "ast_hash": "d965e0acc45d8ffecc060abda7a557e7",
+    "semantic_hash": "d965e0acc45d8ffecc060abda7a557e7"
+  },
+  "backend-ev-flow/scripts/sql/charging_simulation.sql": {
+    "mtime": 1786365676.2128878,
+    "ast_hash": "dfb5af5879af5d2781bd2490c852975d",
+    "semantic_hash": "dfb5af5879af5d2781bd2490c852975d"
+  },
+  "backend-ev-flow/tests/test_cors_policy.py": {
+    "mtime": 1786365676.2163699,
+    "ast_hash": "7c71390e8d509450c443845f4b0f6239",
+    "semantic_hash": "7c71390e8d509450c443845f4b0f6239"
+  },
+  "backend-ev-flow/tests/test_rate_limit.py": {
+    "mtime": 1786365676.2175124,
+    "ast_hash": "c8127af1ad788a8d90c7db9733dc47ff",
+    "semantic_hash": "c8127af1ad788a8d90c7db9733dc47ff"
+  },
+  "backend-ev-flow/tests/test_rate_limits_auth.py": {
+    "mtime": 1786365676.2178235,
+    "ast_hash": "04fbaa8ab19428385b1c14d11fc0770f",
+    "semantic_hash": "04fbaa8ab19428385b1c14d11fc0770f"
+  },
+  "backend-ev-flow/tests/test_rate_limits_money.py": {
+    "mtime": 1786365676.218117,
+    "ast_hash": "e648e29688f1a97cbb285ba9e9cb3cf1",
+    "semantic_hash": "e648e29688f1a97cbb285ba9e9cb3cf1"
+  },
+  "backend-ev-flow/tests/test_route_out_of_area.py": {
+    "mtime": 1786365676.2183187,
+    "ast_hash": "d15774ec78bd18ac37fbc5c16b5bf559",
+    "semantic_hash": "d15774ec78bd18ac37fbc5c16b5bf559"
+  },
+  "backend-ev-flow/tests/test_station_service_area.py": {
+    "mtime": 1786365676.2185671,
+    "ast_hash": "6467ad266b2a9f00e9f784bdc397abcb",
+    "semantic_hash": "6467ad266b2a9f00e9f784bdc397abcb"
+  },
+  "backend-ev-flow/tests/test_station_status.py": {
+    "mtime": 1785564081.6442168,
+    "ast_hash": "0911c7139b0e5e2a5ed553f4718237c6",
+    "semantic_hash": "0911c7139b0e5e2a5ed553f4718237c6"
+  },
+  "backend-ev-flow/tests/test_station_status_db.py": {
+    "mtime": 1785564081.6448789,
+    "ast_hash": "e08101447782428e5b27e44ebe116540",
+    "semantic_hash": "e08101447782428e5b27e44ebe116540"
+  },
+  "backend-ev-flow/tests/test_support_tickets.py": {
+    "mtime": 1786365676.2188005,
+    "ast_hash": "5df5b15dfbc0de23363fdebaaaf6a379",
+    "semantic_hash": "5df5b15dfbc0de23363fdebaaaf6a379"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/components/NearbyAlternatives.tsx": {
+    "mtime": 1786365676.2224386,
+    "ast_hash": "f1716f91ee0f74eb4bd4cccdf4ab8b64",
+    "semantic_hash": "f1716f91ee0f74eb4bd4cccdf4ab8b64"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/components/spkluMarkerSvg.test.ts": {
+    "mtime": 1786365676.2234552,
+    "ast_hash": "545dcff8fad79d29f78e0a2614472509",
+    "semantic_hash": "545dcff8fad79d29f78e0a2614472509"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/components/MetricValueText.tsx": {
+    "mtime": 1786365676.2289143,
+    "ast_hash": "e8de66c2e9d0752ada1222f39cf19457",
+    "semantic_hash": "e8de66c2e9d0752ada1222f39cf19457"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/locationDialogCopy.test.ts": {
+    "mtime": 1786365676.2294512,
+    "ast_hash": "14c7780121fa583061289a48a6438d9f",
+    "semantic_hash": "14c7780121fa583061289a48a6438d9f"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/locationDialogCopy.ts": {
+    "mtime": 1786365676.229613,
+    "ast_hash": "947dee45b15f05bcad0a9ab5a7f96818",
+    "semantic_hash": "947dee45b15f05bcad0a9ab5a7f96818"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/navigationMarkers.test.ts": {
+    "mtime": 1786365676.2297902,
+    "ast_hash": "a96899c28156f00f2e9c77038bc28f89",
+    "semantic_hash": "a96899c28156f00f2e9c77038bc28f89"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/navigationMarkers.ts": {
+    "mtime": 1786365676.2299924,
+    "ast_hash": "12ab63a6591a2906b687ce118a138e27",
+    "semantic_hash": "12ab63a6591a2906b687ce118a138e27"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/reserveCopy.test.ts": {
+    "mtime": 1786365676.230492,
+    "ast_hash": "1c8cba08fd4dec40e6f1869abf8ced0b",
+    "semantic_hash": "1c8cba08fd4dec40e6f1869abf8ced0b"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/plan_route/reserveCopy.ts": {
+    "mtime": 1786365676.2306426,
+    "ast_hash": "dc0a44d69e3e117856f13a84e52a879e",
+    "semantic_hash": "dc0a44d69e3e117856f13a84e52a879e"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-area/areaFilterMode.test.ts": {
+    "mtime": 1786365676.2309635,
+    "ast_hash": "bfbc36968ba1cbdaad075d95ae722a1c",
+    "semantic_hash": "bfbc36968ba1cbdaad075d95ae722a1c"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-area/areaFilterMode.ts": {
+    "mtime": 1786365676.2312396,
+    "ast_hash": "2ce4da0d5847acece31552e53b3e2885",
+    "semantic_hash": "2ce4da0d5847acece31552e53b3e2885"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-area/areaFilterSession.test.ts": {
+    "mtime": 1786365676.2314441,
+    "ast_hash": "8b5435bf10308aed40611f9cf6bf6fda",
+    "semantic_hash": "8b5435bf10308aed40611f9cf6bf6fda"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-area/areaFilterSession.ts": {
+    "mtime": 1786365676.2316003,
+    "ast_hash": "7440ef61ee98a522497166e3199b3726",
+    "semantic_hash": "7440ef61ee98a522497166e3199b3726"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-area/nearbyAlternatives.test.ts": {
+    "mtime": 1786365676.2318137,
+    "ast_hash": "e66de6e924af9f9046f496cbbf45ddbb",
+    "semantic_hash": "e66de6e924af9f9046f496cbbf45ddbb"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-area/nearbyAlternatives.ts": {
+    "mtime": 1786365676.2319741,
+    "ast_hash": "ad99086f531e1a295a198acd4a95891a",
+    "semantic_hash": "ad99086f531e1a295a198acd4a95891a"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-area/stationAvailabilityBand.test.ts": {
+    "mtime": 1786365676.2321327,
+    "ast_hash": "0f7524b4a22e155dd2b56631e496f35d",
+    "semantic_hash": "0f7524b4a22e155dd2b56631e496f35d"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-area/stationAvailabilityBand.ts": {
+    "mtime": 1786365676.2322965,
+    "ast_hash": "6020480ee9a05d007d2e1d7207f658ef",
+    "semantic_hash": "6020480ee9a05d007d2e1d7207f658ef"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-status/connectorStatusPalette.test.ts": {
+    "mtime": 1786365676.232455,
+    "ast_hash": "78ba6f31c296e606e1ac0f72791b8bc7",
+    "semantic_hash": "78ba6f31c296e606e1ac0f72791b8bc7"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/station-status/connectorStatusPalette.ts": {
+    "mtime": 1786365676.2325993,
+    "ast_hash": "936687cd0afe5dd5022bb46e3490387f",
+    "semantic_hash": "936687cd0afe5dd5022bb46e3490387f"
+  },
+  "frontend-evflow-app/packages/features/src/ev_driver/utils/location.web.test.ts": {
+    "mtime": 1786365676.2337594,
+    "ast_hash": "a0645fbffe65083e99e7290979fa7ade",
+    "semantic_hash": "a0645fbffe65083e99e7290979fa7ade"
+  },
+  "frontend-evflow-app/packages/features/src/login/demoPersonas.test.ts": {
+    "mtime": 1786365676.2353954,
+    "ast_hash": "ee90a5d1fed51902f9671061fb862d85",
+    "semantic_hash": "ee90a5d1fed51902f9671061fb862d85"
+  },
+  "frontend-evflow-app/packages/features/src/support/HelpDeskScreen.tsx": {
+    "mtime": 1786365676.2361557,
+    "ast_hash": "d1ec5475122f4958065b4f68cb48498a",
+    "semantic_hash": "d1ec5475122f4958065b4f68cb48498a"
+  },
+  "frontend-evflow-app/packages/features/src/support/supportApiClient.test.ts": {
+    "mtime": 1786365676.2364545,
+    "ast_hash": "0c326f50fdeeea6f1c5f439c46edcc38",
+    "semantic_hash": "0c326f50fdeeea6f1c5f439c46edcc38"
+  },
+  "frontend-evflow-app/packages/features/src/support/supportMessages.test.ts": {
+    "mtime": 1786365676.2367764,
+    "ast_hash": "b08c830c70a7ab9582cdead0362a1ea5",
+    "semantic_hash": "b08c830c70a7ab9582cdead0362a1ea5"
+  },
+  "frontend-evflow-app/packages/features/src/support/supportMessages.ts": {
+    "mtime": 1786365676.2370565,
+    "ast_hash": "da370af092ffec4fd1f543a16f3a36ba",
+    "semantic_hash": "da370af092ffec4fd1f543a16f3a36ba"
+  },
+  "frontend-evflow-app/packages/features/src/support/supportValidation.test.ts": {
+    "mtime": 1786365676.237279,
+    "ast_hash": "89976ffeea5ce19c02c9f1c5945c6a89",
+    "semantic_hash": "89976ffeea5ce19c02c9f1c5945c6a89"
+  },
+  "frontend-evflow-app/packages/features/src/support/supportValidation.ts": {
+    "mtime": 1786365676.2374845,
+    "ast_hash": "0f24815a5fd6435758d41b46e1f01f48",
+    "semantic_hash": "0f24815a5fd6435758d41b46e1f01f48"
+  },
+  "frontend-evflow-app/packages/shared/src/support/api.ts": {
+    "mtime": 1786365676.2382543,
+    "ast_hash": "8b458fe79f2bf3f073b87ea8e69af974",
+    "semantic_hash": "8b458fe79f2bf3f073b87ea8e69af974"
+  },
+  "backend-ev-flow/docs/deployment-evidence/2026-08-08-tls.txt": {
+    "mtime": 1786365676.209638,
+    "ast_hash": "0960247ff09005f54417c75fa16755da",
+    "semantic_hash": "0960247ff09005f54417c75fa16755da"
+  }
+}

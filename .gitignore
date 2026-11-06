@@ -41,10 +41,8 @@ frontend-evflow-app/ios/
 
 # Local Codex and Graphify workspace artifacts
 AGENTS.md
-.graphifyignore
 SKILL.md
 .codex/
-graphify-out/
 
 # Derived artefacts from ev-planner-study. The scripts that produce them are
 # tracked; the outputs are not. siting_model.joblib alone is 5.9 MB, and it is
