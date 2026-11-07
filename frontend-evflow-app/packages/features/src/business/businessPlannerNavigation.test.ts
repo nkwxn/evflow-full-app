@@ -20,10 +20,11 @@ describe('Business Planner navigation', () => {
       '/business-dashboard/saved-sites',
       '/business-dashboard/profile'
     ]);
-    expect(getBusinessPlannerTab('/business-dashboard/planner')).toBe('demand-heatmap');
-    expect(getBusinessPlannerTab('/business-dashboard/site-analytics')).toBe('demand-heatmap');
-    expect(getBusinessPlannerTab('/business-dashboard/unknown')).toBe('demand-heatmap');
-    expect(getBusinessPlannerTab('/business-dashboard/saved-sites')).toBe('saved-sites');
+    expect(getBusinessPlannerTab('planner')).toBe('demand-heatmap');
+    expect(getBusinessPlannerTab('site-analytics')).toBe('demand-heatmap');
+    expect(getBusinessPlannerTab('unknown')).toBe('demand-heatmap');
+    expect(getBusinessPlannerTab(undefined)).toBe('demand-heatmap');
+    expect(getBusinessPlannerTab('saved-sites')).toBe('saved-sites');
     expect(getBusinessPlannerPath('saved-sites')).toBe('/business-dashboard/saved-sites');
     expect(items.some((item) => item.prominent)).toBe(false);
   });

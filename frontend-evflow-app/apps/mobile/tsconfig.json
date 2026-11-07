@@ -2,7 +2,24 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "jsx": "react-native"
+    "jsx": "react-native",
+    "paths": {
+      "@evflow/shared": [
+        "../../packages/shared/src/index.ts"
+      ],
+      "@evflow/ui": [
+        "../../packages/ui/src/index.ts"
+      ],
+      "@evflow/features": [
+        "../../packages/features/src/index.ts"
+      ]
+    }
   },
-  "include": ["App.tsx", "**/*.ts", "**/*.tsx"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

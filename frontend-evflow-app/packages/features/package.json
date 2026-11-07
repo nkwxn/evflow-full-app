@@ -6,28 +6,20 @@
   "types": "src/index.ts",
   "peerDependencies": {
     "expo-location": ">=19",
+    "expo-router": ">=6",
     "leaflet": ">=1.9",
     "react": ">=19",
     "react-native": ">=0.81",
     "react-native-safe-area-context": ">=5",
-    "react-native-svg": ">=15",
-    "react-router": ">=6.30",
-    "react-router-dom": ">=6.30",
-    "react-router-native": ">=6.30"
+    "react-native-svg": ">=15"
   },
   "peerDependenciesMeta": {
     "leaflet": {
       "optional": true
-    },
-    "react-router-dom": {
-      "optional": true
-    },
-    "react-router-native": {
-      "optional": true
     }
   },
   "dependencies": {
-    "@evflow/maps": "*",
+    "leaflet": "1.9.4",
     "@evflow/shared": "*",
     "@evflow/ui": "*",
     "expo-file-system": "~18.0.7",
@@ -35,5 +27,8 @@
     "expo-print": "~15.0.8",
     "expo-sharing": "~14.0.8",
     "html2pdf.js": "^0.14.0"
+  },
+  "exports": {
+    "@evflow/features": "./src/index.ts"
   }
 }

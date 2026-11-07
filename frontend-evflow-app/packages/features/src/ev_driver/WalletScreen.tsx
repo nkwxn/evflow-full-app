@@ -1,6 +1,6 @@
 import { Modal, Platform, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useRouter } from 'expo-router';
 import { walletScreenStyles as styles } from '@evflow/ui';
 import { AuthRequiredError, fetchWalletBalance, fetchWalletTopups, fetchChargingSessions, formatTransactionDate, type TopupApiItem, type ChargingSessionApiResponse } from '@evflow/shared';
 import { SvgAssetIcon } from '../shared/SvgAssetIcon';
@@ -25,7 +25,7 @@ const sortOptions: { value: TransactionSort; label: string }[] = [
 ];
 
 export function WalletScreen({ bottomInset = 0, bottomOffset = 0, topInset = 0 }: WalletScreenProps) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { height, width } = useWindowDimensions();
   const [balance, setBalance] = useState<number | null>(null);
   const [apiTopups, setApiTopups] = useState<TopupApiItem[]>([]);
@@ -108,7 +108,7 @@ export function WalletScreen({ bottomInset = 0, bottomOffset = 0, topInset = 0 }
             <Text style={styles.balanceLabel}>Total Balance</Text>
             <Text style={styles.balanceValue}>{balance === null ? 'Rp …' : formatCurrency(balance)}</Text>
           </View>
-          <Pressable accessibilityRole="button" onPress={() => navigate('/ev-driver/wallet/topup')} style={styles.topUpButton}>
+          <Pressable accessibilityRole="button" onPress={() => router.push('/ev-driver/wallet/topup')} style={styles.topUpButton}>
             <Text style={styles.topUpButtonText}>Top Up</Text>
           </Pressable>
         </View>

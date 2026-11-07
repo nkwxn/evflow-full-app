@@ -5,14 +5,14 @@
 
 ## 30-second pitch
 
-EVFlow is an EV charging-station discovery, routing, and top-up payment app for Indonesia, focused on the Jabodetabek (Greater Jakarta) metro. Its core engineering value is **data fusion**: it unifies three heterogeneous, messy public sources — PLN's official SPKLU registry, the crowd-sourced Open Charge Map, and OpenStreetMap — into a single deduplicated inventory of **1,147 physical stations** stored in PostGIS, then serves them over a versioned FastAPI REST surface that does nearby search, GeoJSON for maps, and battery-aware shortest-path routing over an offline-built road graph. It ships as three containers (PostGIS, FastAPI, nginx+Vite build) feeding a cross-platform React/React Native frontend from one shared API client.
+EVFlow is an EV charging-station discovery, routing, and top-up payment app for Indonesia, focused on the Jabodetabek (Greater Jakarta) metro. Its core engineering value is **data fusion**: it unifies three heterogeneous, messy public sources — PLN's official SPKLU registry, the crowd-sourced Open Charge Map, and OpenStreetMap — into a single deduplicated inventory of **1,147 physical stations** stored in PostGIS, then serves them over a versioned FastAPI REST surface that does nearby search, GeoJSON for maps, and battery-aware shortest-path routing over an offline-built road graph. It ships as three containers (PostGIS, FastAPI, nginx + Expo web bundle) feeding a cross-platform React/React Native frontend from one shared API client.
 
 **Stack**
 - **Backend:** Python, FastAPI, Pydantic, SQLAlchemy Core (`text()`, no ORM), Alembic migrations
 - **Data/DB:** PostgreSQL + **PostGIS** (`geometry(Point,4326)`, GiST + GIN indexes, JSONB connectors)
 - **Geo/routing:** OSMnx (offline graph build) → GraphML → NetworkX + hand-rolled Dijkstra; numpy haversine snapping
 - **Integrations:** Xendit (top-ups/webhooks), Google OAuth, JWT (HS256) + bcrypt
-- **Frontend:** npm workspaces monorepo — Vite + React 19 (web), Expo 54 + React Native 0.81 (mobile), shared `@evflow/shared` `fetch`-based API client
+- **Frontend:** npm workspaces monorepo — Expo Router 54 + React 19 + React Native 0.81 (web + mobile on one Metro pipeline), shared `@evflow/shared` `fetch`-based API client
 - **Deploy:** Podman/Docker Compose, nginx reverse proxy, Cloudflare Tunnel + host networking on a cheap LXC VPS
 
 ---
@@ -57,7 +57,7 @@ EVFlow is an EV charging-station discovery, routing, and top-up payment app for 
                    │
         ┌──────────┴──────────┐
         ▼                     ▼
-   Web (Vite/React)     Mobile (Expo/React Native)
+   Web (Expo web)       Mobile (Expo/React Native)
         └──── shared @evflow/shared fetch client ────┘
                    ▲
           Cloudflare Tunnel (TLS) → localhost:8080 on LXC VPS
@@ -192,17 +192,23 @@ A duplicate webhook matches zero `pending` rows → returns `False` → **no dou
 ## 5. Frontend & deployment
 
 ### Cross-platform monorepo (npm workspaces)
-`apps/web` (Vite + React 19) and `apps/mobile` (Expo 54 + RN 0.81) both consume `packages/shared` (the `fetch`-based API client + types), `packages/features`, `packages/maps`, `packages/ui`. Platform-specific code uses **`.web.tsx` / `.native.tsx` extensions** that Vite (`resolve.extensions`) and Metro resolve automatically — e.g. `PlatformSlider.web.tsx` (HTML `<input type=range>`) vs `.native.tsx` (`@react-native-community/slider`). One business-logic codebase, two platforms.
+`apps/mobile` (Expo Router 54 + RN 0.81) serves both web and native: the same
+Metro pipeline bundles the Expo Router route tree (`app/`) for web and mobile.
+It consumes `packages/shared` (the `fetch`-based API client + types),
+`packages/features`, and `packages/ui`. Platform-specific code uses
+**`.web.tsx` / `.native.tsx` extensions** that Metro resolves automatically —
+e.g. `PlatformSlider.web.tsx` (HTML `<input type=range>`) vs `.native.tsx`
+(`@react-native-community/slider`). One business-logic codebase, two platforms.
 
 ### Smart API base-URL resolution (`baseUrl*.ts`)
-- Web dev: `http://localhost:8000` (via `VITE_EVFLOW_API_BASE_URL`).
+- Web dev: `http://localhost:8000` (via `EXPO_PUBLIC_EVFLOW_API_BASE_URL`).
 - Mobile dev: **auto-derives the dev host from the Expo Metro bundle URL** (LAN IP for physical devices, `10.0.2.2:8000` for emulators); tunnel mode falls back to prod.
 - Prod: `https://ev-flow-api.opensoft.id`; if base is `"/"` → relative paths → **same-origin (no CORS)**.
 
 The `fetch` client is dependency-free (easy to mock in tests). `toQueryString()` flattens array params (`connector_type=Type2&connector_type=CCS2`) and omits null/undefined; FastAPI's repeatable query params reassemble the list.
 
 ### Container topology
-`compose.yaml` runs three containers: **db** (PostGIS 16-3.4) → **api** (FastAPI `:8000`) → **web** (nginx serving the Vite build, built with `VITE_EVFLOW_API_BASE_URL=/`, proxying `/api/` → `http://api:8000`). nginx (`nginx.conf.template`) immutable-caches `/assets/*` (hashed), no-caches `index.html`, SPA-falls-back to `/index.html`, and substitutes `EVFLOW_API_UPSTREAM` at container start so one image works in compose (`api:8000`) and on VPS (`localhost:8000`). Production VPS uses **host networking** (LXC blocks iptables NAT) with **Cloudflare Tunnel** terminating TLS to `localhost:8080` — no open ports, no cert renewal, everything same-origin.
+`compose.yaml` runs three containers: **db** (PostGIS 16-3.4) → **api** (FastAPI `:8000`) → **web** (nginx serving the Expo web export, built with `EXPO_PUBLIC_EVFLOW_API_BASE_URL=/`, proxying `/api/` → `http://api:8000`). nginx (`nginx.conf.template`) immutable-caches `/assets/*` (hashed), no-caches `index.html`, SPA-falls-back to `/index.html`, and substitutes `EVFLOW_API_UPSTREAM` at container start so one image works in compose (`api:8000`) and on VPS (`localhost:8000`). Production VPS uses **host networking** (LXC blocks iptables NAT) with **Cloudflare Tunnel** terminating TLS to `localhost:8080` — no open ports, no cert renewal, everything same-origin.
 
 ---
 
@@ -231,7 +237,7 @@ The `fetch` client is dependency-free (easy to mock in tests). `toQueryString()`
 - **Top-up endpoint is unauthenticated** and the wallet is a **global singleton (`id=1`)**. Next: `Depends(current_user)`, per-user wallet, topups FK'd to user.
 - **No rate limiting / no FKs / single-region** — anyone can crawl the API; no per-app quotas. Next: rate limiting, FK constraints, and a routing service if it scales beyond Jabodetabek.
 - **Per-request Dijkstra + ~10–50 MB graph in memory** — fine now, a bottleneck at national scale. Next: cache hot routes (Redis) or move to OSRM.
-- **Frontend `VITE_EVFLOW_API_BASE_URL` is baked at build time** — multi-env needs separate builds. Next: a runtime `/config.json` if true env portability is needed.
+- **Frontend `EXPO_PUBLIC_EVFLOW_API_BASE_URL` is baked at build time** — multi-env needs separate builds. Next: a runtime `/config.json` if true env portability is needed.
 
 ---
 
@@ -288,10 +294,10 @@ Up to the 7-day expiry — there's no server-side revocation, which is the cost 
 
 ### Frontend & deployment
 **Q: One API client for web and mobile — how does platform-specific UI work?**
-`packages/shared` holds the `fetch` client and business logic both platforms import; platform splits use `.web.tsx`/`.native.tsx` files that Vite and Metro resolve automatically (e.g. `PlatformSlider`). The same JWT and JSON contract work everywhere, so charger filtering, route building, and auth flows are written once.
+`packages/shared` holds the `fetch` client and business logic both platforms import; platform splits use `.web.tsx`/`.native.tsx` files that Metro resolves automatically (e.g. `PlatformSlider`). The same JWT and JSON contract work everywhere, so charger filtering, route building, and auth flows are written once.
 
 **Q: How does the app find the backend across dev, prod, and containers?**
 Three resolvers: web dev hits `localhost:8000`; mobile dev auto-derives the dev host from the Expo Metro bundle URL (LAN IP or `10.0.2.2`); prod uses `ev-flow-api.opensoft.id`, and a `"/"` base means relative paths → same-origin via the nginx proxy, eliminating CORS. If the local backend is down, dev gracefully falls back to prod.
 
 **Q: Why same-origin nginx + Cloudflare Tunnel instead of a separate API domain with CORS?**
-The Vite build bakes `VITE_EVFLOW_API_BASE_URL=/`, so the browser only ever calls relative paths; nginx proxies `/api/` to the API (target substituted from `EVFLOW_API_UPSTREAM` at container start, so one image works locally and on the VPS). On a cheap LXC VPS, host networking sidesteps blocked iptables NAT and Cloudflare Tunnel gives HTTPS with no open ports or cert renewal — at the cost of Cloudflare dependency.
+The Expo web build bakes `EXPO_PUBLIC_EVFLOW_API_BASE_URL=/`, so the browser only ever calls relative paths; nginx proxies `/api/` to the API (target substituted from `EVFLOW_API_UPSTREAM` at container start, so one image works locally and on the VPS). On a cheap LXC VPS, host networking sidesteps blocked iptables NAT and Cloudflare Tunnel gives HTTPS with no open ports or cert renewal — at the cost of Cloudflare dependency.

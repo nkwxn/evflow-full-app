@@ -1,6 +1,6 @@
 import { useMemo, useReducer, useState } from 'react';
 import { Text, useWindowDimensions, View, Platform } from 'react-native';
-import { useLocation, useNavigate } from 'react-router';
+import { useRouter } from 'expo-router';
 import { BottomNavigation, evDriverContainerStyles as styles, SideMenu, type NavigationItem } from '@evflow/ui';
 import { useAppSafeAreaInsets } from '../shared/useAppSafeAreaInsets';
 import { DriverAssetIcon } from './components/DriverAssetIcon';
@@ -15,20 +15,28 @@ import type { DriverTabKey } from './types';
 import { deleteRoutePlan } from '@evflow/shared';
 import { activeNavigationSessionReducer } from './plan_route/navigationSession';
 
+type EVDriverContainerProps = {
+  /** Dynamic [tab] route param; static wallet-topup routes never reach here. */
+  tab?: string;
+  /** Always null today: wallet topup has its own static route files. */
+  walletFlow?: 'topup' | 'success' | null;
+};
 
-export function EVDriverContainer() {
+export function EVDriverContainer({ tab, walletFlow = null }: EVDriverContainerProps = {}) {
   const [immersiveNavigation, setImmersiveNavigation] = useState(false);
+  // Lost on refresh/native restart: matches today's behavior. There is no
+  // GET /route-plans/{id} to rehydrate from. Deferred to Phase 5 backlog
+  // (AsyncStorage keyed by route_plan_id).
   const [activeNavigationSession, dispatchNavigationSession] = useReducer(activeNavigationSessionReducer, null);
-  const location = useLocation();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { height, width } = useWindowDimensions();
   const insets = useAppSafeAreaInsets();
   const desktop = width >= 768;
   const bottomNavOffset = desktop || immersiveNavigation ? 0 : 84 + insets.bottom;
   const topInset = insets.top;
   const items = useDriverNavigationItems();
-  const activeTab = getActiveDriverTab(location.pathname);
-  const walletFlow = getWalletFlow(location.pathname);
+  const activeTab = getActiveDriverTab(tab);
+  const navigate = router.push;
 
   return (
     <View style={[styles.shell, styles.viewportShell, { height, maxHeight: height, minHeight: height }]}>
@@ -40,9 +48,9 @@ export function EVDriverContainer() {
             items={items}
             onItemPress={(key) => {
               if (key === 'scan') {
-                navigate('/charging-flow/scan');
+                router.push('/charging-flow/scan');
               } else {
-                navigate(getDriverTabPath(key as DriverTabKey));
+                router.push(getDriverTabPath(key as DriverTabKey));
               }
             }}
             subtitle="Driver"
@@ -65,7 +73,7 @@ export function EVDriverContainer() {
         ) : activeTab === 'map' ? (
           <DriverMapScreen
             bottomOffset={bottomNavOffset}
-            onChargeHere={() => navigate('/charging-flow/scan')}
+            onChargeHere={() => router.push('/charging-flow/scan')}
             topInset={topInset}
           />
         ) : activeTab === 'wallet' ? (
@@ -101,9 +109,9 @@ export function EVDriverContainer() {
               items={items}
               onItemPress={(key) => {
                 if (key === 'scan') {
-                  navigate('/charging-flow/scan');
+                  router.push('/charging-flow/scan');
                 } else {
-                  navigate(getDriverTabPath(key as DriverTabKey));
+                  router.push(getDriverTabPath(key as DriverTabKey));
                 }
               }}
             />
@@ -114,26 +122,12 @@ export function EVDriverContainer() {
   );
 }
 
-function getActiveDriverTab(pathname: string): DriverTabKey {
-  const tab = pathname.split('/')[2];
-
+function getActiveDriverTab(tab: string | undefined): DriverTabKey {
   if (tab === 'map' || tab === 'wallet' || tab === 'scan' || tab === 'plan_route' || tab === 'profile') {
     return tab;
   }
 
   return 'map';
-}
-
-function getWalletFlow(pathname: string) {
-  if (pathname === '/ev-driver/wallet/topup') {
-    return 'topup';
-  }
-
-  if (pathname === '/ev-driver/wallet/topup/success') {
-    return 'success';
-  }
-
-  return null;
 }
 
 function getDriverTabPath(tab: DriverTabKey) {

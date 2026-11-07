@@ -5,7 +5,7 @@ import {
 
 describe('reading the key', () => {
   it('accepts a real key', () => {
-    expect(tomtomKey({ VITE_TOMTOM_API_KEY: 'abc123' })).toBe('abc123');
+    expect(tomtomKey({ EXPO_PUBLIC_TOMTOM_API_KEY: 'abc123' })).toBe('abc123');
   });
 
   it('treats missing, empty and whitespace all as no key', () => {
@@ -13,8 +13,8 @@ describe('reading the key', () => {
     // the normal state for anyone who has not signed up.
     expect(tomtomKey(undefined)).toBeNull();
     expect(tomtomKey({})).toBeNull();
-    expect(tomtomKey({ VITE_TOMTOM_API_KEY: '' })).toBeNull();
-    expect(tomtomKey({ VITE_TOMTOM_API_KEY: '   ' })).toBeNull();
+    expect(tomtomKey({ EXPO_PUBLIC_TOMTOM_API_KEY: '' })).toBeNull();
+    expect(tomtomKey({ EXPO_PUBLIC_TOMTOM_API_KEY: '   ' })).toBeNull();
   });
 });
 

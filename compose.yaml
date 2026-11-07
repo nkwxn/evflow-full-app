@@ -8,9 +8,9 @@
 # Optional secrets/tuning: copy backend-ev-flow/.env.deploy.example to .env
 # next to this file (compose reads it for the ${...} defaults below).
 #
-# The web bundle is built with VITE_EVFLOW_API_BASE_URL=/ so the browser calls
-# /api/v1/... on the web origin and nginx forwards it to the api container —
-# no CORS setup, no hardcoded API host. Override the build arg to point a
+# The web bundle is built with EXPO_PUBLIC_EVFLOW_API_BASE_URL=/ so the browser
+# calls /api/v1/... on the web origin and nginx forwards it to the api container
+# — no CORS setup, no hardcoded API host. Override the build arg to point a
 # build at an external API instead.
 #
 # For the LXC/OpenVZ VPS deployment (host networking), keep using
@@ -69,7 +69,7 @@ services:
       context: ./frontend-evflow-app
       dockerfile: Containerfile
       args:
-        VITE_EVFLOW_API_BASE_URL: "${VITE_EVFLOW_API_BASE_URL:-/}"
+        EXPO_PUBLIC_EVFLOW_API_BASE_URL: "${EXPO_PUBLIC_EVFLOW_API_BASE_URL:-/}"
     image: evflow-web:latest
     container_name: evflow-web
     restart: unless-stopped

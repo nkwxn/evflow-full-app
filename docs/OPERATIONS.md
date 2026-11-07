@@ -16,8 +16,8 @@ use the root stack with equivalent syntax.
 | `api` | FastAPI/Uvicorn, waits for healthy DB, read-only data bind mount | `8000` |
 | `web` | nginx SPA, proxies `/api/` and `/health` to `api` | `8080` |
 
-The built web bundle uses `VITE_EVFLOW_API_BASE_URL=/`, so browser API calls stay
-on the web origin and nginx proxies them internally.
+The built web bundle uses `EXPO_PUBLIC_EVFLOW_API_BASE_URL=/`, so browser API
+calls stay on the web origin and nginx proxies them internally.
 
 ### Host-Network VPS Stack
 

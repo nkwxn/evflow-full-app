@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { useNavigate } from 'react-router';
+import { useRouter } from 'expo-router';
 import { clearAuthSession, fetchStats, getAuthSession } from '@evflow/shared';
 import { businessDashboardStyles as styles } from '@evflow/ui';
 import { useAppSafeAreaInsets } from '../shared/useAppSafeAreaInsets';
@@ -140,7 +140,7 @@ type BusinessDashboardScreenProps = {
 };
 
 export function BusinessDashboardScreen({ bottomOffset }: BusinessDashboardScreenProps) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const insets = useAppSafeAreaInsets();
   const [stationTotal, setStationTotal] = useState<number | null>(null);
 
@@ -165,7 +165,7 @@ export function BusinessDashboardScreen({ bottomOffset }: BusinessDashboardScree
 
   const handleSignOut = () => {
     clearAuthSession();
-    navigate('/', { replace: true });
+    router.replace('/');
   };
 
   return (
@@ -178,7 +178,7 @@ export function BusinessDashboardScreen({ bottomOffset }: BusinessDashboardScree
           <SpatialHeatmapCard />
           <Pressable
             accessibilityRole="button"
-            onPress={() => navigate('/ev-driver/map')}
+            onPress={() => router.push('/ev-driver/map')}
             style={({ pressed }) => [styles.heatmapButton, pressed && styles.pressed]}
           >
             <Text style={styles.heatmapButtonText}>View Full Heatmap & Filters  →</Text>

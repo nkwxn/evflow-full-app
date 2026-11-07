@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, Pressable, Linking, TextInput } from 'react-native';
-import { useNavigate } from 'react-router';
+import { useRouter, type Href } from 'expo-router';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { chargingFlowStyles as styles } from '@evflow/ui';
 import { ChargingFlowHeader } from './components/ChargingFlowHeader';
 import { SpkluSubmissionGate, validateSpkluPayload, type ValidSpkluSelection } from './spkluQrValidation';
 
 export function ScanSpkluScreen() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [cameraActive, setCameraActive] = useState(true);
@@ -20,14 +20,14 @@ export function ScanSpkluScreen() {
   const navigationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const submissionGateRef = useRef(new SpkluSubmissionGate());
 
-  const stopCameraAndNavigate = (path: string, state?: { selection: ValidSpkluSelection }) => {
+  const stopCameraAndNavigate = (href: Href) => {
     if (navigationTimerRef.current) {
       clearTimeout(navigationTimerRef.current);
     }
 
     setTorchOn(false);
     setCameraActive(false);
-    navigationTimerRef.current = setTimeout(() => navigate(path, state ? { state } : undefined), 250);
+    navigationTimerRef.current = setTimeout(() => router.push(href), 250);
   };
 
   const submitStationPayload = async (payload: string) => {
@@ -42,7 +42,11 @@ export function ScanSpkluScreen() {
       setValidating(false);
       return;
     }
-    stopCameraAndNavigate('/charging-flow/initialize', { selection: result.value });
+    // Ids only — the initialize screen re-fetches station + connector by id.
+    stopCameraAndNavigate({
+      pathname: '/charging-flow/initialize',
+      params: { stationId: result.value.station.id, connectorType: result.value.connector.type }
+    });
   };
 
   useEffect(() => {
@@ -71,7 +75,7 @@ export function ScanSpkluScreen() {
 
     return (
       <View style={styles.page}>
-        <ChargingFlowHeader title="Scan SPKLU QR Code" onBack={() => stopCameraAndNavigate('/ev-driver/map')} />
+        <ChargingFlowHeader title="Scan SPKLU QR Code" onBack={() => stopCameraAndNavigate('/ev-driver/map' as Href)} />
 
         <View style={styles.cameraContainer}>
           <View style={styles.permissionPrompt}>
@@ -97,7 +101,7 @@ export function ScanSpkluScreen() {
     <View style={styles.page}>
       <ChargingFlowHeader
         title="Scan SPKLU QR Code"
-        onBack={() => stopCameraAndNavigate('/ev-driver/map')}
+        onBack={() => stopCameraAndNavigate('/ev-driver/map' as Href)}
         rightIconName={torchAvailable && cameraActive ? 'flashlight' : undefined}
         rightIconColor={torchOn ? '#01aeb8' : '#191C1D'}
         rightIconSize={22}

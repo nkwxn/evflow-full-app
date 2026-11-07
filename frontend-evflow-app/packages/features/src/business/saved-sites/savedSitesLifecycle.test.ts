@@ -33,7 +33,7 @@ describe('Saved Sites lifecycle', () => {
     expect(screen).toContain('Retry');
     expect(screen).toContain('current.filter((item) => item.cell_id !== site.cell_id)');
     expect(screen).toContain('restored.splice(Math.max(0, removedIndex), 0, site)');
-    expect(screen).toContain("navigate('/business-dashboard/demand-heatmap')");
+    expect(screen).toContain("router.push('/business-dashboard/demand-heatmap')");
     expect(screen).toContain('<SiteFeasibilitySheet');
     expect(screen).toContain('setSelectedSite(site)');
     expect(screen).toMatch(/<LocationScoreSummary\s+embedded/);

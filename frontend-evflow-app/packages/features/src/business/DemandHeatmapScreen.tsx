@@ -220,7 +220,7 @@ export function DemandHeatmapScreen({ bottomOffset = 0, topInset = 0 }: DemandHe
   // dropped rather than drawn: inside the circle by accident is not inside it.
   // Read once: it is a build-time value and cannot change while the app runs.
   const trafficKey = useMemo(
-    () => tomtomKey((import.meta as unknown as { env?: Record<string, string | undefined> }).env),
+    () => tomtomKey(typeof process !== 'undefined' ? process.env : undefined),
     []);
   // Raster tiles, so this is the one layer the radius cannot clip: TomTom serves
   // whole map squares, not features we can filter. It covers the viewport even

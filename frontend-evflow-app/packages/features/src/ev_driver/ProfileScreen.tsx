@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
-import { useNavigate } from 'react-router';
+import { useRouter } from 'expo-router';
 import {
   clearAuthSession,
   fetchEvModels,
@@ -37,7 +37,7 @@ function memberSince(iso?: string): string {
 }
 
 export function ProfileScreen({ topInset = 0, bottomOffset = 0, onLogout }: ProfileScreenProps) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const sessionUser = getAuthSession()?.user ?? null;
 
   const [user, setUser] = useState<UserPublic | null>(sessionUser);
@@ -113,11 +113,12 @@ export function ProfileScreen({ topInset = 0, bottomOffset = 0, onLogout }: Prof
   const handleLogout = async () => {
     await onLogout?.();
     clearAuthSession();
-    navigate('/');
+    router.replace('/');
   };
 
   // Rendered in place rather than behind its own route: /ev-driver/:tab is
-  // matched in AppRoutes and EVDriverContainer, which this change does not own.
+  // matched by the [tab] route file and EVDriverContainer, which this change
+  // does not own.
   if (helpDeskOpen) {
     return <HelpDeskScreen bottomOffset={bottomOffset} topInset={topInset} onBack={() => setHelpDeskOpen(false)} />;
   }

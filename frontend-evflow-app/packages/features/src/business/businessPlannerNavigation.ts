@@ -11,9 +11,7 @@ export const businessPlannerTabs: readonly BusinessPlannerTabKey[] = [
   'profile'
 ];
 
-export function getBusinessPlannerTab(pathname: string): BusinessPlannerTabKey {
-  const tab = pathname.split('/')[2];
-
+export function getBusinessPlannerTab(tab: string | undefined): BusinessPlannerTabKey {
   return businessPlannerTabs.includes(tab as BusinessPlannerTabKey)
     ? tab as BusinessPlannerTabKey
     : 'demand-heatmap';

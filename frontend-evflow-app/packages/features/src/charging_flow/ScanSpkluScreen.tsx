@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
-import { useNavigate } from 'react-router';
+import { useRouter, type Href } from 'expo-router';
 import { Html5Qrcode } from 'html5-qrcode';
 import { chargingFlowStyles as styles } from '@evflow/ui';
 import { ChargingFlowHeader } from './components/ChargingFlowHeader';
@@ -15,7 +15,7 @@ async function applyScannerTorch(scanner: Html5Qrcode, enabled: boolean) {
 }
 
 export function ScanSpkluScreen() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [permissionError, setPermissionError] = useState<string | null>(null);
   const [permissionLoading, setPermissionLoading] = useState(true);
@@ -77,9 +77,9 @@ export function ScanSpkluScreen() {
       });
   }, [hasTorch, torchOn]);
 
-  const stopAndNavigate = useCallback((path: string, state?: { selection: ValidSpkluSelection }) => {
-    stopScanner().finally(() => navigate(path, state ? { state } : undefined));
-  }, [navigate, stopScanner]);
+  const stopAndNavigate = useCallback((href: Href) => {
+    stopScanner().finally(() => router.push(href));
+  }, [router, stopScanner]);
 
   const submitStationPayload = useCallback(async (payload: string) => {
     setValidating(true);
@@ -91,7 +91,11 @@ export function ScanSpkluScreen() {
       setValidating(false);
       return;
     }
-    stopAndNavigate('/charging-flow/initialize', { selection: result.value });
+    // Ids only — the initialize screen re-fetches station + connector by id.
+    stopAndNavigate({
+      pathname: '/charging-flow/initialize',
+      params: { stationId: result.value.station.id, connectorType: result.value.connector.type }
+    });
   }, [stopAndNavigate]);
 
   const checkCameraPermission = useCallback(() => {
@@ -216,7 +220,7 @@ export function ScanSpkluScreen() {
       `}</style>
       <ChargingFlowHeader
         title="Scan SPKLU QR Code"
-        onBack={() => stopAndNavigate('/ev-driver/map')}
+        onBack={() => stopAndNavigate('/ev-driver/map' as Href)}
         rightIconName={hasTorch ? 'flashlight' : undefined}
         rightIconColor={torchOn ? '#01aeb8' : '#191C1D'}
         rightIconSize={22}

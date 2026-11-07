@@ -1,6 +1,8 @@
 # EV-FLOW Frontend Sitemap
 
-Source reviewed: `frontend-evflow-app/packages/features/src/routing/AppRoutes.tsx`, `EVDriverContainer.tsx`, and the feature screens under `frontend-evflow-app/packages/features/src`.
+Source reviewed: `frontend-evflow-app/apps/mobile/app/` (Expo Router route files),
+`EVDriverContainer.tsx`, and the feature screens under
+`frontend-evflow-app/packages/features/src`.
 
 ## Route Map
 

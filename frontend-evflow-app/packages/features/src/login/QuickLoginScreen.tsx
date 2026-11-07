@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
-import { useNavigate } from 'react-router';
+import { useRouter } from 'expo-router';
 import { AuthApiError } from '@evflow/shared';
 import { colors, quickLoginStyles as styles } from '@evflow/ui';
 import { useAppSafeAreaInsets } from '../shared/useAppSafeAreaInsets';
@@ -25,7 +25,7 @@ function getQuickLoginErrorMessage(error: unknown): string {
 }
 
 export function QuickLoginScreen() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const insets = useAppSafeAreaInsets();
   const [pendingKey, setPendingKey] = useState<DemoPersonaKey | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +46,7 @@ export function QuickLoginScreen() {
 
     ensureDemoSession(persona)
       .then(() => {
-        navigate(persona.key === 'driver' ? '/onboarding/vehicle' : '/business-dashboard');
+        router.push(persona.key === 'driver' ? '/onboarding/vehicle' : '/business-dashboard');
       })
       .catch((err: unknown) => {
         console.error('Quick login failed', err);

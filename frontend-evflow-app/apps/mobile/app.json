@@ -7,6 +7,7 @@
     "scheme": "evflow",
     "userInterfaceStyle": "light",
     "assetBundlePatterns": ["**/*"],
+    "plugins": ["expo-router"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.evflow.app",
@@ -22,7 +23,8 @@
       }
     },
     "web": {
-      "bundler": "metro"
+      "bundler": "metro",
+      "output": "single"
     }
   }
 }

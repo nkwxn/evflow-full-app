@@ -30,6 +30,8 @@ backend-ev-flow/Screenshot *.png
 node_modules/
 frontend-evflow-app/node_modules/
 frontend-evflow-app/.expo/
+frontend-evflow-app/dist/
+frontend-evflow-app/dist-metro/
 frontend-evflow-app/apps/*/dist/
 frontend-evflow-app/apps/*/build/
 frontend-evflow-app/apps/*/web-build/

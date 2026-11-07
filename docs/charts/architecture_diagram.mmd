@@ -7,8 +7,8 @@ flowchart TB
     end
 
     subgraph CLIENTS[Client applications]
-        Web[Web SPA<br/>Vite + React Native Web]
-        Mobile[Mobile app<br/>Expo + React Native]
+        Web[Web SPA<br/>Expo Router + React Native Web]
+        Mobile[Mobile app<br/>Expo Router + React Native]
         Features[Feature screens and routes<br/>Driver, charging, wallet, planner]
         Shared[Shared API clients, types<br/>and authentication session]
         UI[Shared UI package<br/>Leaflet map adapter]
@@ -42,7 +42,7 @@ flowchart TB
     subgraph EXTERNAL[External APIs and SDKs]
         Leaflet[Leaflet JavaScript SDK<br/>loaded in the web map]
         BaseTiles[Esri light basemap tiles<br/>with OpenStreetMap attribution]
-        TomTom[TomTom Traffic Tiles API<br/>optional VITE_TOMTOM_API_KEY]
+        TomTom[TomTom Traffic Tiles API<br/>optional EXPO_PUBLIC_TOMTOM_API_KEY]
         OSRM[OSRM routing API]
         Nominatim[OpenStreetMap Nominatim]
         Xendit[Xendit Invoice API + webhook]

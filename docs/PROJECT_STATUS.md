@@ -23,8 +23,8 @@ plans.
 | Receipts | Implemented client-side | html2pdf on web; Expo print plus WebView viewer on native |
 | Business planner | Prototype | Live station total only; remaining KPIs, heatmap, candidates and insights are static; most actions are no-ops |
 | Demo login | Implemented for demonstrations | Public persona password; login then auto-register on 401 |
-| Web deployment | Implemented | Vite build, nginx SPA fallback, same-origin API proxy |
-| Mobile deployment | Development-ready | Expo configuration exists; no tracked `eas.json`, store workflow, or verified deep links |
+| Web deployment | Implemented | Expo web export (Metro), nginx SPA fallback, same-origin API proxy |
+| Mobile deployment | Development-ready | Expo configuration and tracked `eas.json` exist; no store workflow or verified deep links |
 
 ## What Is Authoritative
 
@@ -42,7 +42,7 @@ plans.
 |---|---|
 | Frontend TypeScript typecheck | Passed |
 | Frontend production web build | Passed |
-| Web build size | Main minified chunk about 1.99 MB, about 582 KB gzip; Vite emitted a large-chunk warning |
+| Web build size | Metro export single entry chunk about 3.54 MB before gzip; verify after export pipeline changes |
 | Raw station normalization | 3,569 rows: PLN 3,029, Open Charge Map 527, OSM 13 |
 | Current 75 m deduplication | 2,931 stations |
 | Repository worktree before docs | Clean |
@@ -157,10 +157,9 @@ markup when that route must work on mobile.
 | Root UI | Opens demo-persona login; normal login exists only at `/login` |
 | Profile selection | Role state is not passed into registration; registration sends no account type |
 | Map radius | Default view can show all stations while displaying an 8 km circle; nearby query starts only after relevant filter/radius changes |
-| `@evflow/maps` | Declared workspace with placeholder components; product map lives in `@evflow/ui` |
-| Shared scaffolding | `createApiClient`, charger transform/filter helpers, route request builder, and `HomeScreen` are unused |
+| Shared scaffolding | `createApiClient`, charger transform/filter helpers, and route request builder are unused |
 | Package manager | Frontend metadata says Yarn; lockfile, docs, scripts and container use npm |
-| Expo dependencies | Versions are duplicated and not fully aligned across mobile, web and features manifests |
+| Expo dependencies | Versions are duplicated and not fully aligned across mobile and features manifests |
 | API health | Returns 200 and `status: ok` even when its station query fails |
 | Smoke test | Claims every endpoint but covers only public read/discovery routes |
 | Business report | Download and most navigation actions are not implemented |

@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { View, Text, Pressable, ScrollView, Image, ActivityIndicator, type ImageSourcePropType } from 'react-native';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { chargingFlowStyles as styles } from '@evflow/ui';
-import { AuthRequiredError, settleChargingSession, type ChargingSessionApiResponse } from '@evflow/shared';
+import {
+  AuthRequiredError,
+  fetchChargingSession,
+  settleChargingSession,
+  type ChargingSessionApiResponse
+} from '@evflow/shared';
 import { ChargingFlowIcon } from './components/ChargingFlowIcon';
 import chargingCompleteTickPng from '../assets/images/charging-complete-tick.png';
 import { useAppSafeAreaInsets } from '../shared/useAppSafeAreaInsets';
@@ -10,12 +15,18 @@ import { ChargingFlowHeader } from './components/ChargingFlowHeader';
 import { downloadReceipt } from '../shared/downloadReceipt';
 
 export function ChargingSuccessfulScreen() {
-  const navigate = useNavigate();
-  const { state } = useLocation();
+  const router = useRouter();
+  const { sessionId, kwh } = useLocalSearchParams<{ sessionId?: string | string[]; kwh?: string | string[] }>();
   const insets = useAppSafeAreaInsets();
 
-  const session = state?.session as ChargingSessionApiResponse | undefined;
-  const deliveredKwhInput: number = state?.deliveredKwh ?? session?.energy_kwh ?? state?.energy ?? 0;
+  const sessionIdValue = typeof sessionId === 'string' && sessionId ? sessionId : null;
+  const [session, setSession] = useState<ChargingSessionApiResponse | null>(null);
+  const kwhValue = typeof kwh === 'string' ? Number(kwh) : NaN;
+  // Delivered energy is simulation output until settlement; prefer the URL,
+  // fall back to the fetched session's purchased amount on a bare deep link.
+  const deliveredKwhInput = Number.isFinite(kwhValue)
+    ? kwhValue
+    : session?.energy_kwh ?? 0;
 
   const [settlement, setSettlement] = useState<ChargingSessionApiResponse | null>(null);
   const [settling, setSettling] = useState(true);
@@ -23,7 +34,7 @@ export function ChargingSuccessfulScreen() {
 
   // settle is idempotent on the backend, so retries / re-mounts never double-credit.
   const runSettle = useCallback(async () => {
-    if (!session?.id) {
+    if (!sessionIdValue) {
       setSettling(false);
       setError('This charging session is no longer available. Please return to the map.');
       return;
@@ -31,7 +42,7 @@ export function ChargingSuccessfulScreen() {
     setSettling(true);
     setError(null);
     try {
-      const result = await settleChargingSession(session.id, deliveredKwhInput);
+      const result = await settleChargingSession(sessionIdValue, deliveredKwhInput);
       setSettlement(result);
     } catch (err) {
       console.error('Failed to settle charging session:', err);
@@ -39,12 +50,34 @@ export function ChargingSuccessfulScreen() {
     } finally {
       setSettling(false);
     }
-  }, [session?.id, deliveredKwhInput]);
+  }, [sessionIdValue, deliveredKwhInput]);
+
+  // Load the session before settling so deliveredKwhInput has a fallback and
+  // the receipt can show station details even if the kwh param is absent.
+  useEffect(() => {
+    if (!sessionIdValue) {
+      return;
+    }
+
+    let alive = true;
+    fetchChargingSession(sessionIdValue)
+      .then((response) => {
+        if (alive) setSession(response);
+      })
+      .catch(() => {
+        // Settle still runs with the URL kwh; a fetch failure only loses
+        // cosmetic fallbacks.
+      });
+
+    return () => {
+      alive = false;
+    };
+  }, [sessionIdValue]);
 
   useEffect(() => { runSettle(); }, [runSettle]);
 
-  const stationName = settlement?.station_name || session?.station_name || state?.station?.name || 'SPKLU PLN Sukses';
-  const purchasedKwh = settlement?.energy_kwh ?? session?.energy_kwh ?? state?.energy ?? 0;
+  const stationName = settlement?.station_name || session?.station_name || 'SPKLU PLN Sukses';
+  const purchasedKwh = settlement?.energy_kwh ?? session?.energy_kwh ?? 0;
   const deliveredKwh = settlement?.delivered_kwh ?? deliveredKwhInput;
   const initialDeposit = settlement?.deposit_idr ?? session?.deposit_idr ?? 0;
   const actualCost = settlement?.actual_cost_idr ?? 0;
@@ -64,15 +97,15 @@ export function ChargingSuccessfulScreen() {
   if (error && !settlement) {
     return (
       <View style={styles.page}>
-        <ChargingFlowHeader title="Charging Successful" onBack={() => navigate(-1)} />
+        <ChargingFlowHeader title="Charging Successful" onBack={() => router.back()} />
         <View style={[styles.content, { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 }]}>
           <Text style={{ color: '#ba1a1a', fontSize: 14, textAlign: 'center' }}>{error}</Text>
-          {session?.id ? (
+          {sessionIdValue ? (
             <Pressable style={styles.primaryButton} onPress={runSettle}>
               <Text style={styles.primaryButtonText}>RETRY SETTLEMENT</Text>
             </Pressable>
           ) : null}
-          <Pressable onPress={() => navigate('/ev-driver/map')}>
+          <Pressable onPress={() => router.replace('/ev-driver/map')}>
             <Text style={styles.backLink}>BACK TO MAP DISCOVERY</Text>
           </Pressable>
         </View>
@@ -84,7 +117,7 @@ export function ChargingSuccessfulScreen() {
     <View style={styles.page}>
       <ChargingFlowHeader
         title="Charging Successful"
-        onBack={() => navigate(-1)}
+        onBack={() => router.back()}
       />
 
       <ScrollView
@@ -177,7 +210,7 @@ export function ChargingSuccessfulScreen() {
               <ChargingFlowIcon name="download" size={16} color="#004a4f" />
             </View>
           </Pressable>
-          <Pressable onPress={() => navigate('/ev-driver/map')}>
+          <Pressable onPress={() => router.replace('/ev-driver/map')}>
             <Text style={styles.backLink}>BACK TO MAP DISCOVERY</Text>
           </Pressable>
         </View>

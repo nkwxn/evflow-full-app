@@ -7,7 +7,7 @@ development environment. Commands assume the repository root unless a preceding
 ## Prerequisites
 
 - Python 3.12, matching the backend runtime image and Sonar configuration.
-- Node.js `20.19.4+` on the Node 20 line, or `22.12+`. Vite 8 and React Native
+- Node.js `20.19.4+` on the Node 20 line, or `22.12+`. React Native and Expo
   impose these lower bounds.
 - npm. The frontend manifest names Yarn, but the repository lockfiles, scripts,
   CI-related commands, and container builds currently use npm.
@@ -136,9 +136,9 @@ Then use the root convenience command:
 npm run dev
 ```
 
-It starts Uvicorn on port 8000 and Vite on its default port, normally 5173. The
-root scripts hardcode `backend-ev-flow/.venv`, so creating that exact virtualenv
-path is required.
+It starts Uvicorn on port 8000 and the Expo web dev server on its default port,
+normally 8081. The root scripts hardcode `backend-ev-flow/.venv`, so creating that
+exact virtualenv path is required.
 
 The services can also be run independently:
 
@@ -254,7 +254,8 @@ When adding frontend functionality:
 2. Put API/session/domain helpers in `packages/shared` and reusable primitives in
    `packages/ui`.
 3. Use `.web.tsx` and `.native.tsx` only when platform APIs truly differ.
-4. Update `AppRoutes.tsx` and document reload/deep-link behavior for new routes.
+4. Add or update route files under `apps/mobile/app/` and document reload/deep-link
+   behavior for new routes.
 5. Run typecheck and the web build; verify both Expo and browser behavior for a
    platform-specific change.
 

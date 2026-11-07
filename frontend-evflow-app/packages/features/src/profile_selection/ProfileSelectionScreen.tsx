@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { colors, profileSelectionStyles as styles } from '@evflow/ui';
 import { useAppSafeAreaInsets } from '../shared/useAppSafeAreaInsets';
@@ -7,14 +8,15 @@ import { rightArrowIcon } from './components/profileSelectionIcons';
 import type { UserRole } from './types';
 
 type ProfileSelectionScreenProps = {
-  selectedRole: UserRole;
   onBack: () => void;
   onContinue: () => void;
-  onSelectRole: (role: UserRole) => void;
 };
 
-export function ProfileSelectionScreen({ selectedRole, onBack, onContinue, onSelectRole }: ProfileSelectionScreenProps) {
+export function ProfileSelectionScreen({ onBack, onContinue }: ProfileSelectionScreenProps) {
   const insets = useAppSafeAreaInsets();
+  // Radio-highlight state only: never consumed downstream (registration sends
+  // no account type), so it stays local rather than lifted into the router.
+  const [selectedRole, setSelectedRole] = useState<UserRole>('driver');
 
   return (
     <View style={styles.page}>
@@ -38,14 +40,14 @@ export function ProfileSelectionScreen({ selectedRole, onBack, onContinue, onSel
             role="driver"
             selected={selectedRole === 'driver'}
             title="EV User (Driver)"
-            onPress={() => onSelectRole('driver')}
+            onPress={() => setSelectedRole('driver')}
           />
           <RoleCard
             description="Access the VoltGrid dashboard, analyze BPS spatial data, map demand hotspots, and optimize the location of new SPKLUs in Jakarta."
             role="operator"
             selected={selectedRole === 'operator'}
             title="Business Planner"
-            onPress={() => onSelectRole('operator')}
+            onPress={() => setSelectedRole('operator')}
           />
         </ScrollView>
 

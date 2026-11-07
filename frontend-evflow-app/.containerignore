@@ -3,6 +3,8 @@ node_modules/
 **/node_modules/
 .expo/
 **/.expo/
+dist/
+dist-metro/
 apps/*/dist/
 apps/*/build/
 apps/*/web-build/

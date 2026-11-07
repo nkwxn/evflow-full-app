@@ -84,7 +84,7 @@ Boolean values accept `1`, `true`, `yes`, or `on`, case-insensitively.
 | `XENDIT_CALLBACK_TOKEN` | empty | Webhook | Expected `X-Callback-Token`; empty causes all webhook requests to be rejected |
 
 `XENDIT_PUBLIC_KEY` appears in examples but is not read by current backend or
-frontend source. Do not expose the secret key to any `VITE_` or `EXPO_PUBLIC_`
+frontend source. Do not expose the secret key to any `EXPO_PUBLIC_`
 variable.
 
 ## Charging Pricing
@@ -154,38 +154,28 @@ at a trusted API with a compatible station schema.
 
 ## Frontend API URL
 
-### Web
+Web and native share one Expo Public variable scheme; both platforms build with
+Metro, so `EXPO_PUBLIC_*` values are inlined at bundle time.
 
 | Variable | Priority | Purpose |
 |---|---|---|
-| `VITE_EVFLOW_API_BASE_URL` | Canonical | Web API base URL at Vite build/start time |
-| `VITE_API_BASE_URL` | Legacy alias | Backward-compatible fallback |
-| `VITE_API_BASE` | Legacy alias | Backward-compatible fallback |
-
-Resolution:
-
-- Vite development with no override: `http://localhost:8000`.
-- Production build with no override: `https://ev-flow-api.opensoft.id`.
-- Value `/`: empty base string, producing same-origin `/api/v1/...` calls.
-
-`VITE_` values are compiled into the browser bundle. They are public and changing
-them requires a rebuild.
-
-### Mobile
-
-| Variable | Priority | Purpose |
-|---|---|---|
-| `EXPO_PUBLIC_EVFLOW_API_BASE_URL` | Canonical | Expo API base URL |
+| `EXPO_PUBLIC_EVFLOW_API_BASE_URL` | Canonical | API base URL at Metro build/start time |
 | `EXPO_PUBLIC_API_BASE_URL` | Legacy alias | Backward-compatible fallback |
 | `EVFLOW_API_BASE_URL` | Legacy alias | Backward-compatible fallback |
 
-In development with no override, the client extracts a local/LAN/emulator host
-from Metro's bundle URL and uses port 8000. Non-local hosts, including Expo tunnel
-hosts, fall back to the deployed API. Release builds also default to the deployed
-API.
+Resolution:
 
-`EXPO_PUBLIC_` values are bundled and visible to users. Never place backend
-secrets in them.
+- Web development with no override: `http://localhost:8000`.
+- Native development with no override: the client extracts a local/LAN/emulator
+  host from Metro's bundle URL and uses port 8000. Non-local hosts, including
+  Expo tunnel hosts, fall back to the deployed API.
+- Production build with no override: `https://ev-flow-api.opensoft.id`.
+- Value `/`: empty base string, producing same-origin `/api/v1/...` calls.
+
+`EXPO_PUBLIC_` values are compiled into the bundle. They are public and changing
+them requires a rebuild. Never place backend secrets in them. Other public
+frontend values follow the same scheme: `EXPO_PUBLIC_DEMO_PASSWORD`,
+`EXPO_PUBLIC_TOMTOM_API_KEY`.
 
 ## Container Controls
 
@@ -217,7 +207,7 @@ pricing, and several routing/script settings are not currently forwarded there.
 
 - All of the above.
 - Xendit development secret and callback token.
-- `FRONTEND_URL` matching Vite or nginx.
+- `FRONTEND_URL` matching the web origin behind nginx.
 - SMTP credentials for password-reset delivery.
 
 **Production**

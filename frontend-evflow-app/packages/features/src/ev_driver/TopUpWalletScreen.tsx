@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Linking, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { AuthRequiredError, createWalletTopup, fetchWalletBalance, fetchWalletTopup } from '@evflow/shared';
 import { walletScreenStyles as styles } from '@evflow/ui';
 import { SvgAssetIcon } from '../shared/SvgAssetIcon';
@@ -13,7 +13,7 @@ type TopUpWalletScreenProps = {
 const minimumTopup = 10000;
 
 export function TopUpWalletScreen({ bottomOffset = 0, topInset = 0 }: TopUpWalletScreenProps) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [amount, setAmount] = useState('');
   const [balance, setBalance] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -59,11 +59,12 @@ export function TopUpWalletScreen({ bottomOffset = 0, topInset = 0 }: TopUpWalle
             setError('Payment page could not be opened. Use the button on the next screen to try again.');
           });
         }
-        navigate('/ev-driver/wallet/topup/success', {
-          state: {
-            amountIdr: topup.amount_idr,
-            invoiceUrl: topup.invoice_url,
-            topupId: topup.topup_id
+        router.push({
+          pathname: '/ev-driver/wallet/topup/success',
+          params: {
+            amountIdr: String(topup.amount_idr),
+            ...(topup.invoice_url ? { invoiceUrl: topup.invoice_url } : {}),
+            topup_id: topup.topup_id
           }
         });
       })
@@ -75,7 +76,7 @@ export function TopUpWalletScreen({ bottomOffset = 0, topInset = 0 }: TopUpWalle
 
   return (
     <View style={styles.page}>
-      <WalletFlowHeader title="Top Up Wallet" topInset={topInset} onBack={() => navigate('/ev-driver/wallet')} />
+      <WalletFlowHeader title="Top Up Wallet" topInset={topInset} onBack={() => router.replace('/ev-driver/wallet')} />
 
       <ScrollView
         contentContainerStyle={[styles.topupContent, { paddingBottom: 32 + bottomOffset }]}
@@ -147,15 +148,14 @@ export function TopUpWalletScreen({ bottomOffset = 0, topInset = 0 }: TopUpWalle
 }
 
 export function TopUpSuccessScreen({ bottomOffset = 0, topInset = 0 }: TopUpWalletScreenProps) {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const state = location.state as { amountIdr?: number; invoiceUrl?: string; topupId?: string } | null;
-  // In-app flow passes the id via navigation state; the Xendit success redirect
-  // lands here with ?topup_id=... and no state.
-  const topupId = state?.topupId ?? parseTopupIdFromSearch(location.search);
-  const invoiceUrl = state?.invoiceUrl ?? null;
+  const router = useRouter();
+  const params = useLocalSearchParams<{ amountIdr?: string; invoiceUrl?: string; topup_id?: string }>();
+  // The in-app flow passes ids via URL params; the Xendit success redirect
+  // lands here with only ?topup_id=... — the poll loop then re-fetches the rest.
+  const topupId = typeof params.topup_id === 'string' && params.topup_id ? params.topup_id : undefined;
+  const invoiceUrl = typeof params.invoiceUrl === 'string' && params.invoiceUrl ? params.invoiceUrl : null;
   const [paid, setPaid] = useState(false);
-  const [amount, setAmount] = useState(state?.amountIdr ?? 0);
+  const [amount, setAmount] = useState(params.amountIdr ? Number(params.amountIdr) || 0 : 0);
 
   useEffect(() => {
     if (!topupId || paid) {
@@ -203,7 +203,7 @@ export function TopUpSuccessScreen({ bottomOffset = 0, topInset = 0 }: TopUpWall
         title={waiting ? 'Awaiting Payment' : 'Top Up Success'}
         topInset={topInset}
         titleStyle={styles.topupSuccessHeaderTitle}
-        onBack={() => navigate('/ev-driver/wallet/topup')}
+        onBack={() => router.replace('/ev-driver/wallet/topup')}
       />
 
       <View style={[styles.topupSuccessContent, { paddingBottom: 32 + bottomOffset }]}>
@@ -246,17 +246,12 @@ export function TopUpSuccessScreen({ bottomOffset = 0, topInset = 0 }: TopUpWall
 
         <View style={styles.topupSuccessSpacer} />
 
-        <Pressable accessibilityRole="button" onPress={() => navigate('/ev-driver/wallet')} style={styles.topupDoneButton}>
+        <Pressable accessibilityRole="button" onPress={() => router.replace('/ev-driver/wallet')} style={styles.topupDoneButton}>
           <Text style={styles.topupDoneButtonText}>{waiting ? 'Back to wallet' : 'Done'}</Text>
         </Pressable>
       </View>
     </View>
   );
-}
-
-function parseTopupIdFromSearch(search: string) {
-  const match = /[?&]topup_id=([^&]+)/.exec(search);
-  return match ? decodeURIComponent(match[1]) : undefined;
 }
 
 type WalletFlowHeaderProps = {

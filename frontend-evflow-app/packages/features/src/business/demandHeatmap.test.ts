@@ -12,7 +12,7 @@ describe('Demand Heatmap planning state', () => {
       landUse: false,
       // Off by default: it issues a request per viewport, and it answers a
       // different question from the weighted score the map opens on.
-      // Hidden entirely unless VITE_TOMTOM_API_KEY is set.
+      // Hidden entirely unless EXPO_PUBLIC_TOMTOM_API_KEY is set.
       liveTraffic: false
     });
   });

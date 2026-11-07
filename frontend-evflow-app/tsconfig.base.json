@@ -14,7 +14,6 @@
     "paths": {
       "@evflow/shared": ["packages/shared/src/index.ts"],
       "@evflow/ui": ["packages/ui/src/index.ts"],
-      "@evflow/maps": ["packages/maps/src/index.ts"],
       "@evflow/features": ["packages/features/src/index.ts"]
     }
   }

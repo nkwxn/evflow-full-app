@@ -1,5 +1,5 @@
 import { View, Text, Pressable, ScrollView, TextInput, ActivityIndicator } from 'react-native';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { chargingFlowStyles as styles } from '@evflow/ui';
 import { useState, useMemo, useEffect } from 'react';
 import { ChargingFlowIcon } from './components/ChargingFlowIcon';
@@ -26,8 +26,11 @@ function formatRupiah(value: number) {
 }
 
 export function InitializeChargingScreen() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const { stationId, connectorType } = useLocalSearchParams<{
+    stationId?: string | string[];
+    connectorType?: string | string[];
+  }>();
   const insets = useAppSafeAreaInsets();
   const [energy, setEnergy] = useState('');
   const [isCalculated, setIsCalculated] = useState(false);
@@ -55,14 +58,24 @@ export function InitializeChargingScreen() {
   useEffect(() => {
     async function loadStation() {
       try {
-        const validatedSelection = (location.state as { selection?: { station: StationApiItem; connector: StationConnectorApiItem } } | null)?.selection;
-        if (validatedSelection?.station && validatedSelection.connector) {
-          setStation(validatedSelection.station);
-          setConnector(validatedSelection.connector);
-          if (!validatedSelection.connector.power_kw) setRandomSpeed(DEFAULT_DISPLAY_POWER_KW);
-          return;
+        const stationIdParam = typeof stationId === 'string' ? stationId : undefined;
+        const connectorTypeParam = typeof connectorType === 'string' ? connectorType : undefined;
+        if (stationIdParam) {
+          // Deep-linkable path: the scan flow hands off ids in the URL and this
+          // screen re-fetches the authoritative station + connector objects.
+          const fullStation = await fetchStation(stationIdParam);
+          const matchedConnector =
+            fullStation.connectors?.find((item) => item.type === connectorTypeParam) ??
+            fullStation.connectors?.[0];
+          if (matchedConnector) {
+            setStation(fullStation);
+            setConnector(matchedConnector);
+            if (!matchedConnector.power_kw) setRandomSpeed(DEFAULT_DISPLAY_POWER_KW);
+            return;
+          }
         }
 
+        // No params: nearest-station fallback (deep link without context).
         const locationResult = await getUserLocation({ requestPermission: false });
         
         let targetStationId = '';
@@ -104,7 +117,7 @@ export function InitializeChargingScreen() {
     }
     
     loadStation();
-  }, [location.state]);
+  }, [stationId, connectorType]);
 
   const parsedEnergy = Number(energy) || 0;
   const totalDue = quote?.total_due_idr ?? 0;
@@ -172,9 +185,8 @@ export function InitializeChargingScreen() {
         connectorType: connector.type,
         powerKw: connector.power_kw ?? actualPowerKw
       });
-      navigate('/charging-flow/success', {
-        state: { session, station, connector, actualPowerKw, energy: parsedEnergy, estimatedMinutes }
-      });
+      // Session id is the recovery key: downstream screens re-fetch by id.
+      router.push({ pathname: '/charging-flow/success', params: { sessionId: session.id } });
     } catch (err) {
       if (err instanceof InsufficientBalanceError) {
         setError('Insufficient wallet balance. Please top up before paying.');
@@ -203,11 +215,11 @@ export function InitializeChargingScreen() {
     <View style={styles.page}>
       <ChargingFlowHeader
         title="Initialize Charging"
-        onBack={() => navigate('/charging-flow/scan')}
+        onBack={() => router.replace('/charging-flow/scan')}
         rightIconName="close"
         rightIconColor="#191C1D"
         rightIconSize={18}
-        onRightPress={() => navigate('/ev-driver/map')}
+        onRightPress={() => router.replace('/ev-driver/map')}
       />
 
       <ScrollView

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { fetchConnectorTypes, getAuthSession, getMe, saveAuthSession, updateProfile } from '@evflow/shared';
 import { colors, onboardingStyles as styles } from '@evflow/ui';
 import { useAppSafeAreaInsets } from '../shared/useAppSafeAreaInsets';
@@ -23,13 +23,19 @@ type VehicleSelectionState = {
   evModelId: string | null;
 };
 
-function vehicleSelectionFromLocationState(state: unknown): VehicleSelectionState {
-  if (state && typeof state === 'object' && 'evModelId' in state) {
-    const value = (state as { evModelId: unknown }).evModelId;
-    return { evModelId: typeof value === 'string' ? value : null, present: true };
+/**
+ * Parses the `evModelId` URL param. An empty string (VehicleSelectScreen's
+ * "my car isn't listed" choice) is a present-but-null selection: the profile
+ * update clears the saved car. An absent param means the screen was deep-linked
+ * or refreshed without onboarding context, so the previously saved car is kept.
+ */
+function vehicleSelectionFromParams(evModelIdParam: string | string[] | undefined): VehicleSelectionState {
+  if (evModelIdParam === undefined) {
+    return { evModelId: null, present: false };
   }
 
-  return { evModelId: null, present: false };
+  const raw = Array.isArray(evModelIdParam) ? evModelIdParam[0] ?? '' : evModelIdParam;
+  return { evModelId: raw === '' ? null : raw, present: true };
 }
 
 function stationCountLabel(count: number | null): string | null {
@@ -37,12 +43,12 @@ function stationCountLabel(count: number | null): string | null {
 }
 
 export function ConnectorSelectScreen() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const { evModelId } = useLocalSearchParams<{ evModelId?: string | string[] }>();
   const insets = useAppSafeAreaInsets();
-  // On a page refresh the router state is gone; the screen still works, and we
-  // then omit ev_model_id from the update so a previously saved car is kept.
-  const vehicleSelection = vehicleSelectionFromLocationState(location.state);
+  // The param lives in the URL, so a refresh keeps it; a param-less deep link
+  // omits ev_model_id from the update so a previously saved car is kept.
+  const vehicleSelection = vehicleSelectionFromParams(evModelId);
 
   const [options, setOptions] = useState<readonly ConnectorOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -89,7 +95,7 @@ export function ConnectorSelectScreen() {
     };
   }, []);
 
-  const goToMap = () => navigate('/ev-driver/map', { replace: true });
+  const goToMap = () => router.replace('/ev-driver/map');
 
   const handleContinue = () => {
     if (!chosen || saving) {
@@ -127,7 +133,7 @@ export function ConnectorSelectScreen() {
           <Pressable
             accessibilityLabel="Back"
             accessibilityRole="button"
-            onPress={() => navigate('/onboarding/vehicle')}
+            onPress={() => router.push('/onboarding/vehicle')}
             style={styles.backButton}
           >
             <SvgAssetIcon color="#191C1D" height={12} name="leftChevron" width={8} />

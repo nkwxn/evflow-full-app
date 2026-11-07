@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { View, Text, Pressable, ScrollView, Image, type ImageSourcePropType } from 'react-native';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { chargingFlowStyles as styles } from '@evflow/ui';
+import { fetchChargingSession, type ChargingSessionApiResponse } from '@evflow/shared';
 import { ChargingFlowIcon } from './components/ChargingFlowIcon';
 import paymentCompletePng from '../assets/images/payment-complete.png';
 import carPlugInPng from '../assets/images/car-plug-in.png';
@@ -9,10 +10,33 @@ import { useAppSafeAreaInsets } from '../shared/useAppSafeAreaInsets';
 import { ChargingFlowHeader } from './components/ChargingFlowHeader';
 
 export function TransactionSuccessScreen() {
-  const navigate = useNavigate();
-  const { state } = useLocation();
+  const router = useRouter();
+  const { sessionId } = useLocalSearchParams<{ sessionId?: string | string[] }>();
   const insets = useAppSafeAreaInsets();
   const [isPluggedIn, setIsPluggedIn] = useState(false);
+  const [session, setSession] = useState<ChargingSessionApiResponse | null>(null);
+
+  const sessionIdValue = typeof sessionId === 'string' && sessionId ? sessionId : null;
+
+  useEffect(() => {
+    if (!sessionIdValue) {
+      return;
+    }
+
+    let alive = true;
+    fetchChargingSession(sessionIdValue)
+      .then((response) => {
+        if (alive) setSession(response);
+      })
+      .catch(() => {
+        // Empty receipt state below matches a missing session; the flow can
+        // still proceed into the simulated status screen.
+      });
+
+    return () => {
+      alive = false;
+    };
+  }, [sessionIdValue]);
 
   useEffect(() => {
     const pluggedInTimer = setTimeout(() => {
@@ -24,9 +48,9 @@ export function TransactionSuccessScreen() {
     };
   }, []);
 
-  const amountPaid = state?.session?.deposit_idr ?? state?.totalDue ?? 0;
-  const referenceNo = state?.session?.id ?? '—';
-  const createdAt = state?.session?.created_at;
+  const amountPaid = session?.deposit_idr ?? 0;
+  const referenceNo = session?.id ?? '—';
+  const createdAt = session?.created_at;
   const dateTime = createdAt
     ? `${new Date(createdAt).toLocaleString('id-ID', {
         day: '2-digit', month: 'short', year: 'numeric',
@@ -38,7 +62,7 @@ export function TransactionSuccessScreen() {
     <View style={styles.page}>
       <ChargingFlowHeader
         title="Transaction Success"
-        onBack={() => navigate(-1)}
+        onBack={() => router.back()}
       />
 
       <ScrollView
@@ -97,7 +121,11 @@ export function TransactionSuccessScreen() {
             accessibilityState={{ disabled: !isPluggedIn }}
             disabled={!isPluggedIn}
             style={[styles.primaryButton, !isPluggedIn && styles.disabledPrimaryButton]}
-            onPress={() => navigate('/charging-flow/status', { state })}
+            onPress={() =>
+              sessionIdValue
+                ? router.replace({ pathname: '/charging-flow/status', params: { sessionId: sessionIdValue } })
+                : router.replace('/charging-flow/status')
+            }
           >
             <View style={styles.buttonIconRow}>
               <ChargingFlowIcon name="connector" size={20} color="#004a4f" />

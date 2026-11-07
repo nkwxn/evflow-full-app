@@ -195,7 +195,7 @@ sequenceDiagram
 
   User->>UI: Open /profile-selection
   User->>UI: Select EV Driver or Business Planner role
-  UI->>UI: Store selectedRole in AppRoutes state
+  UI->>UI: Store selectedRole in ProfileSelectionScreen local state
   User->>UI: Continue to register
   alt EV Driver selected
     UI-->>Driver: Navigate to /register
@@ -650,7 +650,7 @@ sequenceDiagram
 
 | Flow | Frontend files |
 | --- | --- |
-| Routes | `packages/features/src/routing/AppRoutes.tsx` |
+| Routes | `apps/mobile/app/*` (Expo Router route files) |
 | Login / forgot password | `packages/features/src/login/LoginScreen.tsx`, `packages/shared/src/auth/api.ts`, `packages/shared/src/auth/session.ts` |
 | Registration | `packages/features/src/registration/RegistrationScreen.tsx`, `packages/shared/src/ev_models/api.ts`, `packages/shared/src/stations/api.ts` |
 | Driver navigation | `packages/features/src/ev_driver/EVDriverContainer.tsx`, `packages/features/src/ev_driver/MockDriverScreen.tsx` |

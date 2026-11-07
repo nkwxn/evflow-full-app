@@ -1,30 +1,37 @@
 import { assertSecureProductionApiBaseUrl, LOCAL_BACKEND_PORT, logDevApiBaseUrl, normalizeApiBaseUrl } from './baseUrl.shared';
 
-type ViteImportMeta = ImportMeta & {
-  env?: Record<string, string | boolean | undefined>;
-};
+declare const __DEV__: boolean | undefined;
 
 function pickStringEnv(...values: Array<string | boolean | undefined>) {
   return values.find((value): value is string => typeof value === 'string' && value.trim() !== '');
 }
 
-export function getEvflowApiBaseUrl() {
-  const env = (import.meta as ViteImportMeta).env;
-  const override = pickStringEnv(env?.VITE_EVFLOW_API_BASE_URL, env?.VITE_API_BASE_URL, env?.VITE_API_BASE);
+function isDevBuild() {
+  return typeof __DEV__ !== 'undefined' && __DEV__ === true;
+}
 
-  // In dev builds default to the local backend so frontend work never mutates
-  // production data; production builds keep the deployed API as the default.
-  if (!override && env?.DEV) {
+export function getEvflowApiBaseUrl() {
+  const env = typeof process !== 'undefined' ? process.env : undefined;
+  const override = pickStringEnv(
+    env?.EXPO_PUBLIC_EVFLOW_API_BASE_URL,
+    env?.EXPO_PUBLIC_API_BASE_URL,
+    env?.EVFLOW_API_BASE_URL
+  );
+  const isDev = isDevBuild();
+
+  // In dev default to the backend running on the dev machine so frontend work
+  // never mutates production data; release builds keep the deployed API.
+  if (!override && isDev) {
     const localBaseUrl = normalizeApiBaseUrl(`http://localhost:${LOCAL_BACKEND_PORT}`);
-    logDevApiBaseUrl(localBaseUrl, 'VITE_EVFLOW_API_BASE_URL');
+    logDevApiBaseUrl(localBaseUrl, 'EXPO_PUBLIC_EVFLOW_API_BASE_URL');
     return localBaseUrl;
   }
 
   const baseUrl = normalizeApiBaseUrl(override);
-  if (env?.DEV) {
-    logDevApiBaseUrl(baseUrl, 'VITE_EVFLOW_API_BASE_URL');
+  if (isDev) {
+    logDevApiBaseUrl(baseUrl, 'EXPO_PUBLIC_EVFLOW_API_BASE_URL');
   }
-  return assertSecureProductionApiBaseUrl(baseUrl, Boolean(env?.DEV));
+  return assertSecureProductionApiBaseUrl(baseUrl, isDev);
 }
 
 export const getApiBaseUrl = getEvflowApiBaseUrl;

@@ -19,7 +19,7 @@ repository. It was reviewed against the source at commit `247b89b` on 2026-07-22
 ```text
 evflow-fullstack/
   backend-ev-flow/       FastAPI, PostGIS access, Alembic, data tooling, tests
-  frontend-evflow-app/   Vite web app, Expo mobile app, shared TypeScript packages
+  frontend-evflow-app/   Expo Router app (web + mobile on one Metro pipeline), shared TypeScript packages
   docs/                  Current cross-project developer documentation
   sonarqube/             Optional local SonarQube stack and scanner wrapper
   compose.yaml           PostGIS + API + nginx web stack

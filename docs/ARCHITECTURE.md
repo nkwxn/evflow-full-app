@@ -8,7 +8,7 @@ and charging state. The web and mobile apps share most screens and API clients.
 
 ```mermaid
 flowchart LR
-    Web["Vite web app"] --> API["FastAPI"]
+    Web["Expo web bundle"] --> API["FastAPI"]
     Mobile["Expo mobile app"] --> API
     Nginx["nginx web container"] --> Web
     Nginx --> API
@@ -23,7 +23,7 @@ flowchart LR
 ```
 
 In the root container stack, nginx serves the built SPA and proxies `/api/` and
-`/health` to FastAPI. During native development, Vite and Expo call FastAPI
+`/health` to FastAPI. During development, Metro (web and native) calls FastAPI
 directly on port 8000.
 
 ## Backend Structure
@@ -193,37 +193,38 @@ The frontend is an npm-workspace monorepo whose packages expose TypeScript sourc
 directly. Apps do not build internal packages separately.
 
 ```text
-apps/web or apps/mobile
+apps/mobile (Expo Router entry, web + native)
   -> @evflow/features
      -> @evflow/shared
      -> @evflow/ui
-
-@evflow/maps -> @evflow/ui  (declared but not used by product screens)
 ```
 
 | Workspace | Responsibility |
 |---|---|
-| `apps/web` | React DOM/Vite startup, React Native Web aliasing, global CSS |
-| `apps/mobile` | Expo startup, fonts, safe-area provider, native metadata |
-| `packages/features` | Routes, business dashboard, driver, auth, onboarding, wallet, and charging screens |
+| `apps/mobile` | Expo Router entry (`app/` route tree), fonts, safe-area provider, native and web metadata |
+| `packages/features` | Business dashboard, driver, auth, onboarding, wallet, and charging screens |
 | `packages/shared` | Handwritten API clients/types, auth session, validation, transforms and helpers |
 | `packages/ui` | Shared primitives, navigation, actual Leaflet map implementations, themes, centralized screen styles |
-| `packages/maps` | Placeholder `MapView` package; not the map used by `DriverMapScreen` |
 
-Vite prefers `.web.tsx` and maps `react-native` to `react-native-web`. Metro selects
-`.native.tsx` and watches the full workspace. Platform variants implement routing,
-API URL detection, camera scanning, location, Leaflet, icons, sliders, progress
-rings, safe areas, model selection, and receipt generation.
+Metro selects `.native.tsx` on native and `.web.tsx` on web, and watches the full
+workspace. Platform variants implement API URL detection, camera scanning,
+location, Leaflet, icons, sliders, progress rings, safe areas, model selection,
+and receipt generation. `react-native` resolves to `react-native-web` on web
+through Expo's default Metro config.
 
 ### Client Routing
 
-Web uses `BrowserRouter`; mobile uses `NativeRouter`. Product routes are defined in
-`packages/features/src/routing/AppRoutes.tsx`. There are no route-level auth or
-role guards. Most charging screens rely on in-memory navigation state, so a reload
-cannot reconstruct the flow.
+Both web and native use Expo Router. Product routes are defined as files under
+`apps/mobile/app/`; `apps/mobile/app/_layout.tsx` owns fonts, the safe-area
+provider, and the header-less `Stack`. Screens receive route params through
+`useLocalSearchParams` and navigate with `useRouter`. Charging, wallet, and
+onboarding flows persist stable identifiers (`sessionId`, `topup_id`,
+`stationId`, `connectorType`, `evModelId`) in the URL and re-fetch server state,
+so a reload reconstructs the flow. There are no route-level auth or role guards.
 
-The native router is memory-based. Mobile deep-link metadata exists in
-`app.json`, but routes are not wired to deep-link restoration.
+Deep-link metadata lives in `app.json` (`scheme` plus the `expo-router` plugin);
+typed route helpers are generated into `apps/mobile/.expo/types` when Expo tooling
+runs.
 
 ### API And Session State
 

@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { chargingFlowStyles as styles } from '@evflow/ui';
-import { fetchSpeedTiers, type SpeedTierApiItem } from '@evflow/shared';
+import {
+  fetchChargingSession,
+  fetchSpeedTiers,
+  type ChargingSessionApiResponse,
+  type SpeedTierApiItem
+} from '@evflow/shared';
 import { ChargingFlowIcon } from './components/ChargingFlowIcon';
 import { useAppSafeAreaInsets } from '../shared/useAppSafeAreaInsets';
 import { ChargingFlowHeader } from './components/ChargingFlowHeader';
@@ -15,23 +20,43 @@ const simulationTickMs = 100;
 const FALLBACK_BASE_RATE_IDR = 2466; // only used if navigated here without a backend session
 
 export function ChargingStatusScreen() {
-  const navigate = useNavigate();
-  const { state } = useLocation();
+  const router = useRouter();
+  const { sessionId } = useLocalSearchParams<{ sessionId?: string | string[] }>();
   const insets = useAppSafeAreaInsets();
   const [progress, setProgress] = useState(0);
   const [speedTiers, setSpeedTiers] = useState<SpeedTierApiItem[]>([]);
+  const [session, setSession] = useState<ChargingSessionApiResponse | null>(null);
 
-  const purchasedKwh = state?.energy || 20;
-  const fastDeliveryPowerKw = state?.actualPowerKw || 142;
+  const sessionIdValue = typeof sessionId === 'string' && sessionId ? sessionId : null;
+  // Simulation restarts on reload — accepted (charging progress is simulated).
+  const purchasedKwh = session?.energy_kwh || 20;
+  const fastDeliveryPowerKw = session?.power_kw || 142;
   const slowDeliveryPowerKw = Math.max(Math.floor(fastDeliveryPowerKw * 0.26), 1);
-  const stationName = state?.station?.name || 'SPKLU PLN Sukses - Thamrin';
-  const connectorType = state?.connector?.type || 'Connector 02';
+  const stationName = session?.station_name || 'SPKLU PLN Sukses - Thamrin';
+  const connectorType = session?.connector_type || 'Connector 02';
   // Authoritative tariff the backend actually charged (deposit was computed from it).
-  const pricePerKwh = state?.session?.base_rate_idr ?? FALLBACK_BASE_RATE_IDR;
+  const pricePerKwh = session?.base_rate_idr ?? FALLBACK_BASE_RATE_IDR;
 
   useEffect(() => {
     fetchSpeedTiers().then(setSpeedTiers).catch(console.error);
   }, []);
+
+  useEffect(() => {
+    if (!sessionIdValue) {
+      return;
+    }
+
+    let alive = true;
+    fetchChargingSession(sessionIdValue)
+      .then((response) => {
+        if (alive) setSession(response);
+      })
+      .catch(console.error);
+
+    return () => {
+      alive = false;
+    };
+  }, [sessionIdValue]);
 
   useEffect(() => {
     const startedAt = Date.now();
@@ -65,12 +90,16 @@ export function ChargingStatusScreen() {
     }
 
     const timeout = setTimeout(() => {
-      // Reached the purchased target: full energy delivered.
-      navigate('/charging-flow/successful', { replace: true, state: { ...state, deliveredKwh: purchasedKwh } });
+      // Reached the purchased target: full energy delivered. `kwh` is simulation
+      // output with no backend source until settlement, so it travels in the URL.
+      router.replace({
+        pathname: '/charging-flow/successful',
+        params: { sessionId: sessionIdValue ?? '', kwh: String(purchasedKwh) }
+      });
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [navigate, progress, state, purchasedKwh]);
+  }, [progress, purchasedKwh, router, sessionIdValue]);
 
   const chargingMetrics = useMemo(() => {
     const roundedProgress = Math.min(Math.round(progress), 100);
@@ -109,7 +138,7 @@ export function ChargingStatusScreen() {
     <View style={styles.page}>
       <ChargingFlowHeader
         title="Charging Status"
-        onBack={() => navigate(-1)}
+        onBack={() => router.back()}
       />
 
       <ScrollView
@@ -184,9 +213,15 @@ export function ChargingStatusScreen() {
         <View style={styles.footerAction}>
           <Pressable
             style={styles.dangerButton}
-            onPress={() => navigate('/charging-flow/successful', {
-              state: { ...state, deliveredKwh: (purchasedKwh * progress) / 100 }
-            })}
+            onPress={() =>
+              router.push({
+                pathname: '/charging-flow/successful',
+                params: {
+                  sessionId: sessionIdValue ?? '',
+                  kwh: String((purchasedKwh * progress) / 100)
+                }
+              })
+            }
           >
             <ChargingFlowIcon name="stop" size={20} color="#ffffff" />
             <Text style={styles.dangerButtonText}>STOP CHARGING SESSION</Text>

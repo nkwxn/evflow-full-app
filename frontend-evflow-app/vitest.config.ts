@@ -27,7 +27,6 @@ export default defineConfig({
         // Mirrors sonar.coverage.exclusions: the UI and map packages are
         // presentation, tested through the pure logic modules they consume.
         'packages/ui/**',
-        'packages/maps/**',
         // Re-export barrels: no behaviour of their own to cover.
         '**/index.ts',
         // Static artwork and design tokens. These are data written as modules;

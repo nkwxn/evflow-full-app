@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Text, useWindowDimensions, View } from 'react-native';
-import { useLocation, useNavigate } from 'react-router';
+import { useRouter } from 'expo-router';
 import { BottomNavigation, evDriverContainerStyles as containerStyles, SideMenu } from '@evflow/ui';
 import { useAppSafeAreaInsets } from '../shared/useAppSafeAreaInsets';
 import { ProfileScreen } from '../ev_driver/ProfileScreen';
@@ -8,20 +8,25 @@ import { DemandHeatmapScreen } from './DemandHeatmapScreen';
 import { SavedSitesScreen } from './saved-sites/SavedSitesScreen';
 import { getBusinessPlannerNavigationItems, getBusinessPlannerPath, getBusinessPlannerTab } from './businessPlannerNavigation';
 
+type BusinessPlannerContainerProps = {
+  /** Dynamic [tab] route param; defaults to demand-heatmap when absent/unknown. */
+  tab?: string;
+};
+
 /**
  * Uses the same responsive navigation composition as EVDriverContainer:
  * sidebar on desktop and a bottom tab bar on mobile. The latter has no raised
  * action because none of the Business Planner tabs is marked prominent.
  */
-export function BusinessPlannerContainer() {
+export function BusinessPlannerContainer({ tab }: BusinessPlannerContainerProps = {}) {
   const { height, width } = useWindowDimensions();
   const insets = useAppSafeAreaInsets();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const router = useRouter();
   const desktop = width >= 768;
   const items = useMemo(() => getBusinessPlannerNavigationItems(), []);
-  const activeTab = getBusinessPlannerTab(location.pathname);
+  const activeTab = getBusinessPlannerTab(tab);
   const bottomOffset = desktop ? 0 : 84 + insets.bottom;
+  const navigate = router.push;
 
   return (
     <View style={[containerStyles.shell, containerStyles.viewportShell, { height, maxHeight: height, minHeight: height }]}>

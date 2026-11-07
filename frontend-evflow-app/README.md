@@ -1,6 +1,7 @@
 # EVFlow Frontend
 
-React and React Native TypeScript monorepo for EVFlow. The codebase is structured so business logic, UI primitives, maps, and screens can be shared across web, Android, and iOS.
+Expo Router + React Native TypeScript monorepo for EVFlow. One Metro pipeline
+bundles the shared screens for web, Android, and iOS.
 
 For the full-stack development workflow, architecture, API, environment behavior,
 and current implementation gaps, start with the root
@@ -10,17 +11,17 @@ and current implementation gaps, start with the root
 
 ```text
 apps/
-  mobile/       Expo React Native app for Android and iOS
-  web/          React web app powered by Vite and React Native Web
+  mobile/       Expo Router app: Android, iOS, and web (one Metro pipeline)
 
 packages/
   shared/       API client, TypeScript types, data helpers, charger filtering, route planning logic
   ui/           Shared buttons, cards, filters, and layout components
-  maps/         Platform-specific MapView.web.tsx and MapView.native.tsx
-  features/     Shared feature modules and screens used by mobile and web apps
+  features/     Shared feature modules and screens used by mobile and web
 ```
 
-`packages/features` is the recommended additional directory for screens and user flows. Keep `apps/mobile` and `apps/web` focused on platform startup code, while feature screens live in reusable modules.
+`packages/features` holds screens and user flows. Keep `apps/mobile` focused on
+platform startup code, the Expo Router route tree (`app/`), fonts, and native
+metadata, while feature screens live in reusable modules.
 
 ## Prerequisites
 
@@ -82,13 +83,13 @@ npm run start --workspace @evflow/mobile
 
 ## Run Web
 
-Start the Vite web app:
+Start the Expo web dev server (Metro):
 
 ```bash
 npm run web
 ```
 
-Build the web app:
+Build the production web bundle:
 
 ```bash
 npm run build:web
@@ -97,7 +98,7 @@ npm run build:web
 Preview the production web build:
 
 ```bash
-npm run preview --workspace @evflow/web
+npx serve dist
 ```
 
 ## Typecheck
@@ -140,13 +141,14 @@ eas submit --platform ios
 
 ## Web Deployment
 
-The web output is generated in `apps/web/dist`.
+The web output is generated in `dist/` at the workspace root.
 
 ```bash
 npm run build:web
 ```
 
-Deploy `apps/web/dist` to a static host such as Vercel, Netlify, Cloudflare Pages, or GitHub Pages.
+Deploy `dist/` to a static host such as Vercel, Netlify, Cloudflare Pages, or
+GitHub Pages. The container image copies the same `dist/` directory.
 
 ## Repository
 

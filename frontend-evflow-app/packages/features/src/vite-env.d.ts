@@ -14,3 +14,5 @@ declare module '*.png' {
 }
 
 declare module '*.css';
+
+declare module 'html2pdf.js';

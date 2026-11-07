@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type GestureResponderHandlers } from 'react-native';
 import { deletePlannerSavedSite, fetchPlannerAreaPrediction, fetchPlannerPredictions, fetchPlannerSavedSites, type PlannerSavedSiteApi } from '@evflow/shared';
 import { driverMapStyles as mapStyles, LeafletMap } from '@evflow/ui';
-import { useNavigate } from 'react-router';
+import { useRouter } from 'expo-router';
 import { SvgAssetIcon } from '../../shared/SvgAssetIcon';
 import { searchIcon } from '../../ev_driver/components/driverMapIcons';
 import { jakartaViewport, plannerMarkers, type PlannerLayerState } from '../demandHeatmap';
@@ -16,7 +16,7 @@ import type { RoadType, SiteFeasibilityData } from '../site-feasibility/siteFeas
 
 export function SavedSitesScreen({ bottomOffset = 0, topInset = 0 }: { bottomOffset?: number; topInset?: number }) {
   const { height, width } = useWindowDimensions();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [items, setItems] = useState<PlannerSavedSiteApi[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -211,7 +211,7 @@ export function SavedSitesScreen({ bottomOffset = 0, topInset = 0 }: { bottomOff
         ) : error && items.length === 0 ? (
           <View accessibilityLiveRegion="polite" style={styles.state}><Text style={styles.error}>{error}</Text><Pressable accessibilityRole="button" onPress={() => setRetry((value) => value + 1)} style={styles.action}><Text style={styles.actionText}>Retry</Text></Pressable></View>
         ) : items.length === 0 ? (
-          <View style={styles.state}><Text style={styles.emptyTitle}>No saved sites yet.</Text><Text style={styles.stateText}>Review Optimal Sites on the Heatmap and bookmark locations you want to compare.</Text><Pressable accessibilityRole="button" onPress={() => navigate('/business-dashboard/demand-heatmap')} style={styles.action}><Text style={styles.actionText}>Go to Heatmap</Text></Pressable></View>
+          <View style={styles.state}><Text style={styles.emptyTitle}>No saved sites yet.</Text><Text style={styles.stateText}>Review Optimal Sites on the Heatmap and bookmark locations you want to compare.</Text><Pressable accessibilityRole="button" onPress={() => router.push('/business-dashboard/demand-heatmap')} style={styles.action}><Text style={styles.actionText}>Go to Heatmap</Text></Pressable></View>
         ) : (
           <ScrollView accessibilityLabel="Saved sites" contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
             {error ? <Text accessibilityLiveRegion="polite" style={styles.error}>{error}</Text> : null}

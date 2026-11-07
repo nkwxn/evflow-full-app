@@ -1,14 +1,15 @@
+import { Slot, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SpaceGrotesk_400Regular, SpaceGrotesk_500Medium, SpaceGrotesk_600SemiBold, SpaceGrotesk_700Bold, useFonts } from '@expo-google-fonts/space-grotesk';
 import { cloneElement } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { AppRouter } from '@evflow/features';
+import { ReceiptPdfViewer } from '@evflow/features';
 
 installDefaultFont(Text);
 installDefaultFont(TextInput);
 
-export default function App() {
+export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     SpaceGrotesk_400Regular,
     SpaceGrotesk_500Medium,
@@ -23,8 +24,10 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <View style={{ flex: 1 }}>
-        <AppRouter />
+        {/* Header-less: each screen owns its own header/back affordance. */}
+        <Stack screenOptions={{ headerShown: false }} />
         <StatusBar style="auto" />
+        {Platform.OS !== 'web' ? <ReceiptPdfViewer /> : null}
       </View>
     </SafeAreaProvider>
   );

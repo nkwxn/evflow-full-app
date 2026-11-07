@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
-import { useNavigate } from 'react-router';
+import { useRouter } from 'expo-router';
 import { fetchEvModels, getMe, type EVModelApiItem } from '@evflow/shared';
 import { colors, onboardingStyles as styles } from '@evflow/ui';
 import { useAppSafeAreaInsets } from '../shared/useAppSafeAreaInsets';
@@ -26,7 +26,7 @@ function modelMeta(model: EVModelApiItem): string | null {
 }
 
 export function VehicleSelectScreen() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const insets = useAppSafeAreaInsets();
   const { height } = useWindowDimensions();
   const [models, setModels] = useState<EVModelApiItem[]>([]);
@@ -129,14 +129,17 @@ export function VehicleSelectScreen() {
       return;
     }
 
-    navigate('/onboarding/connector', { state: { evModelId: selection.evModelId } });
+    router.push({
+      pathname: '/onboarding/connector',
+      params: { evModelId: selection.evModelId ?? '' }
+    });
   };
 
   return (
     <View style={[styles.page, styles.vehiclePage, { height, maxHeight: height, minHeight: height }]}>
       <View style={[styles.contentShell, styles.vehicleContentShell]}>
         <View style={[styles.header, { paddingTop: insets.top, paddingLeft: 22 + insets.left, paddingRight: 22 + insets.right }]}>
-          <Pressable accessibilityLabel="Back" accessibilityRole="button" onPress={() => navigate('/')} style={styles.backButton}>
+          <Pressable accessibilityLabel="Back" accessibilityRole="button" onPress={() => router.replace('/')} style={styles.backButton}>
             <SvgAssetIcon color="#191C1D" height={12} name="leftChevron" width={8} />
           </Pressable>
           <Text style={styles.brand}>EV-FLOW</Text>

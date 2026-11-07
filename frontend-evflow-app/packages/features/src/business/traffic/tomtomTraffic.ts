@@ -18,7 +18,7 @@ import type { LeafletTileOverlay } from '@evflow/ui';
  * WHY THE KEY IS IN THE URL AND WHY THAT IS FINE
  *
  * TomTom puts the key in the tile path, so it ships in the bundle and any user
- * can read it, exactly like VITE_DEMO_PASSWORD already does. Secrecy was never
+ * can read it, exactly like EXPO_PUBLIC_DEMO_PASSWORD already does. Secrecy was never
  * the control here: the key must be domain-restricted in the TomTom console,
  * after which reading it buys nothing. Proxying tiles through our own API would
  * hide it, at the cost of routing roughly twenty tiles per pan through a VPS
@@ -88,7 +88,7 @@ export const TOMTOM_ATTRIBUTION =
 
 /** Reads the build-time key. Empty, absent or placeholder all mean "no traffic". */
 export function tomtomKey(env: Record<string, string | undefined> | undefined): string | null {
-  const key = env?.VITE_TOMTOM_API_KEY?.trim();
+  const key = env?.EXPO_PUBLIC_TOMTOM_API_KEY?.trim();
   return key ? key : null;
 }
 
